@@ -30,7 +30,6 @@ namespace MasterServer
 			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
-			app.MapGrpcService<GreeterService>();
 			app.MapGrpcService<ChannelService>();
 			app.MapGrpcService<AuthManagerService>();
 			app.MapGrpcService<WorldHeartbeatService>();
