@@ -1,20 +1,32 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf;
+using Grpc.Core;
 using MasterServer.Channel;
-using Shared.Protos.World;
+using MasterServer.DB;
+using Shared.Protos;
 
 namespace MasterServer.Services
 {
-    public class WorldHeartbeatService : WorldHeartbeat.WorldHeartbeatBase
+	public class ChannelMasterService : ChannelMaster.ChannelMasterBase
 	{
 		private readonly ChannelManager _channelManager;
-		public WorldHeartbeatService(ChannelManager channelManager)
+
+		public ChannelMasterService(ChannelManager channelManager)
 		{
 			_channelManager = channelManager;
 		}
 
-		public override Task<WorldHeartbeatReply> Send(WorldHeartbeatRequest request, ServerCallContext context)
+		public override Task<ServerStateReply> GetServerState(ServerStateRequest request, ServerCallContext context)
 		{
-			Serilog.Log.Information("Called Worldheart.Send");
+			List<ServerMsg> msg = _channelManager.GetServerMsg();
+			return Task.FromResult(new ServerStateReply
+			{
+				ServerCount = (UInt32)msg.Count,
+				Servers = {msg}
+			});
+		}
+
+		public override Task<WorldHeartbeatReply> Heartbeat(WorldHeartbeatRequest request, ServerCallContext context)
+		{
 			var code = _channelManager.Heartbeat(request.ServerId, request.ChannelId, request.Ip, request.Port);
 			return Task.FromResult(new WorldHeartbeatReply
 			{

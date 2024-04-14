@@ -35,7 +35,7 @@ namespace LoginServer.Logic
 
         public Encryption Encryption;
 
-		GrpcChannel _masterChannel;
+		GrpcChannel _masterRpcChannel;
 
 		readonly double TIMEOUT_SECONDS = 99999.0;
         public static readonly UInt16 MAX_C2S_PACKET_LEN = 4096;
@@ -51,7 +51,7 @@ namespace LoginServer.Logic
             TcpClient = tcpClient;
             PacketManager = new PacketManager();
             Encryption = new(xorKeyTable);
-			_masterChannel = masterChannel;
+			_masterRpcChannel = masterChannel;
 
 			var remoteEndPoint = TcpClient.Client.RemoteEndPoint as IPEndPoint;
             Ip = remoteEndPoint.Address.GetAddressBytes();
@@ -68,7 +68,7 @@ namespace LoginServer.Logic
 
 		internal async Task<LoginAccountReply> SendLoginRequest(string username, string password)
 		{
-			var client = new AuthManager.AuthManagerClient(_masterChannel);
+			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
 			var reply = await client.LoginAsync(new LoginAccountRequest { Username = username, Password = password });
 			return reply;
 		}
@@ -246,7 +246,7 @@ namespace LoginServer.Logic
 
 		internal async Task<ServerStateReply> GetServerState()
 		{
-			var client = new ChannelServiceAbc.ChannelServiceAbcClient(_masterChannel);
+			var client = new ChannelMaster.ChannelMasterClient(_masterRpcChannel);
 			var reply = await client.GetServerStateAsync(new ServerStateRequest{ Reserved = 0 });
 			return reply;
 		}

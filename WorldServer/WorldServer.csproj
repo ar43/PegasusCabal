@@ -29,10 +29,10 @@
     <ProjectReference Include="..\LibPegasus\LibPegasus.csproj" />
   </ItemGroup>
 
-	<ItemGroup>
-		<Protobuf Include="..\LibPegasus\Protos\world_heartbeat.proto" GrpcServices="Client">
-			<Link>Protos\world_heartbeat.proto</Link>
-		</Protobuf>
-	</ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="..\LibPegasus\Protos\channel_master.proto" GrpcServices="Client">
+      <Link>Protos\channel_master.proto</Link>
+    </Protobuf>
+  </ItemGroup>
 
 </Project>

@@ -31,11 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\LibPegasus\Protos\auth_manager.proto" GrpcServices="Client">
-      <Link>Protos\auth_manager.proto</Link>
+    <Protobuf Include="..\LibPegasus\Protos\auth_master.proto" GrpcServices="Client">
+      <Link>Protos\auth_master.proto</Link>
     </Protobuf>
-    <Protobuf Include="..\LibPegasus\Protos\channel_service_abc.proto" GrpcServices="Client">
-      <Link>Protos\channel_service_abc.proto</Link>
+    <Protobuf Include="..\LibPegasus\Protos\channel_master.proto" GrpcServices="Client">
+      <Link>Protos\channel_master.proto</Link>
     </Protobuf>
   </ItemGroup>
 

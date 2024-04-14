@@ -23,16 +23,11 @@ namespace MasterServer
 			builder.Services.AddScoped<DatabaseManager>();
 			builder.Services.AddSingleton<ChannelManager>();
 			builder.Services.AddHostedService<TimedChannelService>();
-			//builder.Services.AddScoped(new DatabaseManager());
-
-			//builder.Services.AddSingleton
 
 			var app = builder.Build();
 
-			// Configure the HTTP request pipeline.
-			app.MapGrpcService<ChannelService>();
-			app.MapGrpcService<AuthManagerService>();
-			app.MapGrpcService<WorldHeartbeatService>();
+			app.MapGrpcService<ChannelMasterService>();
+			app.MapGrpcService<AuthMasterService>();
 			app.MapGet("/", () => "PegasusCabal MasterServer");
 
 			app.Run();

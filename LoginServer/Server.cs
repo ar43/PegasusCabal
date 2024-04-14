@@ -26,7 +26,7 @@ namespace LoginServer
 		bool _started = false;
 		TcpListener _listener;
 
-		GrpcChannel _masterChannel;
+		GrpcChannel _masterRpcChannel;
 
 		internal static string LOGIN_SECRET { get; private set; }
 		public static readonly int MAX_CLIENTS = 1024;
@@ -54,12 +54,12 @@ namespace LoginServer
 				PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
 			};
 
-			_masterChannel = GrpcChannel.ForAddress("https://localhost:7190", new GrpcChannelOptions
+			_masterRpcChannel = GrpcChannel.ForAddress("https://localhost:7190", new GrpcChannelOptions
 			{
 				HttpHandler = handler
 			});
 
-			_masterChannel.ConnectAsync().Wait();
+			_masterRpcChannel.ConnectAsync().Wait();
 
 			Log.Information("Connected to MasterServer");
 
@@ -110,7 +110,7 @@ namespace LoginServer
 				if (tcpClient != null)
 				{
 					Log.Debug("Client connected");
-					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterChannel));
+					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel));
 				}
 			}
 
@@ -149,7 +149,7 @@ namespace LoginServer
 				throw new ApplicationException("LoginServer test failed");
 			}
 
-			var client = new AuthManager.AuthManagerClient(_masterChannel);
+			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
 			var reply = await client.RegisterAsync(new RegisterAccountRequest { Username = "dummybla", Password = "dummypa"});
 			Log.Debug("Account Registration return code from MasterServer: " + (InfoCodeLS)reply.InfoCode);
 

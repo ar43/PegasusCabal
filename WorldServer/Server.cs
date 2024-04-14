@@ -8,7 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
-using Shared.Protos.World;
+using Shared.Protos;
 using LibPegasus.Enums;
 using System.Threading;
 
@@ -87,18 +87,18 @@ namespace WorldServer
 				if(DateTime.UtcNow.Ticks - lastUpdate.Ticks >= TimeSpan.FromSeconds(heartbeatTime).Ticks)
 				{
 					var cfg = ServerConfig.Get();
-					var client = new WorldHeartbeat.WorldHeartbeatClient(_masterChannel);
+					var client = new ChannelMaster.ChannelMasterClient(_masterChannel);
 					try
 					{
 						_masterChannel.ConnectAsync().Wait();
-						var reply = client.Send(new WorldHeartbeatRequest { ServerId = (uint)cfg.GeneralSettings.ServerId, ChannelId = (uint)cfg.GeneralSettings.ChannelId, Ip = _externalIp.ToString(), Port = (uint)cfg.ConnectionSettings.Port });
+						var reply = client.Heartbeat(new WorldHeartbeatRequest { ServerId = (uint)cfg.GeneralSettings.ServerId, ChannelId = (uint)cfg.GeneralSettings.ChannelId, Ip = _externalIp.ToString(), Port = (uint)cfg.ConnectionSettings.Port });
 						lastUpdate = DateTime.UtcNow;
 						//Log.Debug("World Heartbeat return code from MasterServer: " + (InfoCodeWorldHeartbeat)reply.InfoCode);
 					}
-					catch (Grpc.Core.RpcException ex)
+					catch (Grpc.Core.RpcException)
 					{
 						//TODO
-						Log.Warning(ex.ToString());
+						Log.Warning("Failed to send heartbeat. Retrying.");
 					}
 				}
 				Thread.Sleep(1);

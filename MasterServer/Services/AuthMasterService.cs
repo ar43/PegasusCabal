@@ -7,12 +7,12 @@ using Shared.Protos;
 
 namespace MasterServer.Services
 {
-	public class AuthManagerService : AuthManager.AuthManagerBase
+	public class AuthMasterService : AuthMaster.AuthMasterBase
 	{
 		private readonly DatabaseManager _databaseManager;
 		private readonly ChannelManager _channelManager;
 
-		public AuthManagerService(DatabaseManager databaseManager, ChannelManager channelManager)
+		public AuthMasterService(DatabaseManager databaseManager, ChannelManager channelManager)
 		{
 			_databaseManager = databaseManager;
 			_channelManager = channelManager;

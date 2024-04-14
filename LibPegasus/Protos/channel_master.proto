@@ -2,12 +2,13 @@ syntax = "proto3";
 
 option csharp_namespace = "Shared.Protos";
 
-package channel_service_abc;
+package channel_master;
 
 // The greeting service definition.
-service ChannelServiceAbc 
+service ChannelMaster 
 {
 	rpc GetServerState (ServerStateRequest) returns (ServerStateReply);
+	rpc Heartbeat (WorldHeartbeatRequest) returns (WorldHeartbeatReply);
 }
 
 // The request message containing the user's name.
@@ -34,9 +35,19 @@ message ServerMsg
 	repeated ChannelMsg channels = 4;
 }
 
-// The response message containing the greetings.
 message ServerStateReply 
 {
 	uint32 serverCount = 1;
 	repeated ServerMsg servers = 2;
+}
+
+message WorldHeartbeatRequest {
+	uint32 serverId = 1;
+	uint32 channelId = 2;
+	string ip = 3;
+	uint32 port = 4;
+}
+
+message WorldHeartbeatReply {
+	uint32 infoCode = 1;
 }
