@@ -1,3 +1,4 @@
+using MasterServer.Channel;
 using MasterServer.DB;
 using MasterServer.Services;
 using Serilog;
@@ -20,6 +21,8 @@ namespace MasterServer
 			builder.Host.UseSerilog();
 			builder.Services.AddGrpc();
 			builder.Services.AddScoped<DatabaseManager>();
+			builder.Services.AddSingleton<ChannelManager>();
+			builder.Services.AddHostedService<TimedChannelService>();
 			//builder.Services.AddScoped(new DatabaseManager());
 
 			//builder.Services.AddSingleton
@@ -28,7 +31,9 @@ namespace MasterServer
 
 			// Configure the HTTP request pipeline.
 			app.MapGrpcService<GreeterService>();
-			app.MapGrpcService<RegisterAccountService>();
+			app.MapGrpcService<ChannelService>();
+			app.MapGrpcService<AuthManagerService>();
+			app.MapGrpcService<WorldHeartbeatService>();
 			app.MapGet("/", () => "PegasusCabal MasterServer");
 
 			app.Run();

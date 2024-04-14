@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "Shared.Protos.World";
+
+package world_heartbeat;
+
+service WorldHeartbeat {
+	rpc Send (WorldHeartbeatRequest) returns (WorldHeartbeatReply);
+}
+
+message WorldHeartbeatRequest {
+	uint32 serverId = 1;
+	uint32 channelId = 2;
+	string ip = 3;
+	uint32 port = 4;
+}
+
+message WorldHeartbeatReply {
+	uint32 infoCode = 1;
+}

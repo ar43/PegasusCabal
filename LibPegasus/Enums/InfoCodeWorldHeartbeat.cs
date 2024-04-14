@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace LibPegasus.Enums
 {
-	public enum InfoCodeLS : UInt32
+	public enum InfoCodeWorldHeartbeat : UInt32
 	{
-		REGISTRATION_OK = 0,
-		REGISTRATION_USEREXISTS,
-		REGISTRATION_FAILED,
-		SESSION_TIMEOUT
+		UPDATED = 0,
+		ADDED,
+		SERVER_UNDEFINED
 	}
 }

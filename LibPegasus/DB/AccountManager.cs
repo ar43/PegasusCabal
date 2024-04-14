@@ -43,11 +43,11 @@ namespace LibPegasus.DB
 			}
 		}
 
-		private async Task<string> AccountVerify(string username, string password)
+		private async Task<(string hash, uint accountId)> AccountVerify(string username, string password)
 		{
 			var conn = await _dataSource.OpenConnectionAsync();
 
-			await using (var cmd = new NpgsqlCommand("SELECT password FROM main.accounts WHERE username=@p", conn))
+			await using (var cmd = new NpgsqlCommand("SELECT password, id FROM main.accounts WHERE username=@p", conn))
 			{
 				cmd.Parameters.AddWithValue("p", username);
 				await using (var reader = await cmd.ExecuteReaderAsync())
@@ -55,13 +55,14 @@ namespace LibPegasus.DB
 					bool found = await reader.ReadAsync();
 					if (found)
 					{
-						var output = reader.GetString(0);
-						Debug.Assert(output != String.Empty);
-						return output;
+						var hash = reader.GetString(0);
+						var id = reader.GetInt32(1);
+						Debug.Assert(hash != String.Empty);
+						return (hash, (uint)id);
 					}
 					else
 					{
-						return String.Empty;
+						return (String.Empty, 0);
 					}
 				}
 			}
@@ -77,7 +78,7 @@ namespace LibPegasus.DB
 
 			var conn = await _dataSource.OpenConnectionAsync();
 
-			await using (var cmd = new NpgsqlCommand("INSERT INTO main.accounts VALUES (@u, @p)", conn))
+			await using (var cmd = new NpgsqlCommand("INSERT INTO main.accounts VALUES (DEFAULT, @u, @p)", conn))
 			{
 				cmd.Parameters.AddWithValue("u", username);
 				cmd.Parameters.AddWithValue("p", hashPassword.Result);
@@ -112,29 +113,29 @@ namespace LibPegasus.DB
 			}
 		}
 
-		public async Task<bool> RequestLogin(string username, string password, long time, byte[] ip, string loginSecret)
+		public async Task<UInt32> RequestLogin(string username, string password)
 		{
-			var passwordHash = await AccountVerify(username, password);
+			var accountInfo = await AccountVerify(username, password);
 
-			if (passwordHash == String.Empty)
+			if (accountInfo.hash == String.Empty)
 			{
-				return false;
+				return 0;
 			}
 			else
 			{
 				var valid = Task.Factory.StartNew(() =>
 				{
-					var validation = BCrypt.Net.BCrypt.Verify(password, passwordHash);
+					var validation = BCrypt.Net.BCrypt.Verify(password, accountInfo.hash);
 					return validation;
 				});
 
 				if (valid.Result)
 				{
-					return true;
+					return accountInfo.accountId;
 				}
 				else
 				{
-					return false;
+					return 0;
 				}
 			}
 		}

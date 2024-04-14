@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.62.0" />
     <PackageReference Include="Grpc.Tools" Version="2.62.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Enums\" />
+    <Folder Include="Managers\" />
     <Folder Include="Protos\" />
   </ItemGroup>
 
@@ -31,11 +32,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\Shared\Protos\greet.proto" GrpcServices="Server">
+    <Protobuf Include="..\LibPegasus\Protos\auth_manager.proto">
+      <Link>Protos\auth_manager.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\LibPegasus\Protos\channel_service_abc.proto" GrpcServices="Server">
+      <Link>Protos\channel_service_abc.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\LibPegasus\Protos\greet.proto" GrpcServices="Server">
       <Link>Protos\greet.proto</Link>
     </Protobuf>
-    <Protobuf Include="..\Shared\Protos\register_account.proto" GrpcServices="Server">
-      <Link>Protos\register_account.proto</Link>
+    <Protobuf Include="..\LibPegasus\Protos\world_heartbeat.proto" GrpcServices="Server">
+      <Link>Protos\world_heartbeat.proto</Link>
     </Protobuf>
   </ItemGroup>
 

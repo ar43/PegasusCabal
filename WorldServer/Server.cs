@@ -1,47 +1,43 @@
-﻿using System;
+﻿using Serilog;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
-using System.Collections.Concurrent;
-using LoginServer.DB;
-using Serilog;
-using LoginServer.Crypt;
-using LoginServer.Logic;
-using System.Text.Json;
 using Grpc.Net.Client;
-using LibPegasus.DB;
+using Shared.Protos.World;
 using LibPegasus.Enums;
-using System.Threading.Channels;
-using Shared.Protos;
+using System.Threading;
 
-namespace LoginServer
+namespace WorldServer
 {
-    internal class Server
+	internal class Server
 	{
 		bool _running = false;
 		bool _started = false;
 		TcpListener _listener;
+		IPAddress _externalIp;
 
 		GrpcChannel _masterChannel;
 
-		internal static string LOGIN_SECRET { get; private set; }
 		public static readonly int MAX_CLIENTS = 1024;
 
 		ConcurrentQueue<Client> _awaitingClients = new();
 		List<Client> _clients = new();
-		XorKeyTable _xorKeyTable = new();
+		//XorKeyTable _xorKeyTable = new();
 
-		DatabaseManager _databaseManager;
+		//DatabaseManager _databaseManager;
 
 		bool[] _clientIndexSpace = new bool[MAX_CLIENTS];
 
 		public Server()
 		{
-			var cfg = ServerConfig.Get();
+			var cfg = ServerConfig.Get("world1");
+
+			Log.Information($"Channel id: {cfg.GeneralSettings.ChannelId}");
 
 			Log.Information("Connecting to MasterServer...");
 			var handler = new SocketsHttpHandler
@@ -61,19 +57,59 @@ namespace LoginServer
 
 			_masterChannel.ConnectAsync().Wait();
 
+			var externalIpTask = GetExternalIpAddress();
+			externalIpTask.Wait();
+			_externalIp = externalIpTask.Result ?? IPAddress.Loopback;
+
 			Log.Information("Connected to MasterServer");
 
 			var ipEndPoint = new IPEndPoint(IPAddress.Any, cfg.ConnectionSettings.Port);
 			_listener = new(ipEndPoint);
 
-			_databaseManager = new DatabaseManager(cfg.DatabaseSettings.ConnString);
+			//_databaseManager = new DatabaseManager(cfg.DatabaseSettings.ConnString);
+		}
+		private static async Task<IPAddress?> GetExternalIpAddress()
+		{
+			var externalIpString = (await new HttpClient().GetStringAsync("http://icanhazip.com"))
+				.Replace("\\r\\n", "").Replace("\\n", "").Trim();
+			if (!IPAddress.TryParse(externalIpString, out var ipAddress)) return null;
+			return ipAddress;
+		}
 
-			ReadSecret();
+		void SendHeartbeat()
+		{
+			Log.Information("Starting to send heartbeats...");
+			const double heartbeatTime = 5.0;
+			DateTime lastUpdate = DateTime.MinValue;
+
+			while(_masterChannel != null)
+			{
+				if(DateTime.UtcNow.Ticks - lastUpdate.Ticks >= TimeSpan.FromSeconds(heartbeatTime).Ticks)
+				{
+					var cfg = ServerConfig.Get();
+					var client = new WorldHeartbeat.WorldHeartbeatClient(_masterChannel);
+					try
+					{
+						_masterChannel.ConnectAsync().Wait();
+						var reply = client.Send(new WorldHeartbeatRequest { ServerId = (uint)cfg.GeneralSettings.ServerId, ChannelId = (uint)cfg.GeneralSettings.ChannelId, Ip = _externalIp.ToString(), Port = (uint)cfg.ConnectionSettings.Port });
+						lastUpdate = DateTime.UtcNow;
+						//Log.Debug("World Heartbeat return code from MasterServer: " + (InfoCodeWorldHeartbeat)reply.InfoCode);
+					}
+					catch (Grpc.Core.RpcException ex)
+					{
+						//TODO
+						Log.Warning(ex.ToString());
+					}
+				}
+				Thread.Sleep(1);
+			}
+
+			Log.Information("Exited SendHeartbeat");
 		}
 
 		UInt16 GetAvailableUserIndex()
 		{
-			for(int i = 0; i < _clientIndexSpace.Length; i++)
+			for (int i = 0; i < _clientIndexSpace.Length; i++)
 			{
 				if (_clientIndexSpace[i] == false)
 				{
@@ -90,19 +126,10 @@ namespace LoginServer
 			_clientIndexSpace[(int)index] = false;
 		}
 
-		void ReadSecret()
-		{
-			string workingDirectory = Environment.CurrentDirectory;
-			string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
-
-			string secretFile = projectDirectory + "\\secret.cfg";
-			LOGIN_SECRET = File.ReadAllText(secretFile);
-		}
-
 		void AcceptNewConnections()
 		{
 			Log.Information("Listening for connections...");
-			
+
 
 			while (_listener != null)
 			{
@@ -110,7 +137,7 @@ namespace LoginServer
 				if (tcpClient != null)
 				{
 					Log.Debug("Client connected");
-					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterChannel));
+					//_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable));
 				}
 			}
 
@@ -125,6 +152,7 @@ namespace LoginServer
 			Log.Information("Started Pegasus LoginServer");
 
 			Task.Factory.StartNew(() => AcceptNewConnections(), TaskCreationOptions.LongRunning);
+			Task.Factory.StartNew(() => SendHeartbeat(), TaskCreationOptions.LongRunning);
 
 			_running = true;
 
@@ -133,39 +161,20 @@ namespace LoginServer
 
 		private async void RunTest()
 		{
-			Log.Debug("Running tests...");
-			var code = await _databaseManager.AccountManager.RequestRegister("dummy", "dummypass");
-			Log.Debug("Registration return code: " + code);
-
-			var accountId = await _databaseManager.AccountManager.RequestLogin("dummy", "dummypass");
-			var accountIdBad = await _databaseManager.AccountManager.RequestLogin("dummy", "dummypassfewfwe");
-			if (accountId != 0 && accountIdBad == 0)
-			{
-				Log.Debug("Login test success");
-			}
-			else
-			{
-				Log.Debug("Login test failed");
-				throw new ApplicationException("LoginServer test failed");
-			}
-
-			var client = new AuthManager.AuthManagerClient(_masterChannel);
-			var reply = await client.RegisterAsync(new RegisterAccountRequest { Username = "dummybla", Password = "dummypa"});
-			Log.Debug("Account Registration return code from MasterServer: " + (InfoCodeLS)reply.InfoCode);
 
 		}
 
 		public void Run()
 		{
-			if(!_started) 
+			if (!_started)
 			{
 				Start();
 			}
 
-			while(_running)
+			while (_running)
 			{
 				AddNewClients();
-				ProcessClients(_databaseManager.AccountManager);
+				ProcessClients();
 				RemoveClients();
 				Thread.Sleep(1);
 			}
@@ -175,37 +184,41 @@ namespace LoginServer
 
 		private void RemoveClients()
 		{
-			for(var i = _clients.Count - 1; i >= 0; i--)
+			for (var i = _clients.Count - 1; i >= 0; i--)
 			{
+				/*
 				if (_clients[i].Dropped)
 				{
 					_clients[i].TcpClient.Close();
 					FreeUserIndex(_clients[i].ClientInfo.UserId);
 					_clients.RemoveAt(i);
 				}
+				*/
 			}
 		}
 
-		private void ProcessClients(AccountManager accountManager)
+		private void ProcessClients()
 		{
-			foreach(var client in _clients)
+			foreach (var client in _clients)
 			{
+				/*
 				client.ReceiveData();
-				client.Update(accountManager);
+				client.Update();
 				client.SendData();
+				*/
 			}
 		}
 
 		private void AddNewClients()
 		{
-			while(!_awaitingClients.IsEmpty)
+			while (!_awaitingClients.IsEmpty)
 			{
 				_awaitingClients.TryDequeue(out Client? client);
 				if (client != null)
 				{
 					Log.Debug("Added Client from awaiting to non-awaiting");
 					_clients.Add(client);
-					client.OnConnect(GetAvailableUserIndex());
+					//client.OnConnect();
 				}
 			}
 		}

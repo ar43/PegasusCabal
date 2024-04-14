@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option csharp_namespace = "Shared.Protos";
+
+package auth_manager;
+
+// The greeting service definition.
+service AuthManager 
+{
+	rpc Register (RegisterAccountRequest) returns (RegisterAccountReply);
+	rpc Login (LoginAccountRequest) returns (LoginAccountReply);
+}
+
+// The request message containing the user's name.
+message RegisterAccountRequest 
+{
+	string username = 1;
+	string password = 2;
+}
+
+// The response message containing the greetings.
+message RegisterAccountReply 
+{
+	uint32 infoCode = 1;
+}
+
+message LoginAccountRequest
+{
+	string username = 1;
+	string password = 2;
+}
+
+message LoginAccountReply
+{
+	uint32 status = 1;
+	uint32 accountId = 2;
+	uint32 serverCount = 3;
+	uint32 premServId = 4;
+	uint32 premServExpired = 5;
+	bool subPassSet = 6;
+	uint32 language = 7;
+	string authKey = 8;
+	//TODO: send over AuthKey
+	optional bytes CharData = 9;
+}

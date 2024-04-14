@@ -1,8 +1,10 @@
-﻿using LoginServer.Opcodes.S2C;
+﻿using LibPegasus.Enums;
+using LoginServer.Opcodes.S2C;
 using LoginServer.Packets.S2C;
 using LoginServer.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -90,7 +92,7 @@ namespace LoginServer.Logic.Delegates
 			client.PacketManager.Send(packet);
 		}
 
-		public static void OnAuthAccount(Client client, byte[] rsaData)
+		public static async void OnAuthAccount(Client client, byte[] rsaData)
 		{
 			if (client.ClientInfo.ConnState != Enums.ConnState.PUBLIC_KEY_REQUESTED)
 			{
@@ -108,7 +110,7 @@ namespace LoginServer.Logic.Delegates
 				//TODO: Close connection
 				throw new NotImplementedException();
 			}
-			var username = System.Text.ASCIIEncoding.ASCII.GetString(decryptedRSA, 0, usernameLen);
+			var username = Encoding.ASCII.GetString(decryptedRSA, 0, usernameLen);
 
 			var passwordLen = Array.IndexOf(decryptedRSA, (byte)0, 33) - 33;
 			if (passwordLen <= 0)
@@ -116,13 +118,39 @@ namespace LoginServer.Logic.Delegates
 				//TODO: Close connection
 				throw new NotImplementedException();
 			}
-			var password = System.Text.ASCIIEncoding.ASCII.GetString(decryptedRSA, 33, passwordLen);
+			var password = Encoding.ASCII.GetString(decryptedRSA, 33, passwordLen);
 
 			Serilog.Log.Debug($"username extracted: {username} (len: {username.Length})");
 			Serilog.Log.Debug($"password extracted: {password} (len: {password.Length})");
 
 			client.ClientInfo.ConnState = Enums.ConnState.AUTH_ACCOUNT;
 
+			var reply = await client.SendLoginRequest(username, password);
+			if((AuthResult)reply.Status == AuthResult.Normal)
+			{
+				Debug.Assert(reply.AuthKey.Length == 32);
+				var replyServerState = await client.GetServerState();
+
+				var packetServerState = new NFY_ServerState(replyServerState);
+				client.PacketManager.Send(packetServerState);
+
+				var packetUrlToClient = new NFY_UrlToClient();
+				client.PacketManager.Send(packetUrlToClient);
+
+				var packetAuth = new RSP_AuthAccount(reply);
+				client.PacketManager.Send(packetAuth);
+
+				var packetMsg = new NFY_SystemMessg(Enums.MessageType.Normal2, "");
+				client.PacketManager.Send(packetMsg);
+			}
+			else
+			{
+				var packet = new RSP_AuthAccount(reply);
+				client.PacketManager.Send(packet);
+			}
+			
+			
+			
 
 		}
 

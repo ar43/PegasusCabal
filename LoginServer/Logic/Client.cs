@@ -18,6 +18,8 @@ using LoginServer.Packets;
 using System.Net.Security;
 using System.Security.Cryptography;
 using LoginServer.Utils;
+using Grpc.Net.Client;
+using Shared.Protos;
 
 namespace LoginServer.Logic
 {
@@ -33,7 +35,9 @@ namespace LoginServer.Logic
 
         public Encryption Encryption;
 
-        readonly double TIMEOUT_SECONDS = 99999.0;
+		GrpcChannel _masterChannel;
+
+		readonly double TIMEOUT_SECONDS = 99999.0;
         public static readonly UInt16 MAX_C2S_PACKET_LEN = 4096;
 
         DateTime timeConnected;
@@ -42,13 +46,14 @@ namespace LoginServer.Logic
 
         internal bool Dropped { get; private set; } = false;
 
-        public Client(TcpClient tcpClient, XorKeyTable xorKeyTable)
+        public Client(TcpClient tcpClient, XorKeyTable xorKeyTable, GrpcChannel masterChannel)
         {
             TcpClient = tcpClient;
             PacketManager = new PacketManager();
             Encryption = new(xorKeyTable);
+			_masterChannel = masterChannel;
 
-            var remoteEndPoint = TcpClient.Client.RemoteEndPoint as IPEndPoint;
+			var remoteEndPoint = TcpClient.Client.RemoteEndPoint as IPEndPoint;
             Ip = remoteEndPoint.Address.GetAddressBytes();
         }
 
@@ -60,6 +65,13 @@ namespace LoginServer.Logic
 			var authKeyB = (UInt32)RandomNumberGenerator.GetInt32(Int32.MaxValue);
 			ClientInfo = new(userIndex, authKeyA+authKeyB);
         }
+
+		internal async Task<LoginAccountReply> SendLoginRequest(string username, string password)
+		{
+			var client = new AuthManager.AuthManagerClient(_masterChannel);
+			var reply = await client.LoginAsync(new LoginAccountRequest { Username = username, Password = password });
+			return reply;
+		}
 
         internal void ReceiveData()
         {
@@ -231,5 +243,12 @@ namespace LoginServer.Logic
             Dropped = true;
             //todo - send session timeout
         }
-    }
+
+		internal async Task<ServerStateReply> GetServerState()
+		{
+			var client = new ChannelServiceAbc.ChannelServiceAbcClient(_masterChannel);
+			var reply = await client.GetServerStateAsync(new ServerStateRequest{ Reserved = 0 });
+			return reply;
+		}
+	}
 }

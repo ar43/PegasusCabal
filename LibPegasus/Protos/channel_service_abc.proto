@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option csharp_namespace = "Shared.Protos";
+
+package channel_service_abc;
+
+// The greeting service definition.
+service ChannelServiceAbc 
+{
+	rpc GetServerState (ServerStateRequest) returns (ServerStateReply);
+}
+
+// The request message containing the user's name.
+message ServerStateRequest 
+{
+	uint32 reserved = 1;
+}
+
+message ChannelMsg
+{
+	uint32 channelId = 1;
+	uint32 userCount = 2;
+	uint32 maximumUserCount = 3;
+	string ip = 4;
+	uint32 port = 5;
+	uint32 type = 6;
+}
+
+message ServerMsg
+{
+	uint32 serverId = 1;
+	uint32 serverFlag = 2;
+	uint32 channelCount = 3;
+	repeated ChannelMsg channels = 4;
+}
+
+// The response message containing the greetings.
+message ServerStateReply 
+{
+	uint32 serverCount = 1;
+	repeated ServerMsg servers = 2;
+}
