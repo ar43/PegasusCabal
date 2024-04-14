@@ -1,26 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
-using System.Collections.Concurrent;
-using LibPegasus.DB;
-using Serilog;
+﻿using Grpc.Net.Client;
 using LibPegasus.Crypt;
-using System.Text.Json;
-using Grpc.Net.Client;
+using LibPegasus.DB;
 using LibPegasus.Enums;
-using System.Threading.Channels;
-using Shared.Protos;
-using LoginServer.Logic;
 using LoginServer.DB;
+using LoginServer.Logic;
+using Serilog;
+using Shared.Protos;
+using System.Collections.Concurrent;
+using System.Net;
+using System.Net.Sockets;
 
 namespace LoginServer
 {
-    internal class Server
+	internal class Server
 	{
 		bool _running = false;
 		bool _started = false;
@@ -70,7 +62,7 @@ namespace LoginServer
 
 		UInt16 GetAvailableUserIndex()
 		{
-			for(int i = 0; i < _clientIndexSpace.Length; i++)
+			for (int i = 0; i < _clientIndexSpace.Length; i++)
 			{
 				if (_clientIndexSpace[i] == false)
 				{
@@ -90,7 +82,7 @@ namespace LoginServer
 		void AcceptNewConnections()
 		{
 			Log.Information("Listening for connections...");
-			
+
 
 			while (_listener != null)
 			{
@@ -138,19 +130,19 @@ namespace LoginServer
 			}
 
 			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
-			var reply = await client.RegisterAsync(new RegisterAccountRequest { Username = "dummybla", Password = "dummypa"});
+			var reply = await client.RegisterAsync(new RegisterAccountRequest { Username = "dummybla", Password = "dummypa" });
 			Log.Debug("Account Registration return code from MasterServer: " + (InfoCodeLS)reply.InfoCode);
 
 		}
 
 		public void Run()
 		{
-			if(!_started) 
+			if (!_started)
 			{
 				Start();
 			}
 
-			while(_running)
+			while (_running)
 			{
 				AddNewClients();
 				ProcessClients(_databaseManager.AccountManager);
@@ -163,7 +155,7 @@ namespace LoginServer
 
 		private void RemoveClients()
 		{
-			for(var i = _clients.Count - 1; i >= 0; i--)
+			for (var i = _clients.Count - 1; i >= 0; i--)
 			{
 				if (_clients[i].Dropped)
 				{
@@ -176,7 +168,7 @@ namespace LoginServer
 
 		private void ProcessClients(AccountManager accountManager)
 		{
-			foreach(var client in _clients)
+			foreach (var client in _clients)
 			{
 				client.ReceiveData();
 				client.Update(accountManager);
@@ -186,7 +178,7 @@ namespace LoginServer
 
 		private void AddNewClients()
 		{
-			while(!_awaitingClients.IsEmpty)
+			while (!_awaitingClients.IsEmpty)
 			{
 				_awaitingClients.TryDequeue(out Client? client);
 				if (client != null)

@@ -1,11 +1,6 @@
-﻿using LibPegasus.Enums;
-using LibPegasus.Packets;
+﻿using LibPegasus.Packets;
 using LoginServer.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LoginServer.Packets.S2C
 {
@@ -25,7 +20,7 @@ namespace LoginServer.Packets.S2C
 		{
 			PacketWriter.WriteByte(_data, (byte)_msgType);
 			PacketWriter.WriteUInt16(_data, (UInt16)_msg.Length);
-			if(_msg.Length > 0)
+			if (_msg.Length > 0)
 			{
 				PacketWriter.WriteArray(_data, Encoding.ASCII.GetBytes(_msg));
 				PacketWriter.WriteByte(_data, 0); //possibly need a null byte here or perhaps not

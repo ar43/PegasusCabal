@@ -1,31 +1,30 @@
 ﻿using LibPegasus.Enums;
 using Shared.Protos;
-using System.Threading.Channels;
 
 namespace MasterServer.Channel
 {
-    public class ChannelManager
-    {
+	public class ChannelManager
+	{
 		List<Server> _servers;
 		public ChannelManager(IConfiguration configuration)
 		{
 			var serverData = configuration["ServerData"].Split(',').Select(s => Int32.Parse(s)).ToArray();
 			_servers = new List<Server>();
-			for (int i = 0; i < serverData.Length; i += 2) 
+			for (int i = 0; i < serverData.Length; i += 2)
 			{
 				_servers.Add(new Server(serverData[i], serverData[i + 1], new List<Channel>()));
 				Serilog.Log.Information($"Added server with id {serverData[i]}");
 			}
 		}
 
-		public InfoCodeWorldHeartbeat Heartbeat(UInt32 serverId, UInt32 channelId, string ip, UInt32 port) 
+		public InfoCodeWorldHeartbeat Heartbeat(UInt32 serverId, UInt32 channelId, string ip, UInt32 port)
 		{
-			lock(_servers)
+			lock (_servers)
 			{
 				var server = _servers.Find(x => x.Id == serverId);
 
-                if (server != null)
-                {
+				if (server != null)
+				{
 					foreach (Channel channel in server.Channels)
 					{
 						if (channel.IsEqual(serverId, channelId))
@@ -45,7 +44,7 @@ namespace MasterServer.Channel
 		{
 			lock (_servers)
 			{
-				foreach(Server server in _servers)
+				foreach (Server server in _servers)
 				{
 					for (int i = server.Channels.Count - 1; i >= 0; i--)
 					{
@@ -59,7 +58,7 @@ namespace MasterServer.Channel
 		}
 
 		public List<ServerMsg> GetServerMsg(bool isLocalhost)
-		{ 
+		{
 			lock (_servers)
 			{
 				var outData = new List<ServerMsg>();
@@ -71,7 +70,7 @@ namespace MasterServer.Channel
 					smsg.ChannelCount = (UInt32)server.Channels.Count;
 					var cmsgs = new List<ChannelMsg>();
 
-					foreach(Channel channel in server.Channels)
+					foreach (Channel channel in server.Channels)
 					{
 						var cmsg = new ChannelMsg();
 						cmsg.ChannelId = channel.ChannelId;
@@ -104,17 +103,17 @@ namespace MasterServer.Channel
 						channel.Print();
 					}
 				}
-				
+
 			}
 		}
 
 		public byte[]? GetSerializedServerData()
 		{
-			if(_servers.Count > 0) 
-			{ 
-				byte[] data = new byte[_servers.Count*2];
+			if (_servers.Count > 0)
+			{
+				byte[] data = new byte[_servers.Count * 2];
 				int i = 0;
-				foreach(Server server in _servers)
+				foreach (Server server in _servers)
 				{
 					data[i] = (byte)server.Id;
 					i += 2;

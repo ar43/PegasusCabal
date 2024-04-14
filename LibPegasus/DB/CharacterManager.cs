@@ -1,9 +1,4 @@
 ﻿using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibPegasus.DB
 {
@@ -16,10 +11,10 @@ namespace LibPegasus.DB
 			_dataSource = dataSource;
 		}
 
-		public async Task<Dictionary<int,int>> GetCharacterCount(int accountId)
+		public async Task<Dictionary<int, int>> GetCharacterCount(int accountId)
 		{
 			var conn = await _dataSource.OpenConnectionAsync();
-			var dict = new Dictionary<int,int>();
+			var dict = new Dictionary<int, int>();
 
 			await using (var cmd = new NpgsqlCommand("SELECT server_id FROM main.characters WHERE account_id=@p", conn))
 			{

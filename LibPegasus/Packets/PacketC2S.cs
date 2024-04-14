@@ -1,14 +1,9 @@
 ﻿using LibPegasus.Crypt;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Serilog;
 
 namespace LibPegasus.Packets
 {
-    public class PacketC2S<ClientClass>
+	public class PacketC2S<ClientClass>
 	{
 		private readonly UInt16 _id;
 		protected readonly int _packetLen;
@@ -32,19 +27,19 @@ namespace LibPegasus.Packets
 				var checksum = PacketReader.ReadUInt32(_data);
 				var opcode = PacketReader.ReadUInt16(_data);
 
-				if(magicKey != Encryption.MagicKey)
+				if (magicKey != Encryption.MagicKey)
 				{
 					Log.Error("MagicKey does not match");
 					return false;
 				}
 
-				if(len != _packetLen)
+				if (len != _packetLen)
 				{
 					Log.Error("packet len does not match");
 					return false;
 				}
 
-				if(opcode != (UInt16)_id)
+				if (opcode != (UInt16)_id)
 				{
 					Log.Error($"opcode does not match: got {opcode} expected {_id}");
 					return false;

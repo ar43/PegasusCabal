@@ -1,17 +1,10 @@
-﻿using Serilog;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Grpc.Net.Client;
-using Shared.Protos;
-using LibPegasus.Enums;
-using System.Threading;
+﻿using Grpc.Net.Client;
 using LibPegasus.Crypt;
+using Serilog;
+using Shared.Protos;
+using System.Collections.Concurrent;
+using System.Net;
+using System.Net.Sockets;
 
 namespace WorldServer
 {
@@ -83,9 +76,9 @@ namespace WorldServer
 			const double heartbeatTime = 5.0;
 			DateTime lastUpdate = DateTime.MinValue;
 
-			while(_masterRpcChannel != null)
+			while (_masterRpcChannel != null)
 			{
-				if(DateTime.UtcNow.Ticks - lastUpdate.Ticks >= TimeSpan.FromSeconds(heartbeatTime).Ticks)
+				if (DateTime.UtcNow.Ticks - lastUpdate.Ticks >= TimeSpan.FromSeconds(heartbeatTime).Ticks)
 				{
 					var cfg = ServerConfig.Get();
 					var client = new ChannelMaster.ChannelMasterClient(_masterRpcChannel);

@@ -38,9 +38,9 @@ namespace MasterServer.Services
 			var serverData = _channelManager.GetSerializedServerData();
 			//TODO: actually get character data and fill the serverData with it
 			var serverCount = 0;
-			
 
-			if(accountId.Result > 0)
+
+			if (accountId.Result > 0)
 			{
 				status = AuthResult.Normal;
 
@@ -48,7 +48,7 @@ namespace MasterServer.Services
 				if (serverData != null)
 				{
 					serverCount = serverData.Length / 2;
-					for(int i = 0; i < serverData.Length; i+=2)
+					for (int i = 0; i < serverData.Length; i += 2)
 					{
 						charCountData.Result.TryGetValue(serverData[i], out int charCount);
 						serverData[i + 1] = (Byte)charCount;
@@ -59,7 +59,7 @@ namespace MasterServer.Services
 			{
 				status = AuthResult.Incorrect;
 			}
-			
+
 			return Task.FromResult(new LoginAccountReply
 			{
 				Status = (uint)status,

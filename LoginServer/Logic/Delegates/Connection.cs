@@ -1,14 +1,10 @@
-﻿using LibPegasus.Enums;
+﻿using LibPegasus.Crypt;
+using LibPegasus.Enums;
 using LibPegasus.Utils;
-using LibPegasus.Crypt;
 using LoginServer.Packets.S2C;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LoginServer.Logic.Delegates
 {
@@ -18,7 +14,7 @@ namespace LoginServer.Logic.Delegates
 		{
 			Serilog.Log.Debug("OnServerConnection called");
 
-			if(client.ClientInfo.ConnState != Enums.ConnState.INITIAL)
+			if (client.ClientInfo.ConnState != Enums.ConnState.INITIAL)
 			{
 				//TODO: Close connection
 				throw new NotImplementedException();
@@ -42,21 +38,21 @@ namespace LoginServer.Logic.Delegates
 
 			if (serverConfig.GeneralSettings.VerifyClientVersion)
 			{
-				if(clientVersion != (uint)serverConfig.GeneralSettings.ClientVersion)
+				if (clientVersion != (uint)serverConfig.GeneralSettings.ClientVersion)
 				{
 					//TODO: check what happens if clientVersion is bogus
 					throw new NotImplementedException();
 				}
 			}
 
-			if(client.ClientInfo.ConnState != Enums.ConnState.AUTH_ACCOUNT)
+			if (client.ClientInfo.ConnState != Enums.ConnState.AUTH_ACCOUNT)
 				client.ClientInfo.ConnState = Enums.ConnState.VERSION_CHECKED;
 
 			var packet = new RSP_CheckVersion((uint)serverConfig.GeneralSettings.ClientVersion);
 			client.PacketManager.Send(packet);
 		}
 
-		public static void OnPreServerEnvRequest(Client client, string username) 
+		public static void OnPreServerEnvRequest(Client client, string username)
 		{
 			if (client.ClientInfo.ConnState != Enums.ConnState.VERSION_CHECKED)
 			{
@@ -64,7 +60,7 @@ namespace LoginServer.Logic.Delegates
 				throw new NotImplementedException();
 			}
 
-			if(username.Length < 1 || username.Length > 16)
+			if (username.Length < 1 || username.Length > 16)
 			{
 				//TODO: Close connection
 				throw new NotImplementedException();
@@ -125,7 +121,7 @@ namespace LoginServer.Logic.Delegates
 			//Serilog.Log.Debug($"password extracted: {password} (len: {password.Length})");
 
 			var reply = await client.SendLoginRequest(username, password);
-			if((AuthResult)reply.Status == AuthResult.Normal)
+			if ((AuthResult)reply.Status == AuthResult.Normal)
 			{
 				bool isLocalhost = client.Ip == "127.0.0.1";
 				Debug.Assert(reply.AuthKey.Length == 32);
@@ -150,9 +146,9 @@ namespace LoginServer.Logic.Delegates
 				client.PacketManager.Send(packet);
 				client.Disconnect("bad auth");
 			}
-			
-			
-			
+
+
+
 
 		}
 

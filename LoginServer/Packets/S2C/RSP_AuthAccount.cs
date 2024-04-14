@@ -2,11 +2,7 @@
 using LibPegasus.Packets;
 using LoginServer.Enums;
 using Shared.Protos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LoginServer.Packets.S2C
 {
@@ -21,7 +17,7 @@ namespace LoginServer.Packets.S2C
 
 		public override void WritePayload()
 		{
-			if((byte)_reply.Status == (byte)AuthResult.Normal)
+			if ((byte)_reply.Status == (byte)AuthResult.Normal)
 			{
 				PacketWriter.WriteByte(_data, (byte)_reply.Status);
 				PacketWriter.WriteUInt32(_data, _reply.AccountId);

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.Crypt
+﻿namespace LibPegasus.Crypt
 {
 	public class XorKeyTable
 	{
@@ -40,7 +34,7 @@ namespace LibPegasus.Crypt
 			}
 		}
 
-		
+
 
 	}
 }

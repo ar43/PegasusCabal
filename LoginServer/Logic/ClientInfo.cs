@@ -1,12 +1,5 @@
-﻿using LibPegasus.Enums;
-using LoginServer.Enums;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using LoginServer.Enums;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoginServer.Logic
 {
@@ -27,6 +20,6 @@ namespace LoginServer.Logic
 		public UInt32 AuthKey { get; private set; }
 		public string Username;
 		public ConnState ConnState;
-		public RSA RSA {  get; private set; }
+		public RSA RSA { get; private set; }
 	}
 }

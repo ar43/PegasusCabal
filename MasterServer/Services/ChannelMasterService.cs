@@ -1,7 +1,5 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using MasterServer.Channel;
-using MasterServer.DB;
 using Shared.Protos;
 
 namespace MasterServer.Services
@@ -21,7 +19,7 @@ namespace MasterServer.Services
 			return Task.FromResult(new ServerStateReply
 			{
 				ServerCount = (UInt32)msg.Count,
-				Servers = {msg}
+				Servers = { msg }
 			});
 		}
 

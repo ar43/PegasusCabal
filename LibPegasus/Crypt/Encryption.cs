@@ -1,13 +1,7 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
-using System;
 using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibPegasus.Crypt
 {
@@ -15,7 +9,7 @@ namespace LibPegasus.Crypt
 	{
 		bool _firstPacket = true;
 		UInt32 _xorKeyTableBaseMultiple = 1;
-		public UInt16 RecvXorKeyIdx {  get; private set; }
+		public UInt16 RecvXorKeyIdx { get; private set; }
 		UInt32 _recvXorKey = 0;
 
 		public static readonly UInt32 RecvXorKeyNum = 0x4000;

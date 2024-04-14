@@ -1,6 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-
-namespace MasterServer.Channel
+﻿namespace MasterServer.Channel
 {
 	public class Channel
 	{
@@ -9,7 +7,7 @@ namespace MasterServer.Channel
 		public string Ip { get; private set; }
 		public UInt32 Port { get; private set; }
 
-		public DateTime LastUpdate {  get; private set; }
+		public DateTime LastUpdate { get; private set; }
 
 		private readonly double TIMEOUT = 10.0;
 
@@ -31,7 +29,7 @@ namespace MasterServer.Channel
 
 		public bool IsEqual(UInt32 serverId, UInt32 channelId)
 		{
-			if(serverId == ServerId && channelId == ChannelId)
+			if (serverId == ServerId && channelId == ChannelId)
 			{
 				return true;
 			}
@@ -43,7 +41,7 @@ namespace MasterServer.Channel
 
 		public bool IsExpired()
 		{
-			if(DateTime.UtcNow.Ticks - LastUpdate.Ticks >= TimeSpan.FromSeconds(TIMEOUT).Ticks)
+			if (DateTime.UtcNow.Ticks - LastUpdate.Ticks >= TimeSpan.FromSeconds(TIMEOUT).Ticks)
 			{
 				return true;
 			}

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LibPegasus.Packets;
-
-namespace LibPegasus.Packets
+﻿namespace LibPegasus.Packets
 {
-    public class DanglingPacket
+	public class DanglingPacket
 	{
 		public static readonly int MAX_C2S_PACKET_LEN = 4096;
 		public byte[] DanglingData = new byte[MAX_C2S_PACKET_LEN];
@@ -17,10 +10,10 @@ namespace LibPegasus.Packets
 
 		public DanglingPacket(byte[] data, int i, int length, int packetLen)
 		{
-			if((length-i) >= DanglingData.Length)
+			if ((length - i) >= DanglingData.Length)
 				throw new OverflowException("DanglingPacket: length-i >= Client.MAX_C2S_PACKET_LEN");
 
-			Array.Copy(data, i, DanglingData, _currentPosition, length-i);
+			Array.Copy(data, i, DanglingData, _currentPosition, length - i);
 			_currentPosition += length - i;
 			PacketLen = packetLen;
 		}

@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.Packets
+﻿namespace LibPegasus.Packets
 {
 	public static class PacketReader
 	{
 		public static byte ReadByte(Queue<byte> data)
 		{
-			if(data.Count <= 0)
+			if (data.Count <= 0)
 			{
 				throw new IndexOutOfRangeException("Data queue is empty");
 			}
@@ -91,7 +85,7 @@ namespace LibPegasus.Packets
 		{
 			try
 			{
-				for(int i = 0; i < count; i++)
+				for (int i = 0; i < count; i++)
 				{
 					ReadByte(data);
 				}
@@ -102,16 +96,16 @@ namespace LibPegasus.Packets
 			}
 		}
 
-		public static string ReadString(Queue<byte> data, int len) 
+		public static string ReadString(Queue<byte> data, int len)
 		{
 			try
 			{
 				var byteList = new List<byte>();
 
-				for(int i = 0; i < len; i++)
+				for (int i = 0; i < len; i++)
 				{
 					byte b = ReadByte(data);
-					if(b != 0)
+					if (b != 0)
 						byteList.Add(b);
 				}
 
@@ -125,7 +119,7 @@ namespace LibPegasus.Packets
 
 		public static byte[] ReadArray(Queue<byte> data)
 		{
-			if(data.Count == 0)
+			if (data.Count == 0)
 			{
 				throw new IndexOutOfRangeException("Data queue is empty");
 			}
@@ -133,7 +127,7 @@ namespace LibPegasus.Packets
 			byte[] output = new byte[data.Count];
 
 			int i = 0;
-			while(data.Count > 0)
+			while (data.Count > 0)
 			{
 				byte b = ReadByte(data);
 				output[i] = (byte)b;

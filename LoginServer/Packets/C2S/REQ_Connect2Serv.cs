@@ -1,13 +1,6 @@
-﻿using LibPegasus.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Serilog;
-using LoginServer.Logic;
-using LibPegasus.Packets;
+﻿using LibPegasus.Packets;
 using LoginServer.Enums;
+using LoginServer.Logic;
 using LoginServer.Logic.Delegates;
 
 namespace LoginServer.Packets.C2S
@@ -25,7 +18,7 @@ namespace LoginServer.Packets.C2S
 			{
 				var reserved = PacketReader.ReadUInt32(_data);
 			}
-			catch(IndexOutOfRangeException)
+			catch (IndexOutOfRangeException)
 			{
 				return false;
 			}

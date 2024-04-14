@@ -1,9 +1,4 @@
 ﻿using Nito.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibPegasus.Packets
 {
@@ -69,7 +64,7 @@ namespace LibPegasus.Packets
 
 		public static void WriteNull(Deque<byte> data, int len)
 		{
-			for(int i = 0; i < len; i++)
+			for (int i = 0; i < len; i++)
 			{
 				data.AddToBack((byte)0);
 			}
@@ -77,7 +72,7 @@ namespace LibPegasus.Packets
 
 		public static void WriteArray(Deque<byte> data, byte[] input)
 		{
-			for(int i = 0; i < input.Length; i++)
+			for (int i = 0; i < input.Length; i++)
 			{
 				data.AddToBack(input[i]);
 			}

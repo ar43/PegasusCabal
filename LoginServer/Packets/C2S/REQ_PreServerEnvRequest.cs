@@ -1,13 +1,7 @@
 ﻿using LibPegasus.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LibPegasus.Enums;
-using LoginServer.Logic.Delegates;
-using LoginServer.Logic;
 using LoginServer.Enums;
+using LoginServer.Logic;
+using LoginServer.Logic.Delegates;
 
 namespace LoginServer.Packets.C2S
 {
