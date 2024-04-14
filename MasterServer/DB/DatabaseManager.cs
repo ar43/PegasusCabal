@@ -5,18 +5,25 @@ namespace MasterServer.DB
 {
 	public class DatabaseManager
 	{
-		private NpgsqlDataSource _dataSource;
+		private NpgsqlDataSource _dataSourceAuth;
+		private NpgsqlDataSource _dataSourceWorld;
 
 		public AccountManager AccountManager { private set; get; }
+
+		public CharacterManager CharacterManager { private set; get; }
 
 		//TODO: add other managers
 
 		public DatabaseManager(IConfiguration configuration)
 		{
-			var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration["ConnString"]);
-			_dataSource = dataSourceBuilder.Build();
+			var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration["ConnStringAuth"]);
+			_dataSourceAuth = dataSourceBuilder.Build();
 
-			AccountManager = new(_dataSource);
+			var dataSourceBuilderWorld = new NpgsqlDataSourceBuilder(configuration["ConnStringWorld"]);
+			_dataSourceWorld = dataSourceBuilderWorld.Build();
+
+			AccountManager = new(_dataSourceAuth);
+			CharacterManager = new(_dataSourceWorld);
 		}
 	}
 }
