@@ -1,14 +1,15 @@
-﻿using LibPegasus.Logic.Delegates;
-using LibPegasus.Logic;
-using LibPegasus.Packets;
+﻿using LibPegasus.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LibPegasus.Enums;
+using LoginServer.Logic.Delegates;
+using LoginServer.Logic;
+using LoginServer.Enums;
 
-namespace LibPegasus.Packets.C2S
+namespace LoginServer.Packets.C2S
 {
 	internal class REQ_PreServerEnvRequest : PacketC2S<Client>
 	{

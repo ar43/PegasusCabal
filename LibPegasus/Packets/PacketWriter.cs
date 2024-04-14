@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibPegasus
+namespace LibPegasus.Packets
 {
 	public static class PacketWriter
 	{

@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Enums;
-using LibPegasus.Packets.S2C;
 using LibPegasus.Utils;
+using LibPegasus.Crypt;
+using LoginServer.Packets.S2C;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibPegasus.Logic.Delegates
+namespace LoginServer.Logic.Delegates
 {
 	internal static class Connection
 	{
@@ -25,7 +26,7 @@ namespace LibPegasus.Logic.Delegates
 
 			client.ClientInfo.ConnState = Enums.ConnState.CONNECTED;
 
-			var packet = new RSP_Connect2Serv(Crypt.Encryption.Recv2ndXorSeed, client.ClientInfo.AuthKey, client.ClientInfo.UserId, client.Encryption.RecvXorKeyIdx);
+			var packet = new RSP_Connect2Serv(Encryption.Recv2ndXorSeed, client.ClientInfo.AuthKey, client.ClientInfo.UserId, client.Encryption.RecvXorKeyIdx);
 			client.PacketManager.Send(packet);
 		}
 

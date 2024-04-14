@@ -1,14 +1,15 @@
-﻿using LibPegasus.Logic.Delegates;
-using LibPegasus.Logic;
-using LibPegasus.Packets;
+﻿using LibPegasus.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LibPegasus.Enums;
+using LoginServer.Enums;
+using LoginServer.Logic;
+using LoginServer.Logic.Delegates;
 
-namespace LibPegasus.Packets.C2S
+namespace LoginServer.Packets.C2S
 {
 	internal class REQ_PublicKey : PacketC2S<Client>
 	{

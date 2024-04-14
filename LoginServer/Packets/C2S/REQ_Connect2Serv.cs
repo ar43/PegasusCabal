@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
-using LibPegasus.Logic.Delegates;
-using LibPegasus.Logic;
+using LoginServer.Logic;
+using LibPegasus.Packets;
+using LoginServer.Enums;
+using LoginServer.Logic.Delegates;
 
-namespace LibPegasus.Packets.C2S
+namespace LoginServer.Packets.C2S
 {
 	internal class REQ_Connect2Serv : PacketC2S<Client>
 	{

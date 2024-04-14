@@ -1,5 +1,6 @@
 ﻿using LibPegasus.Enums;
 using LibPegasus.Packets;
+using LoginServer.Enums;
 using Shared.Protos;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibPegasus.Packets.S2C
+namespace LoginServer.Packets.S2C
 {
 	internal class NFY_ServerState : PacketS2C
 	{

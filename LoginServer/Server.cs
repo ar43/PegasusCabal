@@ -10,14 +10,15 @@ using System.Collections.Concurrent;
 using LibPegasus.DB;
 using Serilog;
 using LibPegasus.Crypt;
-using LibPegasus.Logic;
 using System.Text.Json;
 using Grpc.Net.Client;
 using LibPegasus.Enums;
 using System.Threading.Channels;
 using Shared.Protos;
+using LoginServer.Logic;
+using LoginServer.DB;
 
-namespace LibPegasus
+namespace LoginServer
 {
     internal class Server
 	{

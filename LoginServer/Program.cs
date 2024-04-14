@@ -1,6 +1,6 @@
 ﻿using Serilog;
 
-namespace LibPegasus
+namespace LoginServer
 {
 	internal class Program
 	{

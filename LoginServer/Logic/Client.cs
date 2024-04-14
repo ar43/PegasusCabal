@@ -8,7 +8,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
-using LibPegasus.Packets.S2C;
 using System.Net;
 using LibPegasus.Enums;
 using LibPegasus.Crypt;
@@ -18,8 +17,9 @@ using System.Security.Cryptography;
 using LibPegasus.Utils;
 using Grpc.Net.Client;
 using Shared.Protos;
+using LoginServer.Packets;
 
-namespace LibPegasus.Logic
+namespace LoginServer.Logic
 {
     internal class Client
     {
