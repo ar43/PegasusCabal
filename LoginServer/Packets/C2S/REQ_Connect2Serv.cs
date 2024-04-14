@@ -1,18 +1,18 @@
-﻿using LoginServer.Enums;
+﻿using LibPegasus.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
-using LoginServer.Logic.Delegates;
-using LoginServer.Logic;
+using LibPegasus.Logic.Delegates;
+using LibPegasus.Logic;
 
-namespace LoginServer.Opcodes.C2S
+namespace LibPegasus.Packets.C2S
 {
-	internal class REQ_Connect2Serv : PacketC2S
+	internal class REQ_Connect2Serv : PacketC2S<Client>
 	{
-		public REQ_Connect2Serv(Queue<byte> data) : base(Opcode.CONNECT2SVR, data)
+		public REQ_Connect2Serv(Queue<byte> data) : base((UInt16)Opcode.CONNECT2SVR, data)
 		{
 
 		}

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LibPegasus.DB;
 using Npgsql;
 
-namespace LoginServer.DB
+namespace LibPegasus.DB
 {
     internal class DatabaseManager
     {

@@ -1,20 +1,17 @@
-﻿using LibPegasus.Enums;
-using LibPegasus.Packets;
-using LibPegasus.Packets.C2S;
+﻿using LibPegasus.Packets;
+using Nito.Collections;
+using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Serilog;
-using LibPegasus.Logic;
-using Nito.Collections;
+using WorldServer.Enums;
 
-namespace LibPegasus
+namespace WorldServer
 {
-    internal class PacketManager
+	internal class PacketManager
 	{
 		private Queue<Tuple<UInt16, Queue<byte>>> _decryptedInboundPackets = new();
 		private Queue<Deque<byte>> _decryptedOutboundPackets = new();
@@ -49,11 +46,6 @@ namespace LibPegasus
 		{
 			return opcode switch
 			{
-				Opcode.CONNECT2SVR => new REQ_Connect2Serv(data),
-				Opcode.CHECKVERSION => new REQ_CheckVersion(data),
-				Opcode.PRESERVERENVREQUEST => new REQ_PreServerEnvRequest(data),
-				Opcode.PUBLICKEY => new REQ_PublicKey(data),
-				Opcode.AUTHACCOUNT => new REQ_AuthAccount(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}
@@ -64,7 +56,7 @@ namespace LibPegasus
 
 			while (_decryptedInboundPackets.Count > 0)
 			{
-				if(actions == null)
+				if (actions == null)
 					actions = new Queue<Action<Client>>();
 
 				var packetInfo = _decryptedInboundPackets.Dequeue();
@@ -72,7 +64,7 @@ namespace LibPegasus
 				var dataQueue = packetInfo.Item2;
 
 				bool opcodeDefined = Enum.IsDefined(typeof(Opcode), opcodeNum);
-				if(!opcodeDefined)
+				if (!opcodeDefined)
 				{
 					Log.Warning($"Received undefined opcode {opcodeNum}(len={dataQueue.Count})");
 					continue;
@@ -82,14 +74,14 @@ namespace LibPegasus
 				Log.Debug($"Processing opcode {opcodeNum}");
 
 				bool verifyHeader = packet.ReadHeader();
-                if (!verifyHeader)
-                {
+				if (!verifyHeader)
+				{
 					Log.Warning($"Header for opcode {opcodeNum} is invalid");
 					continue;
-                }
+				}
 
-                bool ok = packet.ReadPayload(actions);
-				if(!ok)
+				bool ok = packet.ReadPayload(actions);
+				if (!ok)
 				{
 					Log.Warning($"Invalid payload data during opcode {opcodeNum}");
 					continue;

@@ -1,4 +1,4 @@
-﻿using LoginServer.Enums;
+﻿using LibPegasus.Enums;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Logic
+namespace LibPegasus.Logic
 {
 	internal class ClientInfo
 	{

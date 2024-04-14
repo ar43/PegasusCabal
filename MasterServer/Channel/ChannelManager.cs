@@ -58,7 +58,7 @@ namespace MasterServer.Channel
 			}
 		}
 
-		public List<ServerMsg> GetServerMsg()
+		public List<ServerMsg> GetServerMsg(bool isLocalhost)
 		{ 
 			lock (_servers)
 			{
@@ -77,7 +77,10 @@ namespace MasterServer.Channel
 						cmsg.ChannelId = channel.ChannelId;
 						cmsg.UserCount = 0; // TODO
 						cmsg.MaximumUserCount = 60; // TODO
-						cmsg.Ip = channel.Ip;
+						if (!isLocalhost)
+							cmsg.Ip = channel.Ip;
+						else
+							cmsg.Ip = "127.0.0.1";
 						cmsg.Port = channel.Port;
 						cmsg.Type = 0; // TODO
 						cmsgs.Add(cmsg);

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer
+namespace LibPegasus
 {
-	internal static class PacketReader
+	public static class PacketReader
 	{
 		public static byte ReadByte(Queue<byte> data)
 		{

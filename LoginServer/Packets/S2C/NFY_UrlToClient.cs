@@ -1,16 +1,16 @@
-﻿using LoginServer.Enums;
-using LoginServer.Opcodes;
+﻿using LibPegasus.Enums;
+using LibPegasus.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Packets.S2C
+namespace LibPegasus.Packets.S2C
 {
 	internal class NFY_UrlToClient : PacketS2C
 	{
-		public NFY_UrlToClient() : base(Opcode.URLTOCLIENT)
+		public NFY_UrlToClient() : base((UInt16)Opcode.URLTOCLIENT)
 		{
 		}
 

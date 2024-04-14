@@ -1,18 +1,18 @@
-﻿using LoginServer.Enums;
-using LoginServer.Opcodes;
+﻿using LibPegasus.Enums;
+using LibPegasus.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Packets.S2C
+namespace LibPegasus.Packets.S2C
 {
 	internal class RSP_CheckVersion : PacketS2C
 	{
 		private UInt32 _clientVersion;
 
-		public RSP_CheckVersion(UInt32 clientVersion) : base(Opcode.CHECKVERSION)
+		public RSP_CheckVersion(UInt32 clientVersion) : base((UInt16)Opcode.CHECKVERSION)
 		{
 			_clientVersion = clientVersion;
 		}

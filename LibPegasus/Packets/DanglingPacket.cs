@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LoginServer.Logic;
+using LibPegasus.Packets;
 
-namespace LoginServer.Packets
+namespace LibPegasus.Packets
 {
-    internal class DanglingPacket
+    public class DanglingPacket
 	{
-		public byte[] DanglingData = new byte[Client.MAX_C2S_PACKET_LEN];
+		public static readonly int MAX_C2S_PACKET_LEN = 4096;
+		public byte[] DanglingData = new byte[MAX_C2S_PACKET_LEN];
 		public int PacketLen;
 		int _currentPosition = 0;
 		public bool Resolved = false;

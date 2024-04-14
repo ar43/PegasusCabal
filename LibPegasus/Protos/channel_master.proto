@@ -14,7 +14,7 @@ service ChannelMaster
 // The request message containing the user's name.
 message ServerStateRequest 
 {
-	uint32 reserved = 1;
+	bool isLocalhost = 1;
 }
 
 message ChannelMsg

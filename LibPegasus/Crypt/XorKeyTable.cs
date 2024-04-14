@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Crypt
+namespace LibPegasus.Crypt
 {
-	internal class XorKeyTable
+	public class XorKeyTable
 	{
 		public UInt32[] KeyTable { get; private set; }
 		KeyRand _keyRand = new();

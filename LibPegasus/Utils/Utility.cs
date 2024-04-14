@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Utils
+namespace LibPegasus.Utils
 {
-	internal static class Utility
+	public static class Utility
 	{
 		public static void PrintByteArray(byte[] bytes, int len, string Type)
 		{

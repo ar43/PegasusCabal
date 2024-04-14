@@ -1,7 +1,6 @@
 ﻿using LibPegasus.Enums;
-using LoginServer.Opcodes.S2C;
-using LoginServer.Packets.S2C;
-using LoginServer.Utils;
+using LibPegasus.Packets.S2C;
+using LibPegasus.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Logic.Delegates
+namespace LibPegasus.Logic.Delegates
 {
 	internal static class Connection
 	{
@@ -34,7 +33,7 @@ namespace LoginServer.Logic.Delegates
 		{
 			var serverConfig = ServerConfig.Get();
 
-			if (client.ClientInfo.ConnState != Enums.ConnState.CONNECTED)
+			if (client.ClientInfo.ConnState != Enums.ConnState.CONNECTED && client.ClientInfo.ConnState != Enums.ConnState.AUTH_ACCOUNT)
 			{
 				//TODO: Close connection
 				throw new NotImplementedException();
@@ -49,7 +48,8 @@ namespace LoginServer.Logic.Delegates
 				}
 			}
 
-			client.ClientInfo.ConnState = Enums.ConnState.VERSION_CHECKED;
+			if(client.ClientInfo.ConnState != Enums.ConnState.AUTH_ACCOUNT)
+				client.ClientInfo.ConnState = Enums.ConnState.VERSION_CHECKED;
 
 			var packet = new RSP_CheckVersion((uint)serverConfig.GeneralSettings.ClientVersion);
 			client.PacketManager.Send(packet);
@@ -120,16 +120,15 @@ namespace LoginServer.Logic.Delegates
 			}
 			var password = Encoding.ASCII.GetString(decryptedRSA, 33, passwordLen);
 
-			Serilog.Log.Debug($"username extracted: {username} (len: {username.Length})");
-			Serilog.Log.Debug($"password extracted: {password} (len: {password.Length})");
-
-			client.ClientInfo.ConnState = Enums.ConnState.AUTH_ACCOUNT;
+			//Serilog.Log.Debug($"username extracted: {username} (len: {username.Length})");
+			//Serilog.Log.Debug($"password extracted: {password} (len: {password.Length})");
 
 			var reply = await client.SendLoginRequest(username, password);
 			if((AuthResult)reply.Status == AuthResult.Normal)
 			{
+				bool isLocalhost = client.Ip == "127.0.0.1";
 				Debug.Assert(reply.AuthKey.Length == 32);
-				var replyServerState = await client.GetServerState();
+				var replyServerState = await client.GetServerState(isLocalhost);
 
 				var packetServerState = new NFY_ServerState(replyServerState);
 				client.PacketManager.Send(packetServerState);
@@ -142,11 +141,13 @@ namespace LoginServer.Logic.Delegates
 
 				var packetMsg = new NFY_SystemMessg(Enums.MessageType.Normal2, "");
 				client.PacketManager.Send(packetMsg);
+				client.ClientInfo.ConnState = Enums.ConnState.AUTH_ACCOUNT;
 			}
 			else
 			{
 				var packet = new RSP_AuthAccount(reply);
 				client.PacketManager.Send(packet);
+				client.Disconnect("bad auth");
 			}
 			
 			

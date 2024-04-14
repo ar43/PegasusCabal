@@ -7,18 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Collections.Concurrent;
-using LoginServer.DB;
+using LibPegasus.DB;
 using Serilog;
-using LoginServer.Crypt;
-using LoginServer.Logic;
+using LibPegasus.Crypt;
+using LibPegasus.Logic;
 using System.Text.Json;
 using Grpc.Net.Client;
-using LibPegasus.DB;
 using LibPegasus.Enums;
 using System.Threading.Channels;
 using Shared.Protos;
 
-namespace LoginServer
+namespace LibPegasus
 {
     internal class Server
 	{
@@ -28,7 +27,6 @@ namespace LoginServer
 
 		GrpcChannel _masterRpcChannel;
 
-		internal static string LOGIN_SECRET { get; private set; }
 		public static readonly int MAX_CLIENTS = 1024;
 
 		ConcurrentQueue<Client> _awaitingClients = new();
@@ -67,8 +65,6 @@ namespace LoginServer
 			_listener = new(ipEndPoint);
 
 			_databaseManager = new DatabaseManager(cfg.DatabaseSettings.ConnString);
-
-			ReadSecret();
 		}
 
 		UInt16 GetAvailableUserIndex()
@@ -88,15 +84,6 @@ namespace LoginServer
 		void FreeUserIndex(UInt16 index)
 		{
 			_clientIndexSpace[(int)index] = false;
-		}
-
-		void ReadSecret()
-		{
-			string workingDirectory = Environment.CurrentDirectory;
-			string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
-
-			string secretFile = projectDirectory + "\\secret.cfg";
-			LOGIN_SECRET = File.ReadAllText(secretFile);
 		}
 
 		void AcceptNewConnections()

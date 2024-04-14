@@ -1,18 +1,18 @@
-﻿using LoginServer.Enums;
-using LoginServer.Opcodes;
+﻿using LibPegasus.Enums;
+using LibPegasus.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Packets.S2C
+namespace LibPegasus.Packets.S2C
 {
 	internal class NFY_SystemMessg : PacketS2C
 	{
 		MessageType _msgType;
 		string _msg;
-		public NFY_SystemMessg(MessageType msgType, String msg) : base(Opcode.SYSTEMMESSG)
+		public NFY_SystemMessg(MessageType msgType, String msg) : base((UInt16)Opcode.SYSTEMMESSG)
 		{
 			_msgType = msgType;
 			_msg = msg;

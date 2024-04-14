@@ -1,5 +1,4 @@
-﻿using LoginServer.Opcodes;
-using LoginServer.Opcodes.C2S;
+﻿using LibPegasus.Packets;
 using Nito.Collections;
 using System;
 using System.Buffers.Binary;
@@ -10,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace LoginServer.Crypt
+namespace LibPegasus.Crypt
 {
-	internal class Encryption
+	public class Encryption
 	{
 		bool _firstPacket = true;
 		UInt32 _xorKeyTableBaseMultiple = 1;
@@ -28,6 +27,10 @@ namespace LoginServer.Crypt
 
 		public static readonly UInt16 MagicKey = 0xB7E2;
 
+		public static readonly UInt16 C2S_HEADER_SIZE = 10;
+
+		public static readonly UInt16 FIRST_PACKET_SIZE = 14;
+
 		XorKeyTable _xorKeyTable;
 
 		public Encryption(XorKeyTable xorKeyTable)
@@ -40,7 +43,7 @@ namespace LoginServer.Crypt
 		{
 			if (_firstPacket)
 			{
-				return REQ_Connect2Serv.GetSize();
+				return FIRST_PACKET_SIZE;
 			}
 			else
 			{
@@ -101,7 +104,7 @@ namespace LoginServer.Crypt
 
 			if (_firstPacket)
 			{
-				_recvXorKey = (UInt32)(header ^ (MagicKey | (REQ_Connect2Serv.GetSize() << 16)));
+				_recvXorKey = (UInt32)(header ^ (MagicKey | (FIRST_PACKET_SIZE << 16)));
 			}
 
 			var xorKey = _recvXorKey;
@@ -114,7 +117,7 @@ namespace LoginServer.Crypt
 			span = new Span<byte>(data, 4, 4);
 			BinaryPrimitives.WriteUInt32LittleEndian(span, 0);
 
-			var payloadLen = packetLen - (PacketC2S.HEADER_SIZE - 2);
+			var payloadLen = packetLen - (C2S_HEADER_SIZE - 2);
 			var j = 8;
 
 			for (int i = 0; i < payloadLen / 4; i++)

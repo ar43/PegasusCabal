@@ -1,18 +1,18 @@
-﻿using LoginServer.Logic.Delegates;
-using LoginServer.Logic;
-using LoginServer.Opcodes;
+﻿using LibPegasus.Logic.Delegates;
+using LibPegasus.Logic;
+using LibPegasus.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LoginServer.Enums;
+using LibPegasus.Enums;
 
-namespace LoginServer.Packets.C2S
+namespace LibPegasus.Packets.C2S
 {
-	internal class REQ_CheckVersion : PacketC2S
+	internal class REQ_CheckVersion : PacketC2S<Client>
 	{
-		public REQ_CheckVersion(Queue<byte> data) : base(Opcode.CHECKVERSION, data)
+		public REQ_CheckVersion(Queue<byte> data) : base((UInt16)Opcode.CHECKVERSION, data)
 		{
 
 		}

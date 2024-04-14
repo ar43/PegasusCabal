@@ -1,5 +1,5 @@
-﻿using LoginServer.Enums;
-using LoginServer.Opcodes;
+﻿using LibPegasus.Enums;
+using LibPegasus.Packets;
 using Shared.Protos;
 using System;
 using System.Collections.Generic;
@@ -8,12 +8,12 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Packets.S2C
+namespace LibPegasus.Packets.S2C
 {
 	internal class NFY_ServerState : PacketS2C
 	{
 		ServerStateReply _reply;
-		public NFY_ServerState(ServerStateReply reply) : base(Opcode.SERVERSTATE)
+		public NFY_ServerState(ServerStateReply reply) : base((UInt16)Opcode.SERVERSTATE)
 		{
 			_reply = reply;
 		}

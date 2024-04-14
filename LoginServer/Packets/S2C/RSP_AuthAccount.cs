@@ -1,6 +1,5 @@
 ﻿using LibPegasus.Enums;
-using LoginServer.Enums;
-using LoginServer.Opcodes;
+using LibPegasus.Packets;
 using Shared.Protos;
 using System;
 using System.Collections.Generic;
@@ -8,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Packets.S2C
+namespace LibPegasus.Packets.S2C
 {
 	internal class RSP_AuthAccount : PacketS2C
 	{
 		LoginAccountReply _reply;
 
-		public RSP_AuthAccount(LoginAccountReply reply) : base(Opcode.AUTHACCOUNT)
+		public RSP_AuthAccount(LoginAccountReply reply) : base((UInt16)Opcode.AUTHACCOUNT)
 		{
 			_reply = reply;
 		}

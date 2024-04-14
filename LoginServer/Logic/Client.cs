@@ -1,5 +1,4 @@
-﻿using LoginServer.DB;
-using LibPegasus.DB;
+﻿using LibPegasus.DB;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,19 +8,18 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
-using LoginServer.Opcodes.S2C;
+using LibPegasus.Packets.S2C;
 using System.Net;
-using LoginServer.Enums;
-using LoginServer.Crypt;
-using LoginServer.Opcodes;
-using LoginServer.Packets;
+using LibPegasus.Enums;
+using LibPegasus.Crypt;
+using LibPegasus.Packets;
 using System.Net.Security;
 using System.Security.Cryptography;
-using LoginServer.Utils;
+using LibPegasus.Utils;
 using Grpc.Net.Client;
 using Shared.Protos;
 
-namespace LoginServer.Logic
+namespace LibPegasus.Logic
 {
     internal class Client
     {
@@ -29,7 +27,7 @@ namespace LoginServer.Logic
 
 		public ClientInfo? ClientInfo { private set; get; }
 
-        internal byte[] Ip { private set; get; }
+        internal string Ip { private set; get; }
 
         public PacketManager PacketManager;
 
@@ -38,7 +36,6 @@ namespace LoginServer.Logic
 		GrpcChannel _masterRpcChannel;
 
 		readonly double TIMEOUT_SECONDS = 99999.0;
-        public static readonly UInt16 MAX_C2S_PACKET_LEN = 4096;
 
         DateTime timeConnected;
 
@@ -54,16 +51,15 @@ namespace LoginServer.Logic
 			_masterRpcChannel = masterChannel;
 
 			var remoteEndPoint = TcpClient.Client.RemoteEndPoint as IPEndPoint;
-            Ip = remoteEndPoint.Address.GetAddressBytes();
+            Ip = remoteEndPoint.Address.ToString();
+			Log.Debug(Ip);
         }
 
         internal void OnConnect(UInt16 userIndex)
         {
             timeConnected = DateTime.UtcNow;
-			//UInt32 unixTime = (UInt32)((DateTimeOffset)timeConnected).ToUnixTimeSeconds();
-			var authKeyA = (UInt32)RandomNumberGenerator.GetInt32(Int32.MaxValue);
-			var authKeyB = (UInt32)RandomNumberGenerator.GetInt32(Int32.MaxValue);
-			ClientInfo = new(userIndex, authKeyA+authKeyB);
+			UInt32 unixTime = (UInt32)((DateTimeOffset)timeConnected).ToUnixTimeSeconds();
+			ClientInfo = new(userIndex, unixTime);
         }
 
 		internal async Task<LoginAccountReply> SendLoginRequest(string username, string password)
@@ -127,7 +123,7 @@ namespace LoginServer.Logic
                         var packetLen = Encryption.GetPacketSize(span);
                         Log.Debug($"packetLen decrypted: {packetLen}");
 
-                        if (packetLen < PacketC2S.HEADER_SIZE || packetLen > MAX_C2S_PACKET_LEN)
+                        if (packetLen < Encryption.C2S_HEADER_SIZE || packetLen > DanglingPacket.MAX_C2S_PACKET_LEN)
                         {
                             throw new OverflowException("ReceiveData - packetLen > MAX_C2S_PACKET_LEN");
                         }
@@ -192,42 +188,6 @@ namespace LoginServer.Logic
 				}
 			}
 
-            /*
-			if(_clientInput.InputRegister != null)
-			{
-				_busy = true;
-				var code = await accountManager.RequestRegister(_clientInput.InputRegister);
-				_busy = false;
-				// send the code..
-				_packetManager.Send(new OutInfo((byte)code));
-				Disconnect("registration completed");
-				return;
-			}
-			else if (_clientInput.InputLogin != null)
-			{
-				_busy = true;
-				var token = await accountManager.RequestLogin(_clientInput.InputLogin, DateTime.UtcNow.Ticks, Ip, Server.LOGIN_SECRET);
-				_busy = false;
-				if(token != null)
-				{
-					_packetManager.Send(new OutInfo((byte)InfoCode.LOGIN_SUCCESS));
-					// send token
-					Disconnect("login success");
-				}
-				else
-				{
-					_packetManager.Send(new OutInfo((byte)InfoCode.LOGIN_FAILED));
-					Disconnect("login failed");
-				}
-				return;
-			}
-			*/
-            //if (_clientInput.ReqConnect)
-            //{
-
-            //}
-            //else
-
             var time = DateTime.UtcNow;
 
             if (time.Ticks - timeConnected.Ticks >= TimeSpan.FromSeconds(TIMEOUT_SECONDS).Ticks)
@@ -244,10 +204,10 @@ namespace LoginServer.Logic
             //todo - send session timeout
         }
 
-		internal async Task<ServerStateReply> GetServerState()
+		internal async Task<ServerStateReply> GetServerState(bool isLocalhost)
 		{
 			var client = new ChannelMaster.ChannelMasterClient(_masterRpcChannel);
-			var reply = await client.GetServerStateAsync(new ServerStateRequest{ Reserved = 0 });
+			var reply = await client.GetServerStateAsync(new ServerStateRequest{ IsLocalhost = isLocalhost });
 			return reply;
 		}
 	}

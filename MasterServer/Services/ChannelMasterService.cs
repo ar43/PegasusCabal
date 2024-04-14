@@ -17,7 +17,7 @@ namespace MasterServer.Services
 
 		public override Task<ServerStateReply> GetServerState(ServerStateRequest request, ServerCallContext context)
 		{
-			List<ServerMsg> msg = _channelManager.GetServerMsg();
+			List<ServerMsg> msg = _channelManager.GetServerMsg(request.IsLocalhost);
 			return Task.FromResult(new ServerStateReply
 			{
 				ServerCount = (UInt32)msg.Count,

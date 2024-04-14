@@ -11,6 +11,7 @@ using Grpc.Net.Client;
 using Shared.Protos;
 using LibPegasus.Enums;
 using System.Threading;
+using LibPegasus.Crypt;
 
 namespace WorldServer
 {
@@ -21,13 +22,13 @@ namespace WorldServer
 		TcpListener _listener;
 		IPAddress _externalIp;
 
-		GrpcChannel _masterChannel;
+		GrpcChannel _masterRpcChannel;
 
-		public static readonly int MAX_CLIENTS = 1024;
+		public static readonly int MAX_CLIENTS = 1024; //TODO
 
 		ConcurrentQueue<Client> _awaitingClients = new();
 		List<Client> _clients = new();
-		//XorKeyTable _xorKeyTable = new();
+		XorKeyTable _xorKeyTable = new();
 
 		//DatabaseManager _databaseManager;
 
@@ -50,12 +51,12 @@ namespace WorldServer
 				PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
 			};
 
-			_masterChannel = GrpcChannel.ForAddress("https://localhost:7190", new GrpcChannelOptions
+			_masterRpcChannel = GrpcChannel.ForAddress("https://localhost:7190", new GrpcChannelOptions
 			{
 				HttpHandler = handler
 			});
 
-			_masterChannel.ConnectAsync().Wait();
+			_masterRpcChannel.ConnectAsync().Wait();
 
 			var externalIpTask = GetExternalIpAddress();
 			externalIpTask.Wait();
@@ -82,15 +83,15 @@ namespace WorldServer
 			const double heartbeatTime = 5.0;
 			DateTime lastUpdate = DateTime.MinValue;
 
-			while(_masterChannel != null)
+			while(_masterRpcChannel != null)
 			{
 				if(DateTime.UtcNow.Ticks - lastUpdate.Ticks >= TimeSpan.FromSeconds(heartbeatTime).Ticks)
 				{
 					var cfg = ServerConfig.Get();
-					var client = new ChannelMaster.ChannelMasterClient(_masterChannel);
+					var client = new ChannelMaster.ChannelMasterClient(_masterRpcChannel);
 					try
 					{
-						_masterChannel.ConnectAsync().Wait();
+						_masterRpcChannel.ConnectAsync().Wait();
 						var reply = client.Heartbeat(new WorldHeartbeatRequest { ServerId = (uint)cfg.GeneralSettings.ServerId, ChannelId = (uint)cfg.GeneralSettings.ChannelId, Ip = _externalIp.ToString(), Port = (uint)cfg.ConnectionSettings.Port });
 						lastUpdate = DateTime.UtcNow;
 						//Log.Debug("World Heartbeat return code from MasterServer: " + (InfoCodeWorldHeartbeat)reply.InfoCode);
@@ -137,7 +138,7 @@ namespace WorldServer
 				if (tcpClient != null)
 				{
 					Log.Debug("Client connected");
-					//_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable));
+					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel));
 				}
 			}
 
@@ -186,14 +187,12 @@ namespace WorldServer
 		{
 			for (var i = _clients.Count - 1; i >= 0; i--)
 			{
-				/*
 				if (_clients[i].Dropped)
 				{
 					_clients[i].TcpClient.Close();
-					FreeUserIndex(_clients[i].ClientInfo.UserId);
+					FreeUserIndex(_clients[i].ConnectionInfo.UserId);
 					_clients.RemoveAt(i);
 				}
-				*/
 			}
 		}
 
@@ -201,11 +200,9 @@ namespace WorldServer
 		{
 			foreach (var client in _clients)
 			{
-				/*
 				client.ReceiveData();
 				client.Update();
 				client.SendData();
-				*/
 			}
 		}
 
@@ -218,7 +215,7 @@ namespace WorldServer
 				{
 					Log.Debug("Added Client from awaiting to non-awaiting");
 					_clients.Add(client);
-					//client.OnConnect();
+					client.OnConnect(GetAvailableUserIndex());
 				}
 			}
 		}

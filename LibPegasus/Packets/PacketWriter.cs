@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer
+namespace LibPegasus
 {
-	internal static class PacketWriter
+	public static class PacketWriter
 	{
 		public static void WriteByte(Deque<byte> data, byte val)
 		{

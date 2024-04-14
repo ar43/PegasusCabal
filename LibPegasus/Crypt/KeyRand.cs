@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Crypt
+namespace LibPegasus.Crypt
 {
-    internal class KeyRand
+    public class KeyRand
     {
         public UInt32 Seed;
 

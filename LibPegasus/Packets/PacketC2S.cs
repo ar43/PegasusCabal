@@ -1,5 +1,4 @@
-﻿using LoginServer.Crypt;
-using LoginServer.Enums;
+﻿using LibPegasus.Crypt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Serilog;
 
-namespace LoginServer.Opcodes
+namespace LibPegasus.Packets
 {
-    internal class PacketC2S
+    public class PacketC2S<ClientClass>
 	{
-		private readonly Opcode _id;
+		private readonly UInt16 _id;
 		protected readonly int _packetLen;
 		protected Queue<byte> _data;
 
 		public static readonly UInt16 HEADER_SIZE = 10;
 
-		public PacketC2S(Opcode id, Queue<byte> data)
+		public PacketC2S(UInt16 id, Queue<byte> data)
 		{
 			_id = id;
 			_data = data;
@@ -64,7 +63,7 @@ namespace LoginServer.Opcodes
 			return _data.Count == 0;
 		}
 
-		public virtual bool ReadPayload(Queue<Action<LoginServer.Logic.Client>> actions)
+		public virtual bool ReadPayload(Queue<Action<ClientClass>> actions)
 		{
 			throw new NotImplementedException();
 		}

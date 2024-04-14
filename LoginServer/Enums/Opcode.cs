@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginServer.Enums
+namespace LibPegasus.Enums
 {
 	internal enum Opcode : UInt16
 	{
