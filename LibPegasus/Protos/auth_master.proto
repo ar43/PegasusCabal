@@ -9,6 +9,7 @@ service AuthMaster
 {
 	rpc Register (RegisterAccountRequest) returns (RegisterAccountReply);
 	rpc Login (LoginAccountRequest) returns (LoginAccountReply);
+	rpc CreateSession (SessionRequest) returns (SessionReply);
 }
 
 // The request message containing the user's name.
@@ -42,4 +43,18 @@ message LoginAccountReply
 	string authKey = 8;
 	//TODO: send over AuthKey
 	optional bytes CharData = 9;
+}
+
+message SessionRequest
+{
+	uint32 authKey = 1;
+	uint32 userId = 2;
+	uint32 channelId = 3;
+	uint32 serverId = 4;
+	uint32 accountId = 5;
+}
+
+message SessionReply
+{
+	uint32 result = 1;
 }

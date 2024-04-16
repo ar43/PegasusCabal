@@ -22,7 +22,7 @@ namespace LoginServer.Logic.Delegates
 
 			client.ClientInfo.ConnState = Enums.ConnState.CONNECTED;
 
-			var packet = new RSP_Connect2Serv(Encryption.Recv2ndXorSeed, client.ClientInfo.AuthKey, client.ClientInfo.UserId, client.Encryption.RecvXorKeyIdx);
+			var packet = new RSP_Connect2Svr(Encryption.Recv2ndXorSeed, client.ClientInfo.AuthKey, client.ClientInfo.UserId, client.Encryption.RecvXorKeyIdx);
 			client.PacketManager.Send(packet);
 		}
 
@@ -139,6 +139,8 @@ namespace LoginServer.Logic.Delegates
 				var packetMsg = new NFY_SystemMessg(Enums.MessageType.Normal2, "");
 				client.PacketManager.Send(packetMsg);
 				client.ClientInfo.ConnState = Enums.ConnState.AUTH_ACCOUNT;
+				client.ClientInfo.AccountId = reply.AccountId;
+
 			}
 			else
 			{
@@ -146,11 +148,34 @@ namespace LoginServer.Logic.Delegates
 				client.PacketManager.Send(packet);
 				client.Disconnect("bad auth");
 			}
-
-
-
-
 		}
 
+		internal static async void OnVerifyLinks(Client client, UInt32 authKey, UInt16 userId, Byte channelId, Byte serverId, UInt32 clientMagicKey)
+		{
+			var cfg = ServerConfig.Get();
+			if (client.ClientInfo.ConnState != Enums.ConnState.AUTH_ACCOUNT || client.ClientInfo.AccountId == 0)
+			{
+				//TODO: Close connection
+				throw new NotImplementedException();
+			}
+
+			if(clientMagicKey != cfg.GeneralSettings.ClientMagicKey)
+			{
+				//TODO: Close connection
+				throw new NotImplementedException();
+			}
+			client.ClientInfo.ConnState = Enums.ConnState.VERIFYING;
+			//TODO: check if authKey expired (5 sec?)
+			var reply = await client.SendSessionRequest(authKey, userId, channelId, serverId);
+			bool success = reply.Result == (uint)SessionResult.OK || reply.Result == (uint)SessionResult.REPLACED;
+			var packet = new RSP_VerifyLinks(channelId, serverId, success);
+			client.PacketManager.Send(packet);
+
+			if (success)
+			{
+				client.ClientInfo.ConnState = Enums.ConnState.VERIFIED;
+				//TODO: disconnect??
+			}
+		}
 	}
 }

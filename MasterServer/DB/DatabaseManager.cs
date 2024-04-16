@@ -12,6 +12,8 @@ namespace MasterServer.DB
 
 		public CharacterManager CharacterManager { private set; get; }
 
+		public SessionManager SessionManager { private set; get; }
+
 		//TODO: add other managers
 
 		public DatabaseManager(IConfiguration configuration)
@@ -24,6 +26,7 @@ namespace MasterServer.DB
 
 			AccountManager = new(_dataSourceAuth);
 			CharacterManager = new(_dataSourceWorld);
+			SessionManager = new(_dataSourceWorld);
 		}
 	}
 }

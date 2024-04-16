@@ -23,6 +23,7 @@ namespace LoginServer
 			return _instance;
 		}
 	}
+
 	public class Config
 	{
 		public Generalsettings GeneralSettings { get; set; }
@@ -34,6 +35,7 @@ namespace LoginServer
 	{
 		public bool VerifyClientVersion { get; set; }
 		public int ClientVersion { get; set; }
+		public int ClientMagicKey { get; set; }
 	}
 
 	public class Connectionsettings
@@ -45,6 +47,7 @@ namespace LoginServer
 	{
 		public string ConnString { get; set; }
 	}
+
 
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

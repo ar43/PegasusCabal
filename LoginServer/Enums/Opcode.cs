@@ -3,6 +3,7 @@
 	internal enum Opcode : UInt16
 	{
 		CONNECT2SVR = 101,
+		VERIFYLINKS = 102,
 		AUTHACCOUNT = 103,
 		SYSTEMMESSG = 120,
 		SERVERSTATE = 121,

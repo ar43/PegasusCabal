@@ -1,14 +1,19 @@
 ﻿using Grpc.Net.Client;
 using LibPegasus.Crypt;
+using Npgsql;
 using Serilog;
 using Shared.Protos;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.Json;
+using WorldServer.DB;
+using WorldServer.JSON;
+using WorldServer.Logic;
 
 namespace WorldServer
 {
-	internal class Server
+    internal class Server
 	{
 		bool _running = false;
 		bool _started = false;
@@ -21,11 +26,12 @@ namespace WorldServer
 
 		ConcurrentQueue<Client> _awaitingClients = new();
 		List<Client> _clients = new();
+		ConcurrentQueue<SessionChangeData> _pendingSessionChanges = new();
 		XorKeyTable _xorKeyTable = new();
 
-		//DatabaseManager _databaseManager;
+		DatabaseManager _databaseManager;
 
-		bool[] _clientIndexSpace = new bool[MAX_CLIENTS];
+		bool[] _clientIndexSpace = new bool[UInt16.MaxValue+1];
 
 		public Server()
 		{
@@ -60,7 +66,7 @@ namespace WorldServer
 			var ipEndPoint = new IPEndPoint(IPAddress.Any, cfg.ConnectionSettings.Port);
 			_listener = new(ipEndPoint);
 
-			//_databaseManager = new DatabaseManager(cfg.DatabaseSettings.ConnString);
+			_databaseManager = new DatabaseManager();
 		}
 		private static async Task<IPAddress?> GetExternalIpAddress()
 		{
@@ -147,15 +153,71 @@ namespace WorldServer
 
 			Task.Factory.StartNew(() => AcceptNewConnections(), TaskCreationOptions.LongRunning);
 			Task.Factory.StartNew(() => SendHeartbeat(), TaskCreationOptions.LongRunning);
+			Task.Factory.StartNew(() => SessionChangeListener(), TaskCreationOptions.LongRunning);
 
 			_running = true;
 
 			RunTest();
 		}
 
+		async Task SessionChangeListener()
+		{
+			var cfg = ServerConfig.Get();
+
+			await using var conn = new NpgsqlConnection(cfg.DatabaseSettings.ConnString);
+			await conn.OpenAsync();
+
+			//e.Payload is string representation of JSON we constructed in NotifyOnDataChange() function
+			conn.Notification += (o, e) => SessionChangeHandler(e.Payload);
+
+			await using (var cmd = new NpgsqlCommand("LISTEN sessionchange;", conn))
+				cmd.ExecuteNonQuery();
+
+			while (true)
+				conn.Wait(); // wait for events
+		}
+
+		void SessionChangeHandler(string payload)
+		{
+			var cfg = ServerConfig.Get();
+			Log.Debug("Received session notification: " + payload);
+			var sessionChangeData = JsonSerializer.Deserialize<SessionChangeData>(payload);
+			if(sessionChangeData.table != "sessions" ||  sessionChangeData.data.channel_id != cfg.GeneralSettings.ChannelId || sessionChangeData.data.server_id != cfg.GeneralSettings.ServerId)
+			{
+				return;
+			}
+			_pendingSessionChanges.Enqueue(sessionChangeData);
+		}
+
 		private async void RunTest()
 		{
+		}
 
+		void ProcessSessionChanges()
+		{
+			while (!_pendingSessionChanges.IsEmpty)
+			{
+				_pendingSessionChanges.TryDequeue(out var sessionChanges);
+				if (sessionChanges != null)
+				{
+					var userId = Convert.ToInt16(sessionChanges.data.user_id);
+					var client = _clients.Find(x => x.ConnectionInfo.UserId == userId);
+					if(client != null)
+					{
+						bool login = sessionChanges.action == "INSERT" ? true : false;
+						var authKey = Convert.ToUInt32(sessionChanges.data.auth_key);
+						var accountId = Convert.ToUInt32(sessionChanges.data.account_id);
+						if(login)
+						{
+							client.OnLogin(authKey, accountId);
+						}
+						else
+						{
+							client.OnLogout(authKey, accountId);
+						}
+					}
+				}
+			}
 		}
 
 		public void Run()
@@ -170,6 +232,7 @@ namespace WorldServer
 				AddNewClients();
 				ProcessClients();
 				RemoveClients();
+				ProcessSessionChanges();
 				Thread.Sleep(1);
 			}
 
@@ -208,7 +271,7 @@ namespace WorldServer
 				{
 					Log.Debug("Added Client from awaiting to non-awaiting");
 					_clients.Add(client);
-					client.OnConnect(GetAvailableUserIndex());
+					client.OnClientAccept(GetAvailableUserIndex());
 				}
 			}
 		}

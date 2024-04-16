@@ -28,6 +28,19 @@ namespace MasterServer.Services
 				InfoCode = (uint)code.Result
 			});
 		}
+
+		public override Task<SessionReply> CreateSession(SessionRequest request, ServerCallContext context)
+		{
+			Serilog.Log.Information("Called CreateSession");
+			var code = _databaseManager.SessionManager.Create(request.AuthKey, (UInt16)request.UserId, (byte)request.ChannelId, (byte)request.ServerId, request.AccountId);
+			//Serilog.Log.Information("Registration return code: " + code.Result);
+			return Task.FromResult(new SessionReply
+			{
+				//InfoCode = (uint)code.Result
+				Result = (uint)code.Result
+			});
+		}
+
 		public override Task<LoginAccountReply> Login(LoginAccountRequest request, ServerCallContext context)
 		{
 			Serilog.Log.Information("Called Login");
@@ -36,10 +49,9 @@ namespace MasterServer.Services
 			//Serilog.Log.Information("Login return code: " + success.Result);
 
 			var serverData = _channelManager.GetSerializedServerData();
-			//TODO: actually get character data and fill the serverData with it
 			var serverCount = 0;
 
-
+			//TODO: send bad result if acc is already logged in
 			if (accountId.Result > 0)
 			{
 				status = AuthResult.Normal;

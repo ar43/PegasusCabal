@@ -59,6 +59,13 @@ namespace LoginServer.Logic
 			return reply;
 		}
 
+		internal async Task<SessionReply> SendSessionRequest(UInt32 authKey, UInt16 userId, Byte channelId, Byte serverId)
+		{
+			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
+			var reply = await client.CreateSessionAsync(new SessionRequest { AuthKey = authKey, UserId = userId, ChannelId = channelId, ServerId = serverId, AccountId = ClientInfo.AccountId});
+			return reply;
+		}
+
 		internal void ReceiveData()
 		{
 			if (!TcpClient.Connected || Dropped)

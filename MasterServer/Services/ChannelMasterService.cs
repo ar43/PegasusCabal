@@ -70,7 +70,7 @@ namespace MasterServer.Services
 			int count = Interlocked.Increment(ref _executionCount);
 
 			_channelManager.RemoveExpiredChannels();
-			_channelManager.PrintChannels();
+			//_channelManager.PrintChannels();
 
 			//Serilog.Log.Debug("Timed Hosted Service is working. Count: {Count}", count);
 		}

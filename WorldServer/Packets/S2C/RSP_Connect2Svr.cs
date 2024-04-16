@@ -1,16 +1,21 @@
 ﻿using LibPegasus.Packets;
-using LoginServer.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WorldServer.Enums;
 
-namespace LoginServer.Packets.S2C
+namespace WorldServer.Packets.S2C
 {
-	internal class RSP_Connect2Serv : PacketS2C
+	internal class RSP_Connect2Svr : PacketS2C
 	{
 		private UInt32 _seed2nd;
 		private UInt32 _authKey;
 		private UInt16 _userIdx;
 		private UInt16 _recvXorKeyIdx;
 
-		public RSP_Connect2Serv(UInt32 seed2nd, UInt32 authKey, UInt16 userIdx, UInt16 recvXorKeyIdx) : base((UInt16)Opcode.CONNECT2SVR)
+		public RSP_Connect2Svr(UInt32 seed2nd, UInt32 authKey, UInt16 userIdx, UInt16 recvXorKeyIdx) : base((UInt16)Opcode.CONNECT2SVR)
 		{
 			_seed2nd = seed2nd;
 			_authKey = authKey;

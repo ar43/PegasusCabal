@@ -5,9 +5,9 @@ using LoginServer.Logic.Delegates;
 
 namespace LoginServer.Packets.C2S
 {
-	internal class REQ_Connect2Serv : PacketC2S<Client>
+	internal class REQ_Connect2Svr : PacketC2S<Client>
 	{
-		public REQ_Connect2Serv(Queue<byte> data) : base((UInt16)Opcode.CONNECT2SVR, data)
+		public REQ_Connect2Svr(Queue<byte> data) : base((UInt16)Opcode.CONNECT2SVR, data)
 		{
 
 		}
