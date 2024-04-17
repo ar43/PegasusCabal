@@ -43,6 +43,10 @@ namespace WorldServer.Packets
             return opcode switch
             {
 				Opcode.CONNECT2SVR => new REQ_Connect2Svr(data),
+				Opcode.CHARGEINFO => new REQ_ChargeInfo(data),
+				Opcode.GETMYCHARTR => new REQ_GetMyChartr(data),
+				Opcode.GETSVRTIME => new REQ_GetSvrTime(data),
+				Opcode.SERVERENV => new REQ_ServerEnv(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
             }; ;
         }

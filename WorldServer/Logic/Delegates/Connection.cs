@@ -16,13 +16,13 @@ namespace WorldServer.Logic.Delegates
 			var cfg = ServerConfig.Get();
 			if(client.ConnectionInfo.ConnState != ConnState.UNCONNECTED)
 			{
-				client.Disconnect("invalid handshake");
+				client.Disconnect("invalid handshake", ConnState.ERROR);
 				return;
 			}
 
 			if(serverId != cfg.GeneralSettings.ServerId || channelId != cfg.GeneralSettings.ChannelId)
 			{
-				client.Disconnect("invalid handshake (bad serverId or clientId)");
+				client.Disconnect("invalid handshake (bad serverId or clientId)", ConnState.ERROR);
 				return;
 			}
 

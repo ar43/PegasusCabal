@@ -12,6 +12,8 @@ namespace WorldServer.Enums
 		AWAITING,
 		AUTHORIZING,
 		CONNECTED,
-		KICKED
+		KICKED,
+		TIMEOUT,
+		ERROR
 	}
 }

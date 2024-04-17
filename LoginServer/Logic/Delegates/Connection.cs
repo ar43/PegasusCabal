@@ -174,8 +174,15 @@ namespace LoginServer.Logic.Delegates
 			if (success)
 			{
 				client.ClientInfo.ConnState = Enums.ConnState.VERIFIED;
+				client.Disconnect("Linked - success");
+
 				//TODO: disconnect??
 			}
+			else
+			{
+				client.Disconnect("Linked - fail");
+			}
+			
 		}
 	}
 }

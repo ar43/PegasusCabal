@@ -5,6 +5,7 @@ using LibPegasus.Utils;
 using Serilog;
 using System.Net;
 using System.Net.Sockets;
+using WorldServer.Enums;
 using WorldServer.Packets;
 
 namespace WorldServer.Logic
@@ -171,8 +172,7 @@ namespace WorldServer.Logic
 				//is not the guy we're trying to log out
 				return;
 			}
-			ConnectionInfo.ConnState = Enums.ConnState.KICKED;
-			Disconnect("force logout - session deleted");
+			Disconnect("force logout - session deleted", ConnState.KICKED);
 			//TODO: proper logout
 		}
 
@@ -203,15 +203,16 @@ namespace WorldServer.Logic
             if (time.Ticks - timeClientAccepted.Ticks >= TimeSpan.FromSeconds(TIMEOUT_SECONDS).Ticks)
             {
                 //timeout
-                Disconnect("timeout");
+                Disconnect("timeout", ConnState.TIMEOUT);
                 return;
             }
         }
 
-        internal void Disconnect(string reason)
+        internal void Disconnect(string reason, ConnState newState)
         {
             Dropped = true;
 			Log.Warning($"called Disconnect - {reason}");
+			ConnectionInfo.ConnState = newState;
             //todo - send session timeout
 
 		}
