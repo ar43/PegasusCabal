@@ -12,7 +12,9 @@ namespace MasterServer.DB
 
 		public CharacterManager CharacterManager { private set; get; }
 
-		public SessionManager SessionManager { private set; get; }
+		public SessionManager WorldSessionManager { private set; get; }
+
+		public SessionManager LoginSessionManager { private set; get; }
 
 		//TODO: add other managers
 
@@ -25,8 +27,9 @@ namespace MasterServer.DB
 			_dataSourceWorld = dataSourceBuilderWorld.Build();
 
 			AccountManager = new(_dataSourceAuth);
+			LoginSessionManager = new(_dataSourceAuth);
 			CharacterManager = new(_dataSourceWorld);
-			SessionManager = new(_dataSourceWorld);
+			WorldSessionManager = new(_dataSourceWorld);
 		}
 	}
 }

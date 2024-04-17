@@ -32,7 +32,19 @@ namespace MasterServer.Services
 		public override Task<SessionReply> CreateSession(SessionRequest request, ServerCallContext context)
 		{
 			Serilog.Log.Information("Called CreateSession");
-			var code = _databaseManager.SessionManager.Create(request.AuthKey, (UInt16)request.UserId, (byte)request.ChannelId, (byte)request.ServerId, request.AccountId);
+			var code = _databaseManager.WorldSessionManager.Create(request.AuthKey, (UInt16)request.UserId, (byte)request.ChannelId, (byte)request.ServerId, request.AccountId);
+			//Serilog.Log.Information("Registration return code: " + code.Result);
+			return Task.FromResult(new SessionReply
+			{
+				//InfoCode = (uint)code.Result
+				Result = (uint)code.Result
+			});
+		}
+
+		public override Task<SessionReply> CreateLoginSession(SessionRequest request, ServerCallContext context)
+		{
+			Serilog.Log.Information("Called CreateLoginSession");
+			var code = _databaseManager.LoginSessionManager.Create(request.AuthKey, (UInt16)request.UserId, (byte)request.ChannelId, (byte)request.ServerId, request.AccountId);
 			//Serilog.Log.Information("Registration return code: " + code.Result);
 			return Task.FromResult(new SessionReply
 			{

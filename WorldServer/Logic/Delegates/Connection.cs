@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Crypt;
+using LibPegasus.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,36 @@ namespace WorldServer.Logic.Delegates
 
 			var packet = new RSP_Connect2Svr(Encryption.Recv2ndXorSeed, client.ConnectionInfo.AuthKey, client.ConnectionInfo.UserId, client.Encryption.RecvXorKeyIdx);
 			client.PacketManager.Send(packet);
+		}
+
+		internal async static void OnVerifyLinks(Client client, UInt32 authKey, UInt16 userId, Byte channelId, Byte serverId, UInt32 clientMagicKey)
+		{
+			var cfg = ServerConfig.Get();
+
+			if (clientMagicKey != cfg.GeneralSettings.ClientMagicKey)
+			{
+				//TODO: Close connection
+				throw new NotImplementedException();
+			}
+
+			client.ConnectionInfo.ConnState = ConnState.AWAITING_LINK_REPLY;
+			//TODO: check if authKey expired (5 sec?)
+			var reply = await client.SendLoginSessionRequest(authKey, userId, channelId, serverId);
+			bool success = reply.Result == (uint)SessionResult.OK || reply.Result == (uint)SessionResult.REPLACED;
+			var packet = new RSP_VerifyLinks(channelId, serverId, success);
+			client.PacketManager.Send(packet);
+
+			if (success)
+			{
+				//client.ClientInfo.ConnState = Enums.ConnState.VERIFIED;
+				client.Disconnect("Linked - success", ConnState.EXITED);
+
+				//TODO: disconnect??
+			}
+			else
+			{
+				client.Disconnect("Linked - fail", ConnState.ERROR);
+			}
 		}
 	}
 }

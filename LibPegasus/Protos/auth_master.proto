@@ -10,6 +10,7 @@ service AuthMaster
 	rpc Register (RegisterAccountRequest) returns (RegisterAccountReply);
 	rpc Login (LoginAccountRequest) returns (LoginAccountReply);
 	rpc CreateSession (SessionRequest) returns (SessionReply);
+	rpc CreateLoginSession (SessionRequest) returns (SessionReply);
 }
 
 // The request message containing the user's name.

@@ -47,6 +47,7 @@ namespace WorldServer.Packets
 				Opcode.GETMYCHARTR => new REQ_GetMyChartr(data),
 				Opcode.GETSVRTIME => new REQ_GetSvrTime(data),
 				Opcode.SERVERENV => new REQ_ServerEnv(data),
+				Opcode.VERIFYLINKS => new REQ_VerifyLinks(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
             }; ;
         }

@@ -3,6 +3,7 @@ using LibPegasus.Crypt;
 using LibPegasus.Packets;
 using LibPegasus.Utils;
 using Serilog;
+using Shared.Protos;
 using System.Net;
 using System.Net.Sockets;
 using WorldServer.Enums;
@@ -217,5 +218,11 @@ namespace WorldServer.Logic
 
 		}
 
-    }
+		internal async Task<SessionReply> SendLoginSessionRequest(UInt32 authKey, UInt16 userId, Byte channelId, Byte serverId)
+		{
+			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
+			var reply = await client.CreateLoginSessionAsync(new SessionRequest { AuthKey = authKey, UserId = userId, ChannelId = channelId, ServerId = serverId, AccountId = ConnectionInfo.AccountId });
+			return reply;
+		}
+	}
 }

@@ -14,6 +14,8 @@ namespace WorldServer.Enums
 		CONNECTED,
 		KICKED,
 		TIMEOUT,
-		ERROR
+		ERROR,
+		AWAITING_LINK_REPLY,
+		EXITED
 	}
 }

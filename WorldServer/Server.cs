@@ -1,5 +1,6 @@
 ﻿using Grpc.Net.Client;
 using LibPegasus.Crypt;
+using LibPegasus.JSON;
 using Npgsql;
 using Serilog;
 using Shared.Protos;
@@ -8,7 +9,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using WorldServer.DB;
-using WorldServer.JSON;
 using WorldServer.Logic;
 
 namespace WorldServer

@@ -3,9 +3,12 @@ using LibPegasus.Crypt;
 using LibPegasus.DB;
 using LibPegasus.Packets;
 using LibPegasus.Utils;
+using LoginServer.Enums;
 using LoginServer.Packets;
+using LoginServer.Packets.S2C;
 using Serilog;
 using Shared.Protos;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
@@ -206,6 +209,40 @@ namespace LoginServer.Logic
 			var client = new ChannelMaster.ChannelMasterClient(_masterRpcChannel);
 			var reply = await client.GetServerStateAsync(new ServerStateRequest { IsLocalhost = isLocalhost });
 			return reply;
+		}
+
+		internal async void OnLinkedLogin(UInt32 authKey, UInt32 accountId)
+		{
+			if (authKey != ClientInfo.AuthKey)
+			{
+				throw new NotImplementedException("wrong auth key");
+			}
+			if (ClientInfo.ConnState == Enums.ConnState.VERSION_CHECKED)
+			{
+				ClientInfo.AccountId = accountId;
+				ClientInfo.ConnState = Enums.ConnState.AUTH_ACCOUNT;
+
+				bool isLocalhost = Ip == "127.0.0.1";
+				var replyServerState = await GetServerState(isLocalhost);
+
+				var packetServerState = new NFY_ServerState(replyServerState);
+				PacketManager.Send(packetServerState);
+			}
+			else
+			{
+				throw new NotImplementedException("LinkedLogin without version check");
+			}
+		}
+
+		internal void OnLinkedLogout(UInt32 authKey, UInt32 accountId)
+		{
+			if (authKey != ClientInfo.AuthKey || accountId != ClientInfo.AccountId)
+			{
+				//is not the guy we're trying to log out
+				return;
+			}
+			Disconnect("force logout - session deleted");
+			//TODO: proper logout
 		}
 	}
 }
