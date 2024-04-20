@@ -13,7 +13,7 @@ using WorldServer.Logic;
 
 namespace WorldServer
 {
-    internal class Server
+	internal class Server
 	{
 		bool _running = false;
 		bool _started = false;
@@ -31,7 +31,7 @@ namespace WorldServer
 
 		DatabaseManager _databaseManager;
 
-		bool[] _clientIndexSpace = new bool[UInt16.MaxValue+1];
+		bool[] _clientIndexSpace = new bool[UInt16.MaxValue + 1];
 
 		public Server()
 		{
@@ -182,7 +182,7 @@ namespace WorldServer
 			var cfg = ServerConfig.Get();
 			Log.Debug("Received session notification: " + payload);
 			var sessionChangeData = JsonSerializer.Deserialize<SessionChangeData>(payload);
-			if(sessionChangeData.table != "sessions" ||  sessionChangeData.data.channel_id != cfg.GeneralSettings.ChannelId || sessionChangeData.data.server_id != cfg.GeneralSettings.ServerId)
+			if (sessionChangeData.table != "sessions" || sessionChangeData.data.channel_id != cfg.GeneralSettings.ChannelId || sessionChangeData.data.server_id != cfg.GeneralSettings.ServerId)
 			{
 				return;
 			}
@@ -202,12 +202,12 @@ namespace WorldServer
 				{
 					var userId = Convert.ToInt16(sessionChanges.data.user_id);
 					var client = _clients.Find(x => x.ConnectionInfo.UserId == userId);
-					if(client != null)
+					if (client != null)
 					{
 						bool login = sessionChanges.action == "INSERT" ? true : false;
 						var authKey = Convert.ToUInt32(sessionChanges.data.auth_key);
 						var accountId = Convert.ToUInt32(sessionChanges.data.account_id);
-						if(login)
+						if (login)
 						{
 							client.OnLogin(authKey, accountId);
 						}

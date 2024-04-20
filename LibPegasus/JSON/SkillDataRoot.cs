@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.JSON
+﻿namespace LibPegasus.JSON
 {
 	public class SkillDataRoot
 	{
@@ -13,7 +7,7 @@ namespace LibPegasus.JSON
 			SkillData = skillData;
 		}
 
-		public Dictionary<UInt16, SkillDataEntry> SkillData {  get; set; }
+		public Dictionary<UInt16, SkillDataEntry> SkillData { get; set; }
 
 	}
 
@@ -26,6 +20,6 @@ namespace LibPegasus.JSON
 		}
 
 		public UInt16 Id { get; set; }
-		public byte Level { get; set;}
+		public byte Level { get; set; }
 	}
 }

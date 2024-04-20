@@ -1,7 +1,6 @@
 using LibPegasus.JSON;
 using System.Buffers.Binary;
 using System.Text.Json;
-using System.Windows.Forms;
 
 namespace DataTools
 {
@@ -201,13 +200,13 @@ namespace DataTools
 			{
 				var jsonString = File.ReadAllText(openFileDialog1.FileName);
 				var json = JsonSerializer.Deserialize<CharInitRoot>(jsonString);
-				if(json != null)
+				if (json != null)
 				{
 					//MessageBox.Show("JSON is ok");
 
 					foreach (var item in json.CharInitData)
 					{
-						if(item.HP > UInt16.MaxValue)
+						if (item.HP > UInt16.MaxValue)
 						{
 							item.HP = item.HP & 0xFFFF;
 						}
@@ -225,7 +224,7 @@ namespace DataTools
 				JsonSerializerOptions optionsCopy = new(options);
 				File.WriteAllText(openFileDialog1.FileName, JsonSerializer.Serialize(json, optionsCopy));
 
-				
+
 			}
 		}
 	}

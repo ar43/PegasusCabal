@@ -1,10 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using LibPegasus.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LibPegasus.Packets;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C

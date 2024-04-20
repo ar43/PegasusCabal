@@ -159,7 +159,7 @@ namespace LoginServer.Logic.Delegates
 				throw new NotImplementedException();
 			}
 
-			if(clientMagicKey != cfg.GeneralSettings.ClientMagicKey)
+			if (clientMagicKey != cfg.GeneralSettings.ClientMagicKey)
 			{
 				//TODO: Close connection
 				throw new NotImplementedException();
@@ -182,7 +182,7 @@ namespace LoginServer.Logic.Delegates
 			{
 				client.Disconnect("Linked - fail");
 			}
-			
+
 		}
 	}
 }

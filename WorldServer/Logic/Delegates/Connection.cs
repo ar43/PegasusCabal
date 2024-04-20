@@ -1,10 +1,5 @@
 ﻿using LibPegasus.Crypt;
 using LibPegasus.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Packets.S2C;
 
@@ -15,13 +10,13 @@ namespace WorldServer.Logic.Delegates
 		internal static void OnServerConnection(Client client, Byte serverId, Byte channelId)
 		{
 			var cfg = ServerConfig.Get();
-			if(client.ConnectionInfo.ConnState != ConnState.UNCONNECTED)
+			if (client.ConnectionInfo.ConnState != ConnState.UNCONNECTED)
 			{
 				client.Disconnect("invalid handshake", ConnState.ERROR);
 				return;
 			}
 
-			if(serverId != cfg.GeneralSettings.ServerId || channelId != cfg.GeneralSettings.ChannelId)
+			if (serverId != cfg.GeneralSettings.ServerId || channelId != cfg.GeneralSettings.ChannelId)
 			{
 				client.Disconnect("invalid handshake (bad serverId or clientId)", ConnState.ERROR);
 				return;

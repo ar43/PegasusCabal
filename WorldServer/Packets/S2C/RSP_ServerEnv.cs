@@ -1,9 +1,4 @@
 ﻿using LibPegasus.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C
@@ -45,7 +40,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteByte(_data, (Byte)_gamesettings.LimitNormalChatLev);
 			PacketWriter.WriteByte(_data, (Byte)_gamesettings.LimitTradeChatLev);
 			PacketWriter.WriteUInt32(_data, (UInt32)_gamesettings.MaxDPLimit);
-			PacketWriter.WriteNull(_data, 4+2);
+			PacketWriter.WriteNull(_data, 4 + 2);
 		}
 	}
 }

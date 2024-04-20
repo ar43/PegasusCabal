@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.JSON
+﻿namespace LibPegasus.JSON
 {
 	public class PositionDataRoot
 	{
@@ -13,8 +7,8 @@ namespace LibPegasus.JSON
 			Position = position;
 		}
 
-		public PositionDataEntry Position {  get; set; }
-		
+		public PositionDataEntry Position { get; set; }
+
 	}
 
 	public class PositionDataEntry

@@ -3,12 +3,10 @@ using LibPegasus.Crypt;
 using LibPegasus.DB;
 using LibPegasus.Packets;
 using LibPegasus.Utils;
-using LoginServer.Enums;
 using LoginServer.Packets;
 using LoginServer.Packets.S2C;
 using Serilog;
 using Shared.Protos;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
@@ -65,7 +63,7 @@ namespace LoginServer.Logic
 		internal async Task<SessionReply> SendSessionRequest(UInt32 authKey, UInt16 userId, Byte channelId, Byte serverId)
 		{
 			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
-			var reply = await client.CreateSessionAsync(new SessionRequest { AuthKey = authKey, UserId = userId, ChannelId = channelId, ServerId = serverId, AccountId = ClientInfo.AccountId});
+			var reply = await client.CreateSessionAsync(new SessionRequest { AuthKey = authKey, UserId = userId, ChannelId = channelId, ServerId = serverId, AccountId = ClientInfo.AccountId });
 			return reply;
 		}
 

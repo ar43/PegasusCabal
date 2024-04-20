@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.JSON
+﻿namespace LibPegasus.JSON
 {
 	public class QuickSlotDataRoot
 	{
@@ -24,6 +18,6 @@ namespace LibPegasus.JSON
 			Id = id;
 		}
 
-		public UInt16 Id {  get; set; }
+		public UInt16 Id { get; set; }
 	}
 }
