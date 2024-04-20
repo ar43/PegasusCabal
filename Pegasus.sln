@@ -14,7 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MasterServer", "MasterServe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibPegasus", "LibPegasus\LibPegasus.csproj", "{2E35C39A-6BAD-4DB6-84A9-D36E4218C386}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldServer", "WorldServer\WorldServer.csproj", "{4DED3B59-FC02-41AF-8BFA-D999460183A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorldServer", "WorldServer\WorldServer.csproj", "{4DED3B59-FC02-41AF-8BFA-D999460183A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTools", "DataTools\DataTools.csproj", "{D9C8457A-87CC-48F2-AEC1-3B36129F64D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{4DED3B59-FC02-41AF-8BFA-D999460183A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DED3B59-FC02-41AF-8BFA-D999460183A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DED3B59-FC02-41AF-8BFA-D999460183A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9C8457A-87CC-48F2-AEC1-3B36129F64D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C8457A-87CC-48F2-AEC1-3B36129F64D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9C8457A-87CC-48F2-AEC1-3B36129F64D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9C8457A-87CC-48F2-AEC1-3B36129F64D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
