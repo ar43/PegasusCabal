@@ -28,6 +28,7 @@ namespace MasterServer
 
 			app.MapGrpcService<ChannelMasterService>();
 			app.MapGrpcService<AuthMasterService>();
+			app.MapGrpcService<CharacterMasterService>();
 			app.MapGet("/", () => "PegasusCabal MasterServer");
 
 			app.Run();

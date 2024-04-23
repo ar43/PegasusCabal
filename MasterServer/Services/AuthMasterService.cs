@@ -55,18 +55,6 @@ namespace MasterServer.Services
 			});
 		}
 
-		public override Task<CreateCharacterReply> CreateCharacter(CreateCharacterRequest request, ServerCallContext context)
-		{
-			var jsonString = File.ReadAllText("..\\LibPegasus\\Data\\char_init.json");
-			var json = JsonSerializer.Deserialize<CharInitRoot>(jsonString);
-			var result = _databaseManager.CharacterManager.CreateCharacter(request, json.CharInitData[request.Class-1]);
-			return Task.FromResult(new CreateCharacterReply
-			{
-				Result = (UInt32)result.Result.Item2,
-				CharId = (UInt32)result.Result.Item1
-			});
-		}
-
 		public override Task<LoginAccountReply> Login(LoginAccountRequest request, ServerCallContext context)
 		{
 			Serilog.Log.Information("Called Login");

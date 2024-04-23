@@ -39,6 +39,9 @@
     <Protobuf Include="..\LibPegasus\Protos\channel_master.proto" GrpcServices="Server">
       <Link>Protos\channel_master.proto</Link>
     </Protobuf>
+    <Protobuf Include="..\LibPegasus\Protos\character_master.proto" GrpcServices="Server">
+      <Link>Protos\character_master.proto</Link>
+    </Protobuf>
     <Protobuf Include="..\LibPegasus\Protos\db_serialization.proto" GrpcServices="Both">
       <Link>Protos\db_serialization.proto</Link>
     </Protobuf>

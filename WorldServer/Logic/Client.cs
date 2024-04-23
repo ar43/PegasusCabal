@@ -228,7 +228,7 @@ namespace WorldServer.Logic
 
 		internal async Task<CreateCharacterReply> SendCharCreationRequest(Character chr, byte slot)
 		{
-			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
+			var client = new CharacterMaster.CharacterMasterClient(_masterRpcChannel);
 			var serverId = ServerConfig.Get().GeneralSettings.ServerId;
 			var reply = await client.CreateCharacterAsync(new CreateCharacterRequest { Aura = chr.Style.Aura, Class = chr.Style.BattleStyle, Face = chr.Style.Face, Gender = chr.Style.Gender, HairColor = chr.Style.HairColor, HairStyle = chr.Style.HairStyle, JoinNoviceGuild = false, Name = chr.Name, Rank = chr.Style.Rank, ShowHelmet = chr.Style.ShowHelmet, Slot = slot, AccountId = ConnectionInfo.AccountId, ServerId = (UInt32)serverId });
 			return reply;
