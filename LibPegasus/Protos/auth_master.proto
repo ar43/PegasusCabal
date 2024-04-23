@@ -4,13 +4,13 @@ option csharp_namespace = "Shared.Protos";
 
 package auth_master;
 
-// The greeting service definition.
 service AuthMaster 
 {
 	rpc Register (RegisterAccountRequest) returns (RegisterAccountReply);
 	rpc Login (LoginAccountRequest) returns (LoginAccountReply);
 	rpc CreateSession (SessionRequest) returns (SessionReply);
 	rpc CreateLoginSession (SessionRequest) returns (SessionReply);
+	rpc CreateCharacter (CreateCharacterRequest) returns (CreateCharacterReply);
 }
 
 // The request message containing the user's name.
@@ -58,4 +58,27 @@ message SessionRequest
 message SessionReply
 {
 	uint32 result = 1;
+}
+
+message CreateCharacterRequest
+{
+	uint32 class = 1;
+	uint32 rank = 2;
+	uint32 face = 3;
+	uint32 hairColor = 4;
+	uint32 hairStyle = 5;
+	uint32 aura = 6;
+	uint32 gender = 7;
+	uint32 showHelmet = 8;
+	bool joinNoviceGuild = 9;
+	uint32 slot = 10;
+	string name = 11;
+	uint32 accountId = 12;
+	uint32 serverId = 13;
+}
+
+message CreateCharacterReply
+{
+	uint32 result = 1;
+	uint32 charId = 2;
 }

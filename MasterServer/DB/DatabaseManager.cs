@@ -1,5 +1,4 @@
-﻿using LibPegasus.DB;
-using Npgsql;
+﻿using Npgsql;
 
 namespace MasterServer.DB
 {

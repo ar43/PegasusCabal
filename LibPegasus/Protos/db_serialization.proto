@@ -1,0 +1,56 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Shared.Protos";
+
+package db_serialization;
+
+message EquipmentData
+{
+	message EquipmentDataItem 
+	{
+		uint32 kind = 1;
+		uint32 option = 2;
+	}
+	map<uint32, EquipmentDataItem> equipmentData = 1;
+}
+
+message InventoryData
+{
+	message InventoryDataItem
+	{
+		uint32 kind = 1;
+		uint32 option = 2;
+	}
+	map<uint32, InventoryDataItem> inventoryData = 1;
+}
+
+message QuickSlotData
+{
+	message QuickSlotDataItem
+	{
+		uint32 id = 1;
+	}
+	map<uint32, QuickSlotDataItem> quickSlotData = 1;
+}
+
+message SkillData
+{
+	message SkillDataItem
+	{
+		uint32 id = 1;
+		uint32 level = 2;
+	}
+	map<uint32, SkillDataItem> skillData = 1;
+}
+
+message StyleSerial
+{
+	uint32 battleStyle = 1;
+	uint32 rank = 2;
+	uint32 face = 3;
+	uint32 hairColor = 4;
+	uint32 hairStyle = 5;
+	uint32 aura = 6;
+	bool gender = 7;
+	bool showHelmet = 8;
+}

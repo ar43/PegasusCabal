@@ -1,7 +1,7 @@
 ﻿using LibPegasus.Enums;
 using Npgsql;
 
-namespace LibPegasus.DB
+namespace MasterServer.DB
 {
 	public class SessionManager
 	{

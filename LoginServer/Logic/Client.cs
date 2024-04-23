@@ -1,6 +1,5 @@
 ﻿using Grpc.Net.Client;
 using LibPegasus.Crypt;
-using LibPegasus.DB;
 using LibPegasus.Packets;
 using LibPegasus.Utils;
 using LoginServer.Packets;
@@ -170,7 +169,7 @@ namespace LoginServer.Logic
 
 		}
 
-		internal async void Update(AccountManager accountManager)
+		internal async void Update()
 		{
 			if (_busy || Dropped)
 				return;

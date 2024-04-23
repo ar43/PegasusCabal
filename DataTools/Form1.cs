@@ -227,5 +227,57 @@ namespace DataTools
 
 			}
 		}
+
+		private void button3_Click(object sender, EventArgs e)
+		{
+			Random random = new Random();
+			List<int> cores= new List<int>();
+			List<int> converters = new List<int>();
+			int[] chances = { 100, 80, 70, 55, 40, 36 };
+			int[] coreUsage = { 0, 2, 2, 4, 4, 5 };
+
+			for(int i = 0; i < 100000; i++)
+			{
+				int itemLvl = 0;
+				int coreNum = 0;
+				int converterNum = 0;
+
+				while (itemLvl != 6)
+				{
+					if(itemLvl == 0)
+					{
+						itemLvl = 1;
+						converterNum++;
+					}
+					var num = random.Next(0, 100);
+					//int toBeat = 100 - chances[itemLvl];
+					coreNum += coreUsage[itemLvl];
+					if (num < chances[itemLvl])
+					{
+						itemLvl++;
+					}
+					else
+					{
+						itemLvl = 0;
+					}
+				}
+				cores.Add(coreNum);
+				converters.Add(converterNum);
+			}
+			int average = 0;
+			for(int i = 0; i <  cores.Count; i++)
+			{
+				average = average + cores[i];
+			}
+			average = average / cores.Count;
+
+			int average_conv = 0;
+			for (int i = 0; i < converters.Count; i++)
+			{
+				average_conv = average_conv + converters[i];
+			}
+			average_conv = average_conv / converters.Count;
+			textBox2.Text = $"{average} {average_conv}";
+		}
 	}
 }

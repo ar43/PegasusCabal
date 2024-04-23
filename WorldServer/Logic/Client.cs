@@ -7,6 +7,7 @@ using Shared.Protos;
 using System.Net;
 using System.Net.Sockets;
 using WorldServer.Enums;
+using WorldServer.Logic.Char;
 using WorldServer.Packets;
 
 namespace WorldServer.Logic
@@ -222,6 +223,14 @@ namespace WorldServer.Logic
 		{
 			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
 			var reply = await client.CreateLoginSessionAsync(new SessionRequest { AuthKey = authKey, UserId = userId, ChannelId = channelId, ServerId = serverId, AccountId = ConnectionInfo.AccountId });
+			return reply;
+		}
+
+		internal async Task<CreateCharacterReply> SendCharCreationRequest(Character chr, byte slot)
+		{
+			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
+			var serverId = ServerConfig.Get().GeneralSettings.ServerId;
+			var reply = await client.CreateCharacterAsync(new CreateCharacterRequest { Aura = chr.Style.Aura, Class = chr.Style.BattleStyle, Face = chr.Style.Face, Gender = chr.Style.Gender, HairColor = chr.Style.HairColor, HairStyle = chr.Style.HairStyle, JoinNoviceGuild = false, Name = chr.Name, Rank = chr.Style.Rank, ShowHelmet = chr.Style.ShowHelmet, Slot = slot, AccountId = ConnectionInfo.AccountId, ServerId = (UInt32)serverId });
 			return reply;
 		}
 	}

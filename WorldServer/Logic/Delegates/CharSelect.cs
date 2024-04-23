@@ -1,4 +1,6 @@
-﻿using WorldServer.Packets.S2C;
+﻿using LibPegasus.Enums;
+using WorldServer.Logic.Char;
+using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
 {
@@ -29,6 +31,24 @@ namespace WorldServer.Logic.Delegates
 		{
 			var packet = new RSP_ChargeInfo(0, 0, 0);
 			client.PacketManager.Send(packet);
+		}
+
+		internal static void OnCreate(Client client, Byte battleStyle, Byte rank, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet, Boolean joinNoviceGuild, Byte slot, string name)
+		{
+			var character = new Character(new Style(battleStyle, rank, face, hairColor, hairStyle, aura, gender, showHelmet), name);
+
+			if(character.Verify())
+			{
+				var reply = client.SendCharCreationRequest(character, slot);
+
+				var packet = new RSP_NewMyChartr(reply.Result.CharId, (CharCreateResult)reply.Result.Result);
+				client.PacketManager.Send(packet);
+			}
+			else
+			{
+				var packet = new RSP_NewMyChartr(0, CharCreateResult.DATABRK);
+				client.PacketManager.Send(packet);
+			}
 		}
 	}
 }

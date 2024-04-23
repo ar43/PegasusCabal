@@ -1,5 +1,4 @@
-﻿using LibPegasus.DB;
-using Npgsql;
+﻿using Npgsql;
 
 namespace WorldServer.DB
 {
@@ -7,9 +6,9 @@ namespace WorldServer.DB
 	{
 		public NpgsqlDataSource DataSourceWorld { private set; get; }
 
-		public CharacterManager CharacterManager { private set; get; }
+		//public CharacterManager CharacterManager { private set; get; }
 
-		public SessionManager SessionManager { private set; get; }
+		//public SessionManager SessionManager { private set; get; }
 
 		//TODO: add other managers
 
@@ -19,8 +18,8 @@ namespace WorldServer.DB
 			var dataSourceBuilderWorld = new NpgsqlDataSourceBuilder(cfg.DatabaseSettings.ConnString);
 			DataSourceWorld = dataSourceBuilderWorld.Build();
 
-			CharacterManager = new(DataSourceWorld);
-			SessionManager = new(DataSourceWorld);
+			//CharacterManager = new(DataSourceWorld);
+			//SessionManager = new(DataSourceWorld);
 		}
 	}
 }

@@ -22,6 +22,14 @@ namespace LibPegasus.Utils
 			Log.Debug(sb.ToString());
 		}
 
+		public static UInt32 ReadBits(UInt32 input, int startBit, int length)
+		{
+			UInt32 mask = (UInt32)(((1 << length) - 1) << startBit);
+			UInt32 result = input & mask;
+			result = result >> startBit;
+			return result;
+		}
+
 		public static void PrintCharArray(byte[] bytes, int len, string Type)
 		{
 			var sb = new StringBuilder(Type + "(" + len.ToString() + "): \n");

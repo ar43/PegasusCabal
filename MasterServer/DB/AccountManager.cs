@@ -3,7 +3,7 @@ using Npgsql;
 using Serilog;
 using System.Diagnostics;
 
-namespace LibPegasus.DB
+namespace MasterServer.DB
 {
 	public class AccountManager
 	{

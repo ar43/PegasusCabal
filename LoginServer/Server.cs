@@ -1,6 +1,5 @@
 ﻿using Grpc.Net.Client;
 using LibPegasus.Crypt;
-using LibPegasus.DB;
 using LibPegasus.Enums;
 using LibPegasus.JSON;
 using LoginServer.DB;
@@ -146,26 +145,9 @@ namespace LoginServer
 
 		private async void RunTest()
 		{
-			Log.Debug("Running tests...");
-			var code = await _databaseManager.AccountManager.RequestRegister("dummy", "dummypass");
-			Log.Debug("Registration return code: " + code);
-
-			var accountId = await _databaseManager.AccountManager.RequestLogin("dummy", "dummypass");
-			var accountIdBad = await _databaseManager.AccountManager.RequestLogin("dummy", "dummypassfewfwe");
-			if (accountId != 0 && accountIdBad == 0)
-			{
-				Log.Debug("Login test success");
-			}
-			else
-			{
-				Log.Debug("Login test failed");
-				throw new ApplicationException("LoginServer test failed");
-			}
-
 			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
 			var reply = await client.RegisterAsync(new RegisterAccountRequest { Username = "dummybla", Password = "dummypa" });
 			Log.Debug("Account Registration return code from MasterServer: " + (InfoCodeLS)reply.InfoCode);
-
 		}
 
 		public void Run()
@@ -178,7 +160,7 @@ namespace LoginServer
 			while (_running)
 			{
 				AddNewClients();
-				ProcessClients(_databaseManager.AccountManager);
+				ProcessClients();
 				RemoveClients();
 				ProcessSessionChanges();
 				Thread.Sleep(1);
@@ -230,12 +212,12 @@ namespace LoginServer
 			}
 		}
 
-		private void ProcessClients(AccountManager accountManager)
+		private void ProcessClients()
 		{
 			foreach (var client in _clients)
 			{
 				client.ReceiveData();
-				client.Update(accountManager);
+				client.Update();
 				client.SendData();
 			}
 		}

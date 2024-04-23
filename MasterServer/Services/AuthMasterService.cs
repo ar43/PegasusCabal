@@ -1,9 +1,11 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
 using LibPegasus.Enums;
+using LibPegasus.JSON;
 using MasterServer.Channel;
 using MasterServer.DB;
 using Shared.Protos;
+using System.Text.Json;
 
 namespace MasterServer.Services
 {
@@ -50,6 +52,18 @@ namespace MasterServer.Services
 			{
 				//InfoCode = (uint)code.Result
 				Result = (uint)code.Result
+			});
+		}
+
+		public override Task<CreateCharacterReply> CreateCharacter(CreateCharacterRequest request, ServerCallContext context)
+		{
+			var jsonString = File.ReadAllText("..\\LibPegasus\\Data\\char_init.json");
+			var json = JsonSerializer.Deserialize<CharInitRoot>(jsonString);
+			var result = _databaseManager.CharacterManager.CreateCharacter(request, json.CharInitData[request.Class-1]);
+			return Task.FromResult(new CreateCharacterReply
+			{
+				Result = (UInt32)result.Result.Item2,
+				CharId = (UInt32)result.Result.Item1
 			});
 		}
 
