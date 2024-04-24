@@ -42,15 +42,3 @@ message SkillData
 	}
 	map<uint32, SkillDataItem> skillData = 1;
 }
-
-message StyleSerial
-{
-	uint32 battleStyle = 1;
-	uint32 rank = 2;
-	uint32 face = 3;
-	uint32 hairColor = 4;
-	uint32 hairStyle = 5;
-	uint32 aura = 6;
-	bool gender = 7;
-	bool showHelmet = 8;
-}

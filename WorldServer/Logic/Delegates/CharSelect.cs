@@ -6,9 +6,10 @@ namespace WorldServer.Logic.Delegates
 {
 	internal static class CharSelect
 	{
-		internal static void OnCharacterRequest(Client client)
+		internal static async void OnCharacterRequest(Client client)
 		{
-			var packet = new RSP_GetMyChartr();
+			var reply = await client.SendCharListRequest();
+			var packet = new RSP_GetMyChartr(reply);
 			client.PacketManager.Send(packet);
 		}
 
@@ -33,15 +34,15 @@ namespace WorldServer.Logic.Delegates
 			client.PacketManager.Send(packet);
 		}
 
-		internal static void OnCreate(Client client, Byte battleStyle, Byte rank, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet, Boolean joinNoviceGuild, Byte slot, string name)
+		internal static async void OnCreate(Client client, Byte battleStyle, Byte rank, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet, Boolean joinNoviceGuild, Byte slot, string name)
 		{
 			var character = new Character(new Style(battleStyle, rank, face, hairColor, hairStyle, aura, gender, showHelmet), name);
 
 			if(character.Verify())
 			{
-				var reply = client.SendCharCreationRequest(character, slot);
+				var reply = await client.SendCharCreationRequest(character, slot);
 
-				var packet = new RSP_NewMyChartr(reply.Result.CharId, (CharCreateResult)reply.Result.Result);
+				var packet = new RSP_NewMyChartr(reply.CharId, (CharCreateResult)reply.Result);
 				client.PacketManager.Send(packet);
 			}
 			else

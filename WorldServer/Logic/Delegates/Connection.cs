@@ -31,12 +31,12 @@ namespace WorldServer.Logic.Delegates
 		internal async static void OnVerifyLinks(Client client, UInt32 authKey, UInt16 userId, Byte channelId, Byte serverId, UInt32 clientMagicKey)
 		{
 			var cfg = ServerConfig.Get();
-
-			if (clientMagicKey != cfg.GeneralSettings.ClientMagicKey)
-			{
-				//TODO: Close connection
-				throw new NotImplementedException();
-			}
+			//TODO: FIX THIS! STUDY HOW THIS WORKS! IT CHANGES!
+			//if (clientMagicKey != cfg.GeneralSettings.ClientMagicKey)
+			//{
+			//	//TODO: Close connection
+			//	throw new NotImplementedException();
+			//}
 
 			client.ConnectionInfo.ConnState = ConnState.AWAITING_LINK_REPLY;
 			//TODO: check if authKey expired (5 sec?)

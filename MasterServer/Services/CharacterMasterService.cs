@@ -21,12 +21,18 @@ namespace MasterServer.Services
 		{
 			var jsonString = File.ReadAllText("..\\LibPegasus\\Data\\char_init.json");
 			var json = JsonSerializer.Deserialize<CharInitRoot>(jsonString);
-			var result = _databaseManager.CharacterManager.CreateCharacter(request, json.CharInitData[request.Class - 1]);
+			var result = _databaseManager.CharacterManager.CreateCharacter(request, json.CharInitData[(request.Style & 7) - 1]);
 			return Task.FromResult(new CreateCharacterReply
 			{
 				Result = (UInt32)result.Result.Item2,
 				CharId = (UInt32)result.Result.Item1
 			});
+		}
+
+		public override Task<GetMyCharactersReply> GetMyCharacters(GetMyCharactersRequest request, ServerCallContext context)
+		{
+			var output = _databaseManager.CharacterManager.GetMyCharacters(request);
+			return output;
 		}
 	}
 }

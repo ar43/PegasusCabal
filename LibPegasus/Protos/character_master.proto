@@ -6,28 +6,52 @@ package character_master;
 
 service CharacterMaster 
 {
+	rpc GetMyCharacters (GetMyCharactersRequest) returns (GetMyCharactersReply);
 	rpc CreateCharacter (CreateCharacterRequest) returns (CreateCharacterReply);
 }
 
 message CreateCharacterRequest
 {
-	uint32 class = 1;
-	uint32 rank = 2;
-	uint32 face = 3;
-	uint32 hairColor = 4;
-	uint32 hairStyle = 5;
-	uint32 aura = 6;
-	uint32 gender = 7;
-	uint32 showHelmet = 8;
-	bool joinNoviceGuild = 9;
-	uint32 slot = 10;
-	string name = 11;
-	uint32 accountId = 12;
-	uint32 serverId = 13;
+	uint32 style = 1;
+	bool joinNoviceGuild = 2;
+	uint32 slot = 3;
+	string name = 4;
+	uint32 accountId = 5;
+	uint32 serverId = 6;
 }
 
 message CreateCharacterReply
 {
 	uint32 result = 1;
 	uint32 charId = 2;
+}
+
+message GetMyCharactersRequest
+{
+	uint32 accountId = 1;
+	uint32 serverId = 2;
+}
+
+message GetMyCharactersReplySingle
+{
+	uint32 character_id = 1;
+	int64 creation_date = 2;
+	uint32 style = 3;
+	uint32 level = 4;
+	uint32 rank = 5; //speculation
+	uint64 alz = 6;
+	uint32 u2 = 7; //what is this
+	uint32 worldId = 8;
+	uint32 x = 9;
+	uint32 y = 10;
+	repeated uint32 equipment = 11;
+	string name = 12;
+}
+
+message GetMyCharactersReply
+{
+	bool isPinSet = 1;
+	uint32 lastCharId = 2; //maybe this is actually slot?? prolly not
+	uint32 characterOrder = 3;
+	repeated GetMyCharactersReplySingle characters = 4;
 }

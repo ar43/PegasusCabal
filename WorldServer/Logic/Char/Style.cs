@@ -29,6 +29,21 @@ namespace WorldServer.Logic.Char
 			ShowHelmet = showHelmet;
 		}
 
+		public UInt32 GetSerialized()
+		{
+			UInt32 result = 0;
+			result |= (UInt32)BattleStyle;
+			result |= ((UInt32)Rank << 3);
+			result |= ((UInt32)Face << 5);
+			result |= (UInt32)HairColor << 5;
+			result |= (UInt32)HairColor << 4;
+			result |= (UInt32)Aura << 5;
+			result |= (UInt32)Gender << 4;
+			result |= (UInt32)ShowHelmet << 1;
+
+			return result;
+		}
+
 		public bool Verify()
 		{
 			//TODO

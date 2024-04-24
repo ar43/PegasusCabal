@@ -79,17 +79,91 @@ namespace MasterServer.DB
 			return invSerial;
 		}
 
+		private static T? ToProtoObject<T>(byte[] buf, int len) where T : IMessage<T>, new()
+		{
+			if (buf == null)
+				return default(T);
+
+			using (MemoryStream ms = new MemoryStream())
+			{
+				ms.Write(buf, 0, len);
+				ms.Seek(0, SeekOrigin.Begin);
+
+				MessageParser<T> parser = new MessageParser<T>(() => new T());
+				return parser.ParseFrom(ms);
+			}
+		}
+
+		public async Task<GetMyCharactersReply> GetMyCharacters(GetMyCharactersRequest request)
+		{
+			var conn = await _dataSource.OpenConnectionAsync();
+			
+			GetMyCharactersReply reply = new GetMyCharactersReply();
+			
+			await using (var cmd = new NpgsqlCommand("SELECT * FROM main.characters WHERE account_id=@p AND server_id=@g", conn))
+			{
+				cmd.Parameters.AddWithValue("p", (int)request.AccountId);
+				cmd.Parameters.AddWithValue("g", (int)request.ServerId);
+				await using (var reader = await cmd.ExecuteReaderAsync())
+				{
+					var alz = reader.GetOrdinal("alz");
+					var charId = reader.GetOrdinal("char_id");
+					var creationDate = reader.GetOrdinal("creation_date");
+					var equipment = reader.GetOrdinal("eq_data");
+					var level = reader.GetOrdinal("level");
+					var name = reader.GetOrdinal("name");
+					var rank = reader.GetOrdinal("rank");
+					var style = reader.GetOrdinal("style");
+					var worldId = reader.GetOrdinal("world_id");
+					var x = reader.GetOrdinal("x");
+					var y = reader.GetOrdinal("y");
+					while (await reader.ReadAsync())
+					{
+						byte[] eqDataBytes = new byte[1024];
+
+						var t = reader.GetBytes(equipment, 0, eqDataBytes, 0, eqDataBytes.Length);
+
+						if(t != 34)
+						{
+							throw new Exception("fix this");
+						}
+
+						var eqData = ToProtoObject<EquipmentData>(eqDataBytes, (int)t);
+
+						UInt32[] equipmentData = new uint[20];
+						for(int i = 0; i < 20; i++)
+						{
+							if (eqData != null && eqData.EquipmentData_.TryGetValue((uint)i, out var data))
+							{
+								equipmentData[i] = data.Kind;
+							}
+						}
+
+						GetMyCharactersReplySingle character = new GetMyCharactersReplySingle { Alz = (UInt64)reader.GetInt64(alz), CharacterId = (UInt32)reader.GetInt32(charId)
+						, CreationDate = ((DateTimeOffset)reader.GetDateTime(creationDate)).ToUnixTimeSeconds(), Equipment = { equipmentData }, Level = (UInt32)reader.GetInt32(level), Name = reader.GetString(name)
+						, Rank = (UInt32)reader.GetInt32(rank), Style = (UInt32)reader.GetInt32(style), U2 = 0, WorldId = (UInt32)reader.GetInt32(worldId), X = (UInt32)reader.GetInt32(x), Y = (UInt32)reader.GetInt32(y)
+						};
+						reply.Characters.Add(character);
+					}
+				}
+			}
+			reply.CharacterOrder = 0;
+			reply.LastCharId = 0;
+			reply.IsPinSet = false;
+			return reply;
+		}
+
 		public async Task<(int, CharCreateResult)> CreateCharacter(CreateCharacterRequest createCharacterRequest, CharInitData charInitData)
 		{
 			var conn = await _dataSource.OpenConnectionAsync();
 			var charId = createCharacterRequest.AccountId * 8 + createCharacterRequest.Slot;
-			var styleSerial = new StyleSerial { Aura = createCharacterRequest.Aura, BattleStyle = createCharacterRequest.Class, Face = createCharacterRequest.Face, Gender = Convert.ToBoolean(createCharacterRequest.Gender), HairColor = createCharacterRequest.HairColor, HairStyle = createCharacterRequest.HairStyle, Rank = createCharacterRequest.Rank, ShowHelmet = Convert.ToBoolean(createCharacterRequest.ShowHelmet) };
 			var invSerial = JsonToProtobuf(charInitData.InventoryData);
 			var eqSerial = JsonToProtobuf(charInitData.EquipmentData);
 			var skillSerial = JsonToProtobuf(charInitData.SkillData);
 			var quickslotSerial = JsonToProtobuf(charInitData.QuickSlotData);
+			var time = DateTime.UtcNow;
 
-			if(charInitData.ClassType != createCharacterRequest.Class)
+			if((createCharacterRequest.Style & 7) != charInitData.ClassType)
 			{
 				return (0, CharCreateResult.DATABRK);
 			}
@@ -100,32 +174,32 @@ namespace MasterServer.DB
 				cmd.Parameters.AddWithValue("c2", (int)createCharacterRequest.AccountId);
 				cmd.Parameters.AddWithValue("c3", createCharacterRequest.Name);
 				cmd.Parameters.AddWithValue("c4", (int)createCharacterRequest.ServerId);
-				cmd.Parameters.AddWithValue("c5", styleSerial.ToByteArray());
-				cmd.Parameters.AddWithValue("c6", (int)charInitData.LEV);
-				cmd.Parameters.AddWithValue("c7", (long)charInitData.Exp);
-				cmd.Parameters.AddWithValue("c8", (int)charInitData.STR);
-				cmd.Parameters.AddWithValue("c9", (int)charInitData.DEX);
-				cmd.Parameters.AddWithValue("c10", (int)charInitData.INT);
-				cmd.Parameters.AddWithValue("c11", (int)charInitData.PNT);
-				cmd.Parameters.AddWithValue("c12", (int)charInitData.Rank);
-				cmd.Parameters.AddWithValue("c13", (long)charInitData.Alz);
-				cmd.Parameters.AddWithValue("c14", charInitData.WorldIdx);
-				cmd.Parameters.AddWithValue("c15", (int)charInitData.Position.X);
-				cmd.Parameters.AddWithValue("c16", (int)charInitData.Position.Y);
-				cmd.Parameters.AddWithValue("c17", charInitData.HP);
-				cmd.Parameters.AddWithValue("c18", charInitData.MP);
-				cmd.Parameters.AddWithValue("c19", charInitData.SP);
-				cmd.Parameters.AddWithValue("c20", charInitData.SwdPNT);
-				cmd.Parameters.AddWithValue("c21", charInitData.MagPNT);
-				cmd.Parameters.AddWithValue("c22", charInitData.RankEXP);
-				cmd.Parameters.AddWithValue("c23", charInitData.Flags);
-				cmd.Parameters.AddWithValue("c24", charInitData.WarpBField);
-				cmd.Parameters.AddWithValue("c25", charInitData.MapsBField);
-				cmd.Parameters.AddWithValue("c26", invSerial.ToByteArray());
-				cmd.Parameters.AddWithValue("c27", eqSerial.ToByteArray());
-				cmd.Parameters.AddWithValue("c28", skillSerial.ToByteArray());
-				cmd.Parameters.AddWithValue("c29", quickslotSerial.ToByteArray());
-				cmd.Parameters.AddWithValue("c30", DateTime.UtcNow);
+				cmd.Parameters.AddWithValue("c5", (int)charInitData.LEV);
+				cmd.Parameters.AddWithValue("c6", (long)charInitData.Exp);
+				cmd.Parameters.AddWithValue("c7", (int)charInitData.STR);
+				cmd.Parameters.AddWithValue("c8", (int)charInitData.DEX);
+				cmd.Parameters.AddWithValue("c9", (int)charInitData.INT);
+				cmd.Parameters.AddWithValue("c10", (int)charInitData.PNT);
+				cmd.Parameters.AddWithValue("c11", (int)charInitData.Rank);
+				cmd.Parameters.AddWithValue("c12", (long)charInitData.Alz);
+				cmd.Parameters.AddWithValue("c13", charInitData.WorldIdx);
+				cmd.Parameters.AddWithValue("c14", (int)charInitData.Position.X);
+				cmd.Parameters.AddWithValue("c15", (int)charInitData.Position.Y);
+				cmd.Parameters.AddWithValue("c16", charInitData.HP);
+				cmd.Parameters.AddWithValue("c17", charInitData.MP);
+				cmd.Parameters.AddWithValue("c18", charInitData.SP);
+				cmd.Parameters.AddWithValue("c19", charInitData.SwdPNT);
+				cmd.Parameters.AddWithValue("c20", charInitData.MagPNT);
+				cmd.Parameters.AddWithValue("c21", charInitData.RankEXP);
+				cmd.Parameters.AddWithValue("c22", charInitData.Flags);
+				cmd.Parameters.AddWithValue("c23", charInitData.WarpBField);
+				cmd.Parameters.AddWithValue("c24", charInitData.MapsBField);
+				cmd.Parameters.AddWithValue("c25", invSerial.ToByteArray());
+				cmd.Parameters.AddWithValue("c26", eqSerial.ToByteArray());
+				cmd.Parameters.AddWithValue("c27", skillSerial.ToByteArray());
+				cmd.Parameters.AddWithValue("c28", quickslotSerial.ToByteArray());
+				cmd.Parameters.AddWithValue("c29", time);
+				cmd.Parameters.AddWithValue("c30", (int)createCharacterRequest.Style);
 				var output = await cmd.ExecuteScalarAsync();
 				if(output != null)
 				{

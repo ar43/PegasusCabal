@@ -103,5 +103,13 @@ namespace LibPegasus.Packets
 			}
 		}
 
+		public static void WriteArray(Deque<byte> data, byte[] input, int len)
+		{
+			for (int i = 0; i < len; i++)
+			{
+				data.AddToBack(input[i]);
+			}
+		}
+
 	}
 }
