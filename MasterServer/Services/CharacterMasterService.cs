@@ -32,7 +32,14 @@ namespace MasterServer.Services
 		public override Task<GetMyCharactersReply> GetMyCharacters(GetMyCharactersRequest request, ServerCallContext context)
 		{
 			var output = _databaseManager.CharacterManager.GetMyCharacters(request);
-			return output;
+			//return output.Result;
+			return Task.FromResult(new GetMyCharactersReply
+			{
+				Characters = { output.Result.Characters },
+				CharacterOrder = output.Result.CharacterOrder,
+				IsPinSet = output.Result.IsPinSet,
+				LastCharId = output.Result.LastCharId
+			});
 		}
 	}
 }

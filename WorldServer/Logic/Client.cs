@@ -6,6 +6,7 @@ using Serilog;
 using Shared.Protos;
 using System.Net;
 using System.Net.Sockets;
+using WorldServer.DB;
 using WorldServer.Enums;
 using WorldServer.Logic.Char;
 using WorldServer.Packets;
@@ -26,6 +27,8 @@ namespace WorldServer.Logic
 
 		GrpcChannel _masterRpcChannel;
 
+		private DatabaseManager _databaseManager;
+
 		readonly double TIMEOUT_SECONDS = 99999.0;
 
 		DateTime timeClientAccepted;
@@ -34,7 +37,7 @@ namespace WorldServer.Logic
 
 		internal bool Dropped { get; private set; } = false;
 
-		public Client(TcpClient tcpClient, XorKeyTable xorKeyTable, GrpcChannel masterChannel)
+		public Client(TcpClient tcpClient, XorKeyTable xorKeyTable, GrpcChannel masterChannel, DatabaseManager databaseManager)
 		{
 			TcpClient = tcpClient;
 			PacketManager = new PacketManager();
@@ -43,6 +46,8 @@ namespace WorldServer.Logic
 
 			var remoteEndPoint = TcpClient.Client.RemoteEndPoint as IPEndPoint;
 			Ip = remoteEndPoint.Address.GetAddressBytes();
+
+			_databaseManager = databaseManager;
 		}
 
 		internal void OnClientAccept(UInt16 userIndex)
@@ -239,6 +244,24 @@ namespace WorldServer.Logic
 			var client = new CharacterMaster.CharacterMasterClient(_masterRpcChannel);
 			var serverId = ServerConfig.Get().GeneralSettings.ServerId;
 			var reply = await client.GetMyCharactersAsync(new GetMyCharactersRequest { AccountId = ConnectionInfo.AccountId, ServerId = (UInt32)serverId });
+			return reply;
+		}
+
+		internal async Task<(string, DateTime?)> GetSubPasswordData()
+		{
+			var reply = await _databaseManager.SubpassManager.GetSubPasswordData((Int32)ConnectionInfo.AccountId);
+			return reply;
+		}
+
+		internal async Task<bool> SetSubPassword(string subpass)
+		{
+			var reply = await _databaseManager.SubpassManager.SetSubpass((Int32)ConnectionInfo.AccountId, subpass);
+			return reply;
+		}
+
+		internal async Task<bool> SetSubPasswordVerificationDate()
+		{
+			var reply = await _databaseManager.SubpassManager.SetSubPasswordVerificationDate((Int32)ConnectionInfo.AccountId, DateTime.UtcNow);
 			return reply;
 		}
 	}

@@ -1,4 +1,6 @@
 ﻿using LibPegasus.Enums;
+using System.Diagnostics;
+using WorldServer.Enums;
 using WorldServer.Logic.Char;
 using WorldServer.Packets.S2C;
 
@@ -9,6 +11,16 @@ namespace WorldServer.Logic.Delegates
 		internal static async void OnCharacterRequest(Client client)
 		{
 			var reply = await client.SendCharListRequest();
+			var subpassData = await client.GetSubPasswordData();
+			if(subpassData.Item1.Length > 0)
+			{
+				reply.IsPinSet = true;
+			}
+			else
+			{
+				reply.IsPinSet = false;
+			}
+			
 			var packet = new RSP_GetMyChartr(reply);
 			client.PacketManager.Send(packet);
 		}
@@ -48,6 +60,80 @@ namespace WorldServer.Logic.Delegates
 			else
 			{
 				var packet = new RSP_NewMyChartr(0, CharCreateResult.DATABRK);
+				client.PacketManager.Send(packet);
+			}
+		}
+
+		internal async static void OnSubpasswordCheckRequest(Client client)
+		{
+			var subpassData = await client.GetSubPasswordData();
+			
+			if(subpassData.Item1 == "")
+			{
+				var packet = new RSP_SubPasswordCheckRequest(false);
+				client.PacketManager.Send(packet);
+			}
+			else
+			{
+
+				if(subpassData.Item2 == null)
+				{
+					var packet = new RSP_SubPasswordCheckRequest(true);
+					client.PacketManager.Send(packet);
+				}
+				else
+				{
+					var result = (DateTime.UtcNow - subpassData.Item2).Value.TotalHours;
+					if(result > 3) //TODO: get a db value of this, not just constant 3
+					{
+						var packet = new RSP_SubPasswordCheckRequest(true);
+						client.PacketManager.Send(packet);
+					}
+					else
+					{
+						var packet = new RSP_SubPasswordCheckRequest(false);
+						client.PacketManager.Send(packet);
+					}
+				}
+			}
+			
+		}
+
+		internal async static void OnSubPasswordSet(Client client, String subpass, SubPasswordType subpassType, UInt32 secretQuestion, String secretAnswer, SubPasswordLockType subpassLockType)
+		{
+			if(subpassType == SubPasswordType.LOGIN && subpassLockType == SubPasswordLockType.UNLOCKED)
+			{
+				var attempt = await client.SetSubPassword(subpass);
+
+				if(attempt == true)
+				{
+					var packet = new RSP_SubPasswordSet(1, 0, SubPasswordType.LOGIN, SubPasswordLockType.UNLOCKED);
+					client.PacketManager.Send(packet);
+				}
+				else
+				{
+					throw new NotImplementedException();
+				}
+			}
+			else
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		internal static async void OnSubPasswordCheck(Client client, String subpass, SubPasswordType subpassType, Byte hours, SubPasswordLockType subpassLockType)
+		{
+			var subpassData = await client.GetSubPasswordData();
+
+			if(subpassData.Item1 == subpass)
+			{
+				var packet = new RSP_SubPasswordCheck(1, 0, subpassType, subpassLockType);
+				client.PacketManager.Send(packet);
+				await client.SetSubPasswordVerificationDate();
+			}
+			else
+			{
+				var packet = new RSP_SubPasswordCheck(0, 1, subpassType, subpassLockType);
 				client.PacketManager.Send(packet);
 			}
 		}

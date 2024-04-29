@@ -6,20 +6,14 @@ namespace WorldServer.DB
 	{
 		public NpgsqlDataSource DataSourceWorld { private set; get; }
 
-		//public CharacterManager CharacterManager { private set; get; }
-
-		//public SessionManager SessionManager { private set; get; }
-
-		//TODO: add other managers
+		public SubpassManager SubpassManager { private set; get; }
 
 		public DatabaseManager()
 		{
 			var cfg = ServerConfig.Get();
 			var dataSourceBuilderWorld = new NpgsqlDataSourceBuilder(cfg.DatabaseSettings.ConnString);
 			DataSourceWorld = dataSourceBuilderWorld.Build();
-
-			//CharacterManager = new(DataSourceWorld);
-			//SessionManager = new(DataSourceWorld);
+			SubpassManager = new(DataSourceWorld);
 		}
 	}
 }

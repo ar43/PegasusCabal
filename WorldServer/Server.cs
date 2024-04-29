@@ -137,7 +137,7 @@ namespace WorldServer
 				if (tcpClient != null)
 				{
 					Log.Debug("Client connected");
-					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel));
+					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel, _databaseManager));
 				}
 			}
 

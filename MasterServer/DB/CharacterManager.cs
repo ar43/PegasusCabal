@@ -123,9 +123,9 @@ namespace MasterServer.DB
 
 						var t = reader.GetBytes(equipment, 0, eqDataBytes, 0, eqDataBytes.Length);
 
-						if(t != 34)
+						if(t == eqDataBytes.Length)
 						{
-							throw new Exception("fix this");
+							throw new Exception("increase eqDataBytes buffer");
 						}
 
 						var eqData = ToProtoObject<EquipmentData>(eqDataBytes, (int)t);

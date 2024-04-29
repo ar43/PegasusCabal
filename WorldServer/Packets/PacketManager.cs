@@ -49,6 +49,9 @@ namespace WorldServer.Packets
 				Opcode.SERVERENV => new REQ_ServerEnv(data),
 				Opcode.VERIFYLINKS => new REQ_VerifyLinks(data),
 				Opcode.NEWMYCHARTR => new REQ_NewMyChartr(data),
+				Opcode.SUBPASSWORDCHECKREQUEST => new REQ_SubPasswordCheckRequest(data),
+				Opcode.SUBPASSWORDSET => new REQ_SubPasswordSet(data),
+				Opcode.SUBPASSWORDCHECK => new REQ_SubPasswordCheck(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}
@@ -84,7 +87,7 @@ namespace WorldServer.Packets
 				}
 
 				var packet = GetPacket((Opcode)opcodeNum, dataQueue);
-				Log.Debug($"Processing opcode {opcodeNum}");
+				Log.Debug($"Processing opcode {opcodeNum} ({packet.GetType().Name})");
 
 				bool verifyHeader = packet.ReadHeader();
 				if (!verifyHeader)

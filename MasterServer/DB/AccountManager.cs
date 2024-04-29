@@ -13,7 +13,6 @@ namespace MasterServer.DB
 		{
 			_dataSource = dataSource;
 		}
-
 		private async Task<bool> AccountExists(string username)
 		{
 			var conn = await _dataSource.OpenConnectionAsync();
@@ -36,7 +35,6 @@ namespace MasterServer.DB
 				}
 			}
 		}
-
 		private async Task<(string hash, uint accountId)> AccountVerify(string username, string password)
 		{
 			var conn = await _dataSource.OpenConnectionAsync();
@@ -61,7 +59,6 @@ namespace MasterServer.DB
 				}
 			}
 		}
-
 		private async Task<bool> RegisterAccount(string username, string password)
 		{
 			var hashPassword = Task.Factory.StartNew(() =>
@@ -80,7 +77,6 @@ namespace MasterServer.DB
 				return true;
 			}
 		}
-
 		public async Task<InfoCodeLS> RequestRegister(string username, string password)
 		{
 			// TODO
@@ -106,7 +102,6 @@ namespace MasterServer.DB
 				}
 			}
 		}
-
 		public async Task<UInt32> RequestLogin(string username, string password)
 		{
 			var accountInfo = await AccountVerify(username, password);
@@ -133,7 +128,6 @@ namespace MasterServer.DB
 				}
 			}
 		}
-
 
 	}
 }
