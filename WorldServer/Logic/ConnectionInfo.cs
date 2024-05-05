@@ -25,6 +25,8 @@ namespace WorldServer.Logic
 		public UInt32 AccountId { get; private set; }
 		private bool _accIdLock = false;
 
+		public bool SubPasswordAuthenticated = false;
+
 		public void SetAccountId(UInt32 accountId)
 		{
 			if (!_accIdLock)

@@ -12,6 +12,20 @@ namespace WorldServer.Logic.Char
 		{
 			Style = style;
 			Name = name;
+			Location = new Location(0, 0, 0);
+		}
+
+		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, Skills? skills, QuickSlotBar? quickSlotBar, Location location, CStats? stats, CStatus? status)
+		{
+			Equipment = equipment;
+			Inventory = inventory;
+			Skills = skills;
+			QuickSlotBar = quickSlotBar;
+			Location = location;
+			Stats = stats;
+			Status = status;
+			Style = style;
+			Name = name;
 		}
 
 		public bool Verify()
@@ -22,6 +36,13 @@ namespace WorldServer.Logic.Char
 
 		public Style Style {  get; set; }
 		public string Name { get; set; }
+		public Equipment? Equipment { get; set; }
+		public Inventory? Inventory { get; set; }
+		public Skills? Skills { get; set; }
+		public QuickSlotBar? QuickSlotBar { get; set; }
+		public Location Location { get; private set; }
+		public CStats? Stats { get; set; }
+		public CStatus? Status { get; set; }
 
 	}
 }

@@ -6,6 +6,7 @@ using Serilog;
 using Shared.Protos;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection.PortableExecutable;
 using WorldServer.DB;
 using WorldServer.Enums;
 using WorldServer.Logic.Char;
@@ -28,6 +29,8 @@ namespace WorldServer.Logic
 		GrpcChannel _masterRpcChannel;
 
 		private DatabaseManager _databaseManager;
+
+		public Character? Character;
 
 		readonly double TIMEOUT_SECONDS = 99999.0;
 
@@ -138,6 +141,10 @@ namespace WorldServer.Logic
 			}
 		}
 
+		internal async Task<Character?> LoadCharacter(UInt32 characterId)
+		{
+			return await _databaseManager.CharacterManager.GetCharacter(characterId);
+		}
 		internal void SendData()
 		{
 			if (!TcpClient.Connected || !PacketManager.OutputQueued())
@@ -218,7 +225,7 @@ namespace WorldServer.Logic
 		internal void Disconnect(string reason, ConnState newState)
 		{
 			Dropped = true;
-			Log.Warning($"called Disconnect - {reason}");
+			Log.Warning($"called Disconnect on client id {ConnectionInfo.UserId} with reason: {reason}");
 			ConnectionInfo.ConnState = newState;
 			//todo - send session timeout
 
@@ -235,7 +242,7 @@ namespace WorldServer.Logic
 		{
 			var client = new CharacterMaster.CharacterMasterClient(_masterRpcChannel);
 			var serverId = ServerConfig.Get().GeneralSettings.ServerId;
-			var reply = await client.CreateCharacterAsync(new CreateCharacterRequest { Style = chr.Style.GetSerialized(), Slot = slot, AccountId = ConnectionInfo.AccountId, ServerId = (UInt32)serverId, JoinNoviceGuild = false, Name = chr.Name });
+			var reply = await client.CreateCharacterAsync(new CreateCharacterRequest { Style = chr.Style.Serialize(), Slot = slot, AccountId = ConnectionInfo.AccountId, ServerId = (UInt32)serverId, JoinNoviceGuild = false, Name = chr.Name });
 			return reply;
 		}
 

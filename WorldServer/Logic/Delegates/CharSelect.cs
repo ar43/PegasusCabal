@@ -93,6 +93,7 @@ namespace WorldServer.Logic.Delegates
 					{
 						var packet = new RSP_SubPasswordCheckRequest(false);
 						client.PacketManager.Send(packet);
+						client.ConnectionInfo.SubPasswordAuthenticated = true;
 					}
 				}
 			}
@@ -130,11 +131,50 @@ namespace WorldServer.Logic.Delegates
 				var packet = new RSP_SubPasswordCheck(1, 0, subpassType, subpassLockType);
 				client.PacketManager.Send(packet);
 				await client.SetSubPasswordVerificationDate();
+				client.ConnectionInfo.SubPasswordAuthenticated = true;
 			}
 			else
 			{
 				var packet = new RSP_SubPasswordCheck(0, 1, subpassType, subpassLockType);
 				client.PacketManager.Send(packet);
+			}
+		}
+
+		internal static async void OnInitialize(Client client, UInt32 charId)
+		{
+			if(client.Character != null)
+			{
+				client.Disconnect("trying to init while already being init", ConnState.ERROR);
+				return;
+			}
+
+			if(!client.ConnectionInfo.SubPasswordAuthenticated)
+			{
+				client.Disconnect("trying to init without being subpass authenticated", ConnState.ERROR);
+				return;
+			}
+
+			var charToAccId = charId / 8;
+			if(charToAccId != client.ConnectionInfo.AccountId)
+			{
+				client.Disconnect("invalid char id", ConnState.ERROR);
+				return;
+			}
+
+			var character = await client.LoadCharacter(charId);
+			client.Character = character;
+			if(client.Character != null)
+			{
+				var packet = new RSP_ChargeInfo(0, 0, 0);
+				client.PacketManager.Send(packet);
+
+				var packet_init = new RSP_Initialized(client.Character, 0, client.ConnectionInfo.UserId);
+				client.PacketManager.Send(packet_init);
+			}
+			else
+			{
+				client.Disconnect("char with specified id does not exist", ConnState.ERROR);
+				return;
 			}
 		}
 	}

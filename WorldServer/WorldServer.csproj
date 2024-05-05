@@ -40,6 +40,9 @@
     <Protobuf Include="..\LibPegasus\Protos\character_master.proto" GrpcServices="Client">
       <Link>Protos\character_master.proto</Link>
     </Protobuf>
+    <Protobuf Include="..\LibPegasus\Protos\db_serialization.proto" GrpcServices="Client">
+      <Link>Protos\db_serialization.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

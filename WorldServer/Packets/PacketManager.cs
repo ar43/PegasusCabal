@@ -52,6 +52,7 @@ namespace WorldServer.Packets
 				Opcode.SUBPASSWORDCHECKREQUEST => new REQ_SubPasswordCheckRequest(data),
 				Opcode.SUBPASSWORDSET => new REQ_SubPasswordSet(data),
 				Opcode.SUBPASSWORDCHECK => new REQ_SubPasswordCheck(data),
+				Opcode.INITIALIZED => new REQ_Initialized(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

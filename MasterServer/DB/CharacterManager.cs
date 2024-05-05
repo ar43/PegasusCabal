@@ -139,9 +139,20 @@ namespace MasterServer.DB
 							}
 						}
 
-						GetMyCharactersReplySingle character = new GetMyCharactersReplySingle { Alz = (UInt64)reader.GetInt64(alz), CharacterId = (UInt32)reader.GetInt32(charId)
-						, CreationDate = ((DateTimeOffset)reader.GetDateTime(creationDate)).ToUnixTimeSeconds(), Equipment = { equipmentData }, Level = (UInt32)reader.GetInt32(level), Name = reader.GetString(name)
-						, Rank = (UInt32)reader.GetInt32(rank), Style = (UInt32)reader.GetInt32(style), U2 = 0, WorldId = (UInt32)reader.GetInt32(worldId), X = (UInt32)reader.GetInt32(x), Y = (UInt32)reader.GetInt32(y)
+						GetMyCharactersReplySingle character = new GetMyCharactersReplySingle
+						{
+							Alz = (UInt64)reader.GetInt64(alz),
+							CharacterId = (UInt32)reader.GetInt32(charId),
+							CreationDate = ((DateTimeOffset)reader.GetDateTime(creationDate)).ToUnixTimeSeconds(),
+							Equipment = { equipmentData },
+							Level = (UInt32)reader.GetInt32(level),
+							Name = reader.GetString(name),
+							Rank = (UInt32)reader.GetInt32(rank),
+							Style = (UInt32)reader.GetInt32(style),
+							U2 = 0,
+							WorldId = (UInt32)reader.GetInt32(worldId),
+							X = (UInt32)reader.GetInt32(x),
+							Y = (UInt32)reader.GetInt32(y)
 						};
 						reply.Characters.Add(character);
 					}
@@ -168,7 +179,7 @@ namespace MasterServer.DB
 				return (0, CharCreateResult.DATABRK);
 			}
 
-			await using (var cmd = new NpgsqlCommand("INSERT INTO main.characters VALUES (@c1, @c2, @c3, @c4, @c5, @c6, @c7, @c8, @c9, @c10, @c11, @c12, @c13, @c14, @c15, @c16, @c17, @c18, @c19, @c20, @c21, @c22, @c23, @c24, @c25, @c26, @c27, @c28, @c29, @c30) RETURNING char_id", conn))
+			await using (var cmd = new NpgsqlCommand("INSERT INTO main.characters VALUES (@c1, @c2, @c3, @c4, @c5, @c6, @c7, @c8, @c9, @c10, @c11, @c12, @c13, @c14, @c15, @c16, @c17, @c18, @c19, @c20, @c21, @c22, @c23, @c24, @c25, @c26, @c27, @c28, @c29, @c30, @c31, @c32, @c33) RETURNING char_id", conn))
 			{
 				cmd.Parameters.AddWithValue("c1", (int)charId);
 				cmd.Parameters.AddWithValue("c2", (int)createCharacterRequest.AccountId);
@@ -200,6 +211,9 @@ namespace MasterServer.DB
 				cmd.Parameters.AddWithValue("c28", quickslotSerial.ToByteArray());
 				cmd.Parameters.AddWithValue("c29", time);
 				cmd.Parameters.AddWithValue("c30", (int)createCharacterRequest.Style);
+				cmd.Parameters.AddWithValue("c31", charInitData.SP);
+				cmd.Parameters.AddWithValue("c32", charInitData.HP);
+				cmd.Parameters.AddWithValue("c33", charInitData.MP);
 				var output = await cmd.ExecuteScalarAsync();
 				if(output != null)
 				{
