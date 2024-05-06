@@ -15,7 +15,7 @@ namespace WorldServer.Packets.S2C
 		private SubPasswordType _subPasswordType;
 		private SubPasswordLockType _subPasswordLockType;
 
-		public RSP_SubPasswordCheck(UInt32 result, byte failureCount, SubPasswordType subPasswordType, SubPasswordLockType subPasswordLockType) : base((UInt16)Opcode.SUBPASSWORDCHECK)
+		public RSP_SubPasswordCheck(UInt32 result, byte failureCount, SubPasswordType subPasswordType, SubPasswordLockType subPasswordLockType) : base((UInt16)Opcode.CSC_SUBPASSWORDCHECK)
 		{
 			_result = result;
 			_failureCount = failureCount;

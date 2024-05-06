@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
 
-namespace WorldServer.Logic.Char
+namespace WorldServer.Logic.CharData
 {
 	internal class Equipment
 	{

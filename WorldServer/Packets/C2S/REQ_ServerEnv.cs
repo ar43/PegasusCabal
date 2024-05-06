@@ -7,7 +7,7 @@ namespace WorldServer.Packets.C2S
 {
 	internal class REQ_ServerEnv : PacketC2S<Client>
 	{
-		public REQ_ServerEnv(Queue<byte> data) : base((UInt16)Opcode.SERVERENV, data)
+		public REQ_ServerEnv(Queue<byte> data) : base((UInt16)Opcode.CSC_SERVERENV, data)
 		{
 
 		}

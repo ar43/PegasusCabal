@@ -42,17 +42,18 @@ namespace WorldServer.Packets
 		{
 			return opcode switch
 			{
-				Opcode.CONNECT2SVR => new REQ_Connect2Svr(data),
-				Opcode.CHARGEINFO => new REQ_ChargeInfo(data),
-				Opcode.GETMYCHARTR => new REQ_GetMyChartr(data),
-				Opcode.GETSVRTIME => new REQ_GetSvrTime(data),
-				Opcode.SERVERENV => new REQ_ServerEnv(data),
-				Opcode.VERIFYLINKS => new REQ_VerifyLinks(data),
-				Opcode.NEWMYCHARTR => new REQ_NewMyChartr(data),
-				Opcode.SUBPASSWORDCHECKREQUEST => new REQ_SubPasswordCheckRequest(data),
-				Opcode.SUBPASSWORDSET => new REQ_SubPasswordSet(data),
-				Opcode.SUBPASSWORDCHECK => new REQ_SubPasswordCheck(data),
-				Opcode.INITIALIZED => new REQ_Initialized(data),
+				Opcode.CSC_CONNECT2SVR => new REQ_Connect2Svr(data),
+				Opcode.CSC_CHARGEINFO => new REQ_ChargeInfo(data),
+				Opcode.CSC_GETMYCHARTR => new REQ_GetMyChartr(data),
+				Opcode.CSC_GETSVRTIME => new REQ_GetSvrTime(data),
+				Opcode.CSC_SERVERENV => new REQ_ServerEnv(data),
+				Opcode.CSC_VERIFYLINKS => new REQ_VerifyLinks(data),
+				Opcode.CSC_NEWMYCHARTR => new REQ_NewMyChartr(data),
+				Opcode.CSC_SUBPASSWORDCHECKREQUEST => new REQ_SubPasswordCheckRequest(data),
+				Opcode.CSC_SUBPASSWORDSET => new REQ_SubPasswordSet(data),
+				Opcode.CSC_SUBPASSWORDCHECK => new REQ_SubPasswordCheck(data),
+				Opcode.CSC_INITIALIZED => new REQ_Initialized(data),
+				Opcode.CSC_QUERYCASHITEM => new REQ_QueryCashItem(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}
@@ -64,7 +65,7 @@ namespace WorldServer.Packets
 			if (_decryptedInboundPackets.Count > 0)
 			{
 				var upcomingOpcode = _decryptedInboundPackets.Peek().Item1;
-				if (upcomingOpcode != (UInt16)Opcode.CONNECT2SVR && !isAuthenticated)
+				if (upcomingOpcode != (UInt16)Opcode.CSC_CONNECT2SVR && !isAuthenticated)
 				{
 					//TODO: User tried to do things while not logged in
 					return null;

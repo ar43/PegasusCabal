@@ -14,7 +14,7 @@ namespace WorldServer.Packets.S2C
 		private UInt32 _charId;
 		private CharCreateResult _result;
 
-		public RSP_NewMyChartr(UInt32 charId, CharCreateResult result) : base((UInt16)Opcode.NEWMYCHARTR)
+		public RSP_NewMyChartr(UInt32 charId, CharCreateResult result) : base((UInt16)Opcode.CSC_NEWMYCHARTR)
 		{
 			_charId = charId;
 			_result = result;

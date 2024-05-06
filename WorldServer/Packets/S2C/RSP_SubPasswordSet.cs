@@ -15,7 +15,7 @@ namespace WorldServer.Packets.S2C
 		private SubPasswordType _subPasswordType;
 		private SubPasswordLockType _subPasswordLockType;
 
-		public RSP_SubPasswordSet(UInt32 result, UInt32 changePassword, SubPasswordType subPasswordType, SubPasswordLockType subPasswordLockType) : base((UInt16)Opcode.SUBPASSWORDSET)
+		public RSP_SubPasswordSet(UInt32 result, UInt32 changePassword, SubPasswordType subPasswordType, SubPasswordLockType subPasswordLockType) : base((UInt16)Opcode.CSC_SUBPASSWORDSET)
 		{
 			_result = result;
 			_changePassword = changePassword;

@@ -7,7 +7,7 @@ namespace WorldServer.Packets.S2C
 	{
 		long _time;
 		Int16 _timezoneOffset;
-		public RSP_GetSvrTime(long time, Int16 timezoneOffset) : base((UInt16)Opcode.GETSVRTIME)
+		public RSP_GetSvrTime(long time, Int16 timezoneOffset) : base((UInt16)Opcode.CSC_GETSVRTIME)
 		{
 			_time = time;
 			_timezoneOffset = timezoneOffset;

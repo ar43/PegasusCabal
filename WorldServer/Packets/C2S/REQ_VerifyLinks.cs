@@ -7,7 +7,7 @@ namespace WorldServer.Packets.C2S
 {
 	internal class REQ_VerifyLinks : PacketC2S<Client>
 	{
-		public REQ_VerifyLinks(Queue<byte> data) : base((UInt16)Opcode.VERIFYLINKS, data)
+		public REQ_VerifyLinks(Queue<byte> data) : base((UInt16)Opcode.CSC_VERIFYLINKS, data)
 		{
 
 		}

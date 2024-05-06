@@ -1,0 +1,29 @@
+﻿using LibPegasus.Packets;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WorldServer.Enums;
+
+namespace WorldServer.Packets.S2C
+{
+	internal class NFY_Unk994 : PacketS2C
+	{
+
+		public NFY_Unk994() : base((UInt16)Opcode.NFY_UNK994)
+		{
+		}
+
+		public override void WritePayload()
+		{
+			PacketWriter.WriteUInt32(_data, 0); //unk
+			PacketWriter.WriteUInt32(_data, 0); //unk
+			PacketWriter.WriteUInt32(_data, 0); //unk
+			PacketWriter.WriteUInt32(_data, 0); //unk
+			PacketWriter.WriteUInt32(_data, 0); //unk
+			PacketWriter.WriteUInt32(_data, 0); //unk
+			PacketWriter.WriteUInt32(_data, 0); //unk
+		}
+	}
+}

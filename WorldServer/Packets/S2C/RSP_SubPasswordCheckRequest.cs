@@ -13,7 +13,7 @@ namespace WorldServer.Packets.S2C
 	{
 		private bool _pinRequired;
 
-		public RSP_SubPasswordCheckRequest(bool pinRequired) : base((UInt16)Opcode.SUBPASSWORDCHECKREQUEST)
+		public RSP_SubPasswordCheckRequest(bool pinRequired) : base((UInt16)Opcode.CSC_SUBPASSWORDCHECKREQUEST)
 		{
 			_pinRequired = pinRequired;
 		}

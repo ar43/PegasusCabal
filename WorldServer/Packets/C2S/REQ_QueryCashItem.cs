@@ -5,16 +5,16 @@ using WorldServer.Logic.Delegates;
 
 namespace WorldServer.Packets.C2S
 {
-	internal class REQ_GetSvrTime : PacketC2S<Client>
+	internal class REQ_QueryCashItem : PacketC2S<Client>
 	{
-		public REQ_GetSvrTime(Queue<byte> data) : base((UInt16)Opcode.CSC_GETSVRTIME, data)
+		public REQ_QueryCashItem(Queue<byte> data) : base((UInt16)Opcode.CSC_QUERYCASHITEM, data)
 		{
 
 		}
 
 		public override bool ReadPayload(Queue<Action<Client>> actions)
 		{
-			actions.Enqueue((x) => CharSelect.OnGetSvrTime(x));
+			actions.Enqueue((client) => Cash.OnQueryCashItems(client));
 
 			return true;
 		}

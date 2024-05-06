@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
-using WorldServer.Logic.Char;
+using WorldServer.Logic.CharData;
 
 namespace WorldServer.DB
 {

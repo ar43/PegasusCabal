@@ -8,7 +8,7 @@ namespace WorldServer.Packets.S2C
 	internal class RSP_GetMyChartr : PacketS2C
 	{
 		GetMyCharactersReply _reply;
-		public RSP_GetMyChartr(GetMyCharactersReply reply) : base((UInt16)Opcode.GETMYCHARTR)
+		public RSP_GetMyChartr(GetMyCharactersReply reply) : base((UInt16)Opcode.CSC_GETMYCHARTR)
 		{
 			_reply = reply;
 		}

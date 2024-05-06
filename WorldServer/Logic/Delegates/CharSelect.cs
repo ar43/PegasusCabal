@@ -1,7 +1,8 @@
 ﻿using LibPegasus.Enums;
 using System.Diagnostics;
 using WorldServer.Enums;
-using WorldServer.Logic.Char;
+using WorldServer.Logic.AccountData;
+using WorldServer.Logic.CharData;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
@@ -165,11 +166,25 @@ namespace WorldServer.Logic.Delegates
 			client.Character = character;
 			if(client.Character != null)
 			{
-				var packet = new RSP_ChargeInfo(0, 0, 0);
+				var packet = new NFY_ChargeInfo(0, 0, 0); //TODO: premium service
 				client.PacketManager.Send(packet);
 
 				var packet_init = new RSP_Initialized(client.Character, 0, client.ConnectionInfo.UserId);
 				client.PacketManager.Send(packet_init);
+
+				var packet_bang = new NFY_PcBangAlert(0, 0);
+				client.PacketManager.Send(packet_bang);
+
+				var packet_periodical = new NFY_PeriodicalService(0);
+				client.PacketManager.Send(packet_periodical);
+
+				var packet_war = new NFY_LastNationRewardWarResults(0, 0, 0, 0, DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch, 0); //TODO: war rewards
+				client.PacketManager.Send(packet_war);
+
+				var packet_994 = new NFY_Unk994();
+				client.PacketManager.Send(packet_994);
+
+				client.Account = new Account(client.ConnectionInfo.AccountId); //TODO: actually load the account data
 			}
 			else
 			{

@@ -12,7 +12,7 @@ namespace WorldServer.Packets.C2S
 {
 	internal class REQ_SubPasswordSet : PacketC2S<Client>
 	{
-		public REQ_SubPasswordSet(Queue<byte> data) : base((UInt16)Opcode.SUBPASSWORDSET, data)
+		public REQ_SubPasswordSet(Queue<byte> data) : base((UInt16)Opcode.CSC_SUBPASSWORDSET, data)
 		{
 
 		}

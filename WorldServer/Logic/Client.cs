@@ -9,7 +9,8 @@ using System.Net.Sockets;
 using System.Reflection.PortableExecutable;
 using WorldServer.DB;
 using WorldServer.Enums;
-using WorldServer.Logic.Char;
+using WorldServer.Logic.AccountData;
+using WorldServer.Logic.CharData;
 using WorldServer.Packets;
 
 namespace WorldServer.Logic
@@ -31,6 +32,7 @@ namespace WorldServer.Logic
 		private DatabaseManager _databaseManager;
 
 		public Character? Character;
+		public Account? Account;
 
 		readonly double TIMEOUT_SECONDS = 99999.0;
 

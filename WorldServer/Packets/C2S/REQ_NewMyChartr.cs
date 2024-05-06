@@ -13,7 +13,7 @@ namespace WorldServer.Packets.C2S
 {
 	internal class REQ_NewMyChartr : PacketC2S<Client>
 	{
-		public REQ_NewMyChartr(Queue<byte> data) : base((UInt16)Opcode.NEWMYCHARTR, data)
+		public REQ_NewMyChartr(Queue<byte> data) : base((UInt16)Opcode.CSC_NEWMYCHARTR, data)
 		{
 
 		}

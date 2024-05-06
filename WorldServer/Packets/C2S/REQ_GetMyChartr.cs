@@ -7,7 +7,7 @@ namespace WorldServer.Packets.C2S
 {
 	internal class REQ_GetMyChartr : PacketC2S<Client>
 	{
-		public REQ_GetMyChartr(Queue<byte> data) : base((UInt16)Opcode.GETMYCHARTR, data)
+		public REQ_GetMyChartr(Queue<byte> data) : base((UInt16)Opcode.CSC_GETMYCHARTR, data)
 		{
 
 		}

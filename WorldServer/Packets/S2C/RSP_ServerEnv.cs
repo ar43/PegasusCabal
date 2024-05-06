@@ -6,7 +6,7 @@ namespace WorldServer.Packets.S2C
 	internal class RSP_ServerEnv : PacketS2C
 	{
 		Gamesettings _gamesettings;
-		public RSP_ServerEnv(Gamesettings gamesettings) : base((UInt16)Opcode.SERVERENV)
+		public RSP_ServerEnv(Gamesettings gamesettings) : base((UInt16)Opcode.CSC_SERVERENV)
 		{
 			_gamesettings = gamesettings;
 		}

@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
-using WorldServer.Logic.Char;
+using WorldServer.Logic.CharData;
 
 namespace WorldServer.Packets.S2C
 {
@@ -17,7 +17,7 @@ namespace WorldServer.Packets.S2C
 		UInt16 _userCount;
 		UInt16 _userId;
 
-		public RSP_Initialized(Character character, ushort userCount, ushort userId) : base((UInt16)Opcode.INITIALIZED)
+		public RSP_Initialized(Character character, ushort userCount, ushort userId) : base((UInt16)Opcode.CSC_INITIALIZED)
 		{
 			_character = character;
 			_userCount = userCount;
