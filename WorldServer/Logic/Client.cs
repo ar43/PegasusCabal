@@ -11,11 +11,13 @@ using WorldServer.DB;
 using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.ClientData;
+using WorldServer.Logic.World;
 using WorldServer.Packets;
 
 namespace WorldServer.Logic
 {
-	internal class Client
+    internal class Client
 	{
 		public TcpClient TcpClient { private set; get; }
 
@@ -30,6 +32,7 @@ namespace WorldServer.Logic
 		GrpcChannel _masterRpcChannel;
 
 		private DatabaseManager _databaseManager;
+		private InstanceManager _instanceManager;
 
 		public Character? Character;
 		public Account? Account;
@@ -42,7 +45,7 @@ namespace WorldServer.Logic
 
 		internal bool Dropped { get; private set; } = false;
 
-		public Client(TcpClient tcpClient, XorKeyTable xorKeyTable, GrpcChannel masterChannel, DatabaseManager databaseManager)
+		public Client(TcpClient tcpClient, XorKeyTable xorKeyTable, GrpcChannel masterChannel, DatabaseManager databaseManager, InstanceManager instanceManager)
 		{
 			TcpClient = tcpClient;
 			PacketManager = new PacketManager();
@@ -53,6 +56,7 @@ namespace WorldServer.Logic
 			Ip = remoteEndPoint.Address.GetAddressBytes();
 
 			_databaseManager = databaseManager;
+			_instanceManager = instanceManager;
 		}
 
 		internal void OnClientAccept(UInt16 userIndex)
@@ -143,7 +147,7 @@ namespace WorldServer.Logic
 			}
 		}
 
-		internal async Task<Character?> LoadCharacter(UInt32 characterId)
+		internal async Task<(Character?, int)> LoadCharacter(UInt32 characterId)
 		{
 			return await _databaseManager.CharacterManager.GetCharacter(characterId);
 		}
@@ -203,13 +207,14 @@ namespace WorldServer.Logic
 				return;
 			}
 
-			var actions = PacketManager.ReceiveAll(ConnectionInfo.IsAuthenticated());
+			var actions = PacketManager.ReceiveAll(ConnectionInfo.IsAuthenticated(), _instanceManager);
 
 			if (actions != null)
 			{
 				while (actions.Count > 0)
 				{
 					var action = actions.Dequeue();
+					//add try and catch - drop player on exception
 					action(this);
 				}
 			}
@@ -272,6 +277,11 @@ namespace WorldServer.Logic
 		{
 			var reply = await _databaseManager.SubpassManager.SetSubPasswordVerificationDate((Int32)ConnectionInfo.AccountId, DateTime.UtcNow);
 			return reply;
+		}
+
+		public void BroadcastAround(PacketS2C packet)
+		{
+			Character.Location.Instance.BroadcastAround(this, packet);
 		}
 	}
 }

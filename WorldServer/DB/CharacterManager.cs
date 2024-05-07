@@ -36,7 +36,7 @@ namespace WorldServer.DB
 			}
 		}
 
-		public async Task<Character?> GetCharacter(UInt32 charId)
+		public async Task<(Character?, int)> GetCharacter(UInt32 charId)
 		{
 			var conn = await _dataSource.OpenConnectionAsync();
 
@@ -45,6 +45,7 @@ namespace WorldServer.DB
 				cmd.Parameters.AddWithValue("p", (int)charId);
 				await using (var reader = await cmd.ExecuteReaderAsync())
 				{
+					var idLabel = reader.GetOrdinal("char_id");
 					var alz = reader.GetOrdinal("alz");
 					var creationDate = reader.GetOrdinal("creation_date");
 					var equipment = reader.GetOrdinal("eq_data");
@@ -134,7 +135,7 @@ namespace WorldServer.DB
 						{
 							cQuickSlotBar.Links.Add((UInt16)link.Key, new SkillLink((UInt16)link.Value.Id));
 						}
-
+						var wid = reader.GetInt32(worldId);
 						Character character = new Character(
 							new Style((UInt32)reader.GetInt32(style)),
 							reader.GetString(name),
@@ -142,16 +143,17 @@ namespace WorldServer.DB
 							cInventory,
 							cSkills,
 							cQuickSlotBar,
-							new Location((UInt16)reader.GetInt32(x), (UInt16)reader.GetInt32(y), (UInt32)reader.GetInt32(worldId)),
+							new Location((UInt16)reader.GetInt32(x), (UInt16)reader.GetInt32(y)),
 							new CStats((UInt32)reader.GetInt32(level), (UInt32)reader.GetInt32(exp), (UInt32)reader.GetInt32(str), (UInt32)reader.GetInt32(dex), (UInt32)reader.GetInt32(INT), (UInt32)reader.GetInt32(pnt), (UInt32)reader.GetInt32(rank)),
-							new CStatus((UInt32)reader.GetInt32(hp), (UInt32)reader.GetInt32(maxHp), (UInt32)reader.GetInt32(mp), (UInt32)reader.GetInt32(maxMp), (UInt32)reader.GetInt32(sp), (UInt32)reader.GetInt32(maxSp))
+							new CStatus((UInt32)reader.GetInt32(hp), (UInt32)reader.GetInt32(maxHp), (UInt32)reader.GetInt32(mp), (UInt32)reader.GetInt32(maxMp), (UInt32)reader.GetInt32(sp), (UInt32)reader.GetInt32(maxSp)),
+							reader.GetInt32(idLabel)
 						);
-						return character;
+						return (character, wid);
 					}
 				}
 			}
 			
-			return null;
+			return (null, 0);
 		}
 	}
 

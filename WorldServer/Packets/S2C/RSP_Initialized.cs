@@ -15,13 +15,11 @@ namespace WorldServer.Packets.S2C
 	{
 		Character _character;
 		UInt16 _userCount;
-		UInt16 _userId;
 
-		public RSP_Initialized(Character character, ushort userCount, ushort userId) : base((UInt16)Opcode.CSC_INITIALIZED)
+		public RSP_Initialized(Character character, ushort userCount) : base((UInt16)Opcode.CSC_INITIALIZED)
 		{
 			_character = character;
 			_userCount = userCount;
-			_userId = userId;
 		}
 
 		public override void WritePayload()
@@ -45,11 +43,11 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(_data, ip);
 			PacketWriter.WriteUInt16(_data, (UInt16)cfg.ConnectionSettings.Port);
 			PacketWriter.WriteUInt32(_data, channelType);
-			PacketWriter.WriteUInt16(_data, _userId);
-			PacketWriter.WriteByte(_data, 0); //??? todo
-			PacketWriter.WriteByte(_data, 1); //type todo
+			PacketWriter.WriteUInt16(_data, _character.ObjectIndexData.UserId);
+			PacketWriter.WriteByte(_data, _character.ObjectIndexData.WorldIndex); //WorldIndex of ObjectIndexData??? todo Is this perhaps native instance support
+			PacketWriter.WriteByte(_data, (byte)_character.ObjectIndexData.ObjectType); //ObjectType todo
 
-			PacketWriter.WriteUInt32(_data, _character.Location.WorldId);
+			PacketWriter.WriteUInt32(_data, (UInt32)_character.Location.Instance.WorldId);
 			PacketWriter.WriteUInt32(_data, 0); //todo dungeon
 			PacketWriter.WriteUInt16(_data, _character.Location.X);
 			PacketWriter.WriteUInt16(_data, _character.Location.Y);

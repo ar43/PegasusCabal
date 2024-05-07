@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Logic.World;
 
 namespace WorldServer.Logic.CharData
 {
@@ -11,13 +12,17 @@ namespace WorldServer.Logic.CharData
 		public UInt16 X;
 		public UInt16 Y;
 
-		public UInt32 WorldId;
+		public UInt16 TileX;
+		public UInt16 TileY;
 
-		public Location(UInt16 x, UInt16 y, UInt32 worldId)
+		public Instance? Instance;
+
+		public Location(UInt16 x, UInt16 y)
 		{
 			X = x;
 			Y = y;
-			WorldId = worldId;
+			TileX = (UInt16)(X / 16);
+			TileY = (UInt16)(Y / 16);
 		}
 	}
 }

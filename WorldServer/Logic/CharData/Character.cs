@@ -12,10 +12,14 @@ namespace WorldServer.Logic.CharData
 		{
 			Style = style;
 			Name = name;
-			Location = new Location(0, 0, 0);
+			Location = new Location(0, 0);
+			LiveStyle = new LiveStyle(0);
+			BuffFlag = new BuffFlag(0);
+			ActionFlag = new ActionFlag(0);
+			Id = 0;
 		}
 
-		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, Skills? skills, QuickSlotBar? quickSlotBar, Location location, CStats? stats, CStatus? status)
+		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, Skills? skills, QuickSlotBar? quickSlotBar, Location location, CStats? stats, CStatus? status, int id)
 		{
 			Equipment = equipment;
 			Inventory = inventory;
@@ -26,6 +30,10 @@ namespace WorldServer.Logic.CharData
 			Status = status;
 			Style = style;
 			Name = name;
+			LiveStyle = new LiveStyle(0);
+			BuffFlag = new BuffFlag(0);
+			ActionFlag = new ActionFlag(0);
+			Id = id;
 		}
 
 		public bool Verify()
@@ -36,6 +44,8 @@ namespace WorldServer.Logic.CharData
 
 		public Style Style {  get; set; }
 		public string Name { get; set; }
+		public int Id { get; private set; }
+		public ObjectIndexData? ObjectIndexData { get; set; }
 		public Equipment? Equipment { get; set; }
 		public Inventory? Inventory { get; set; }
 		public Skills? Skills { get; set; }
@@ -43,6 +53,10 @@ namespace WorldServer.Logic.CharData
 		public Location Location { get; private set; }
 		public CStats? Stats { get; set; }
 		public CStatus? Status { get; set; }
+
+		public LiveStyle LiveStyle { get; private set; }
+		public ActionFlag ActionFlag { get; private set; }
+		public BuffFlag BuffFlag { get; private set; }
 
 	}
 }

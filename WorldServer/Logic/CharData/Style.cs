@@ -61,5 +61,10 @@ namespace WorldServer.Logic.CharData
 			//TODO
 			return true;
 		}
+
+		public void ToggleHelmet(byte newVal)
+		{
+			ShowHelmet = newVal;
+		}
 	}
 }

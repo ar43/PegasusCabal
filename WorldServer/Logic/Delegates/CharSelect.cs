@@ -3,6 +3,7 @@ using System.Diagnostics;
 using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.World;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
@@ -141,7 +142,7 @@ namespace WorldServer.Logic.Delegates
 			}
 		}
 
-		internal static async void OnInitialize(Client client, UInt32 charId)
+		internal static async void OnInitialize(Client client, UInt32 charId, InstanceManager instanceManager)
 		{
 			if(client.Character != null)
 			{
@@ -163,13 +164,17 @@ namespace WorldServer.Logic.Delegates
 			}
 
 			var character = await client.LoadCharacter(charId);
-			client.Character = character;
+			client.Character = character.Item1;
+			var worldId = character.Item2;
 			if(client.Character != null)
 			{
 				var packet = new NFY_ChargeInfo(0, 0, 0); //TODO: premium service
 				client.PacketManager.Send(packet);
 
-				var packet_init = new RSP_Initialized(client.Character, 0, client.ConnectionInfo.UserId);
+				client.Character.ObjectIndexData = new ObjectIndexData(client.ConnectionInfo.UserId, 0, ObjectType.USER);
+				instanceManager.AddClient(client, (UInt128)worldId);
+
+				var packet_init = new RSP_Initialized(client.Character, 0);
 				client.PacketManager.Send(packet_init);
 
 				var packet_bang = new NFY_PcBangAlert(0, 0);

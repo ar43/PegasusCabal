@@ -7,32 +7,30 @@ using System.Threading.Tasks;
 using WorldServer.Logic.Delegates;
 using WorldServer.Logic;
 using WorldServer.Enums;
-using WorldServer.Logic.World;
 
 namespace WorldServer.Packets.C2S
 {
-	internal class REQ_Initialized : PacketC2S<Client>
+	internal class REQ_UpdateHelpInfo : PacketC2S<Client>
 	{
-		InstanceManager _instanceManager;
-		public REQ_Initialized(Queue<byte> data, InstanceManager instanceManager) : base((UInt16)Opcode.CSC_INITIALIZED, data)
+		public REQ_UpdateHelpInfo(Queue<byte> data) : base((UInt16)Opcode.CSC_UPDATEHELPINFO, data)
 		{
-			_instanceManager = instanceManager;
+
 		}
 
 		public override bool ReadPayload(Queue<Action<Client>> actions)
 		{
-			UInt32 charId;
+			UInt32 unknown;
 
 			try
 			{
-				charId = PacketReader.ReadUInt32(_data);
+				unknown = PacketReader.ReadUInt32(_data);
 			}
 			catch (IndexOutOfRangeException)
 			{
 				return false;
 			}
 
-			actions.Enqueue((client) => CharSelect.OnInitialize(client, charId, _instanceManager));
+			actions.Enqueue((client) => Interface.OnUpdateHelpInfo(client));
 
 			return true;
 		}

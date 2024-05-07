@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 using WorldServer.DB;
 using WorldServer.Logic;
+using WorldServer.Logic.World;
 
 namespace WorldServer
 {
@@ -30,6 +31,8 @@ namespace WorldServer
 		XorKeyTable _xorKeyTable = new();
 
 		DatabaseManager _databaseManager;
+
+		InstanceManager _instanceManager;
 
 		bool[] _clientIndexSpace = new bool[UInt16.MaxValue + 1];
 
@@ -67,6 +70,7 @@ namespace WorldServer
 			_listener = new(ipEndPoint);
 
 			_databaseManager = new DatabaseManager();
+			_instanceManager = new InstanceManager();
 		}
 		private static async Task<IPAddress?> GetExternalIpAddress()
 		{
@@ -137,7 +141,7 @@ namespace WorldServer
 				if (tcpClient != null)
 				{
 					Log.Debug("Client connected");
-					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel, _databaseManager));
+					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel, _databaseManager, _instanceManager));
 				}
 			}
 
@@ -247,6 +251,8 @@ namespace WorldServer
 				{
 					_clients[i].TcpClient.Close();
 					FreeUserIndex(_clients[i].ConnectionInfo.UserId);
+					if (_clients[i].Character != null && _clients[i].Character.Location.Instance != null)
+						_clients[i].Character.Location.Instance.RemoveClient(_clients[i]);
 					_clients.RemoveAt(i);
 				}
 			}
