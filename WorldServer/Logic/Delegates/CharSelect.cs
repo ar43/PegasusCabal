@@ -194,6 +194,8 @@ namespace WorldServer.Logic.Delegates
 				client.Account = new Account(client.ConnectionInfo.AccountId); //TODO: actually load the account data
 
 				instanceManager.AddClient(client, (UInt128)worldId);
+
+				client.TimerHeartbeat = new LibPegasus.Utils.Timer(DateTime.UtcNow, 40.0, true);
 			}
 			else
 			{

@@ -57,6 +57,7 @@ namespace WorldServer.Packets
 				Opcode.CSC_QUERYCASHITEM => new REQ_QueryCashItem(data),
 				Opcode.CSC_CHANGESTYLE => new REQ_ChangeStyle(data),
 				Opcode.CSC_UPDATEHELPINFO => new REQ_UpdateHelpInfo(data),
+				Opcode.CSC_HEARTBEAT => new RSP_Heartbeat(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

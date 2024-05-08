@@ -14,6 +14,7 @@ using WorldServer.Logic.CharData;
 using WorldServer.Logic.ClientData;
 using WorldServer.Logic.World;
 using WorldServer.Packets;
+using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic
 {
@@ -37,6 +38,9 @@ namespace WorldServer.Logic
 		public Account? Account;
 
 		readonly double TIMEOUT_SECONDS = 99999.0;
+
+		public LibPegasus.Utils.Timer? TimerHeartbeat = null; //set to 40
+		public LibPegasus.Utils.Timer? TimerHeartbeatTimeout = null; //set this to null on successfull heartbeat
 
 		DateTime timeClientAccepted;
 
@@ -229,18 +233,32 @@ namespace WorldServer.Logic
 				}
 			}
 
-			var time = DateTime.UtcNow;
-
-			if (time.Ticks - timeClientAccepted.Ticks >= TimeSpan.FromSeconds(TIMEOUT_SECONDS).Ticks)
+			if(TimerHeartbeat != null && TimerHeartbeat.Tick())
 			{
-				//timeout
-				Disconnect("timeout", ConnState.TIMEOUT);
-				return;
+				if (Character != null)
+				{
+					var heartbeatPacket = new REQ_Heartbeat();
+					PacketManager.Send(heartbeatPacket);
+					TimerHeartbeatTimeout = new LibPegasus.Utils.Timer(DateTime.UtcNow, 10.0, false);
+				}
+				else
+				{
+					TimerHeartbeat = null;
+				}
 			}
+
+			if(TimerHeartbeatTimeout != null && TimerHeartbeatTimeout.Tick())
+			{
+				Disconnect("Heartbeat timeout", ConnState.TIMEOUT);
+			}
+
+
 		}
 
 		internal void Disconnect(string reason, ConnState newState)
 		{
+			if (Dropped)
+				return;
 			Dropped = true;
 			Log.Warning($"called Disconnect on client id {ConnectionInfo.UserId} with reason: {reason}");
 			ConnectionInfo.ConnState = newState;
