@@ -17,13 +17,15 @@ namespace WorldServer.Packets.S2C
 		UInt16 _userCount;
 		IPAddress _chatServerIp;
 		UInt16 _chatServerPort;
+		UInt32 _worldId;
 
-		public RSP_Initialized(Character character, ushort userCount, IPAddress chatServerIp, UInt16 chatServerPort) : base((UInt16)Opcode.CSC_INITIALIZED)
+		public RSP_Initialized(Character character, ushort userCount, IPAddress chatServerIp, UInt16 chatServerPort, UInt32 worldId) : base((UInt16)Opcode.CSC_INITIALIZED)
 		{
 			_character = character;
 			_userCount = userCount;
 			_chatServerIp = chatServerIp;
 			_chatServerPort = chatServerPort;
+			_worldId = worldId;
 		}
 
 		public override void WritePayload()
@@ -52,7 +54,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteByte(_data, _character.ObjectIndexData.WorldIndex); //WorldIndex of ObjectIndexData??? todo Is this perhaps native instance support
 			PacketWriter.WriteByte(_data, (byte)_character.ObjectIndexData.ObjectType); //ObjectType todo
 
-			PacketWriter.WriteUInt32(_data, (UInt32)_character.Location.Instance.WorldId);
+			PacketWriter.WriteUInt32(_data, _worldId);
 			PacketWriter.WriteUInt32(_data, 0); //todo dungeon
 			PacketWriter.WriteUInt16(_data, _character.Location.X);
 			PacketWriter.WriteUInt16(_data, _character.Location.Y);

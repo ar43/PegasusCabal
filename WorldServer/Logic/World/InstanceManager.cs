@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
+using WorldServer.Logic.CharData;
+using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.World
 {
@@ -32,8 +34,18 @@ namespace WorldServer.Logic.World
 
 		public void AddClient(Client client, UInt128 instanceId)
 		{
-			_instances[instanceId].AddClient(client, client.Character.Location.TileX, client.Character.Location.TileY);
+			_instances[instanceId].AddNewClient(client, client.Character.Location.TileX, client.Character.Location.TileY);
 			client.Character.Location.Instance = _instances[instanceId];
+
+			var otherCharacters = client.Character.Location.Instance.GetNearbyCharacters(client);
+			if (otherCharacters.Count > 0)
+			{
+				var packet_new_list_others = new NFY_NewUserList(otherCharacters, NewUserType.OTHERPLAYERS);
+				client.PacketManager.Send(packet_new_list_others);
+			}
+
+			var packet_new_list_this = new NFY_NewUserList(new List<Character>() { client.Character }, NewUserType.NEWINIT);
+			client.BroadcastNearby(packet_new_list_this, true);
 		}
 	}
 }

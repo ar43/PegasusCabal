@@ -175,9 +175,8 @@ namespace WorldServer.Logic.Delegates
 				var reply = client.RequestChatServerInfo();
 
 				client.Character.ObjectIndexData = new ObjectIndexData(client.ConnectionInfo.UserId, 0, ObjectType.USER);
-				instanceManager.AddClient(client, (UInt128)worldId);
 
-				var packet_init = new RSP_Initialized(client.Character, 0, IPAddress.Parse(reply.Result.Ip), (UInt16)reply.Result.Port);
+				var packet_init = new RSP_Initialized(client.Character, 0, IPAddress.Parse(reply.Result.Ip), (UInt16)reply.Result.Port, (UInt32)worldId);
 				client.PacketManager.Send(packet_init);
 
 				var packet_bang = new NFY_PcBangAlert(0, 0);
@@ -194,15 +193,7 @@ namespace WorldServer.Logic.Delegates
 
 				client.Account = new Account(client.ConnectionInfo.AccountId); //TODO: actually load the account data
 
-				var otherCharacters = client.Character.Location.Instance.GetNearbyCharacters(client);
-				if(otherCharacters.Count > 0)
-				{
-					var packet_new_list_others = new NFY_NewUserList(otherCharacters, NewUserType.OTHERPLAYERS);
-					client.PacketManager.Send(packet_new_list_others);
-				}
-
-				var packet_new_list_this = new NFY_NewUserList(new List<Character>() { client.Character }, NewUserType.NEWINIT);
-				client.BroadcastNearby(packet_new_list_this, true);
+				instanceManager.AddClient(client, (UInt128)worldId);
 			}
 			else
 			{

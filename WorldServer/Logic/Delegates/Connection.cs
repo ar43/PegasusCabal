@@ -48,7 +48,7 @@ namespace WorldServer.Logic.Delegates
 			if (success)
 			{
 				//client.ClientInfo.ConnState = Enums.ConnState.VERIFIED;
-				client.Disconnect("Linked - success", ConnState.EXITED);
+				client.Disconnect("Linked - success", ConnState.LINK_EXIT);
 
 				//TODO: disconnect??
 			}

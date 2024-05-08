@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.World
 {
@@ -17,11 +18,11 @@ namespace WorldServer.Logic.World
 			WorldId = (Enums.WorldId)worldId;
 			Type = type;
 
-			for(int i = 0; i < Tiles.GetLength(0); i++)
+			for(int i = 0; i < _tiles.GetLength(0); i++)
 			{
-				for(int j = 0; j < Tiles.GetLength(1); j++)
+				for(int j = 0; j < _tiles.GetLength(1); j++)
 				{
-					Tiles[i, j] = new Tile();
+					_tiles[i, j] = new Tile();
 				}
 			}
 
@@ -38,21 +39,24 @@ namespace WorldServer.Logic.World
 
 		public Instance(Enums.WorldId worldId, InstanceType type) : this((UInt16)worldId, type) { }
 
-		public Tile[,] Tiles = new Tile[16, 16];
+		private Tile[,] _tiles = new Tile[16, 16];
 		public UInt128 Id { get;}
 		public Enums.WorldId WorldId { get; }
 		public InstanceType Type { get;}
 
 		private static UInt128 InstanceIdGenerator = 1000;
 
-		public void AddClient(Client client, UInt16 tileX, UInt16 tileY)
+		public void AddNewClient(Client client, UInt16 tileX, UInt16 tileY)
 		{
-			Tiles[tileY, tileX].localClients.Add(client);
+			_tiles[tileY, tileX].localClients.Add(client);
 		}
 
-		public void RemoveClient(Client client)
+		public void RemoveClient(Client client, DelUserType reason)
 		{
-			foreach(var tile in Tiles)
+			var packet_del = new NFY_DelUserList(client.Character.Id, reason);
+			BroadcastNearby(client, packet_del, true);
+
+			foreach(var tile in _tiles)
 			{
                 if (tile.localClients.Remove(client))
                 {
@@ -87,7 +91,7 @@ namespace WorldServer.Logic.World
 
 			foreach(var tilePos in GetNeighbours((Int16)tileX, (Int16)tileY))
 			{
-				foreach(var c in Tiles[tilePos.Item2, tilePos.Item1].localClients)
+				foreach(var c in _tiles[tilePos.Item2, tilePos.Item1].localClients)
 				{
 					if (c == client && excludeClient)
 						continue;
@@ -106,7 +110,7 @@ namespace WorldServer.Logic.World
 
 			foreach (var tilePos in GetNeighbours((Int16)tileX, (Int16)tileY))
 			{
-				foreach (var c in Tiles[tilePos.Item2, tilePos.Item1].localClients)
+				foreach (var c in _tiles[tilePos.Item2, tilePos.Item1].localClients)
 				{
 					if (c == client)
 						continue;

@@ -168,7 +168,14 @@ namespace WorldServer.Logic
 				{
 					byte[] send = Encryption.Encrypt(PacketManager.GetOutboundPacket());
 
-					stream.Write(send);
+					try
+					{
+						stream.Write(send);
+					}
+					catch (IOException)
+					{
+						Disconnect("Disconnect - cannot send data", ConnState.DISCONNECTED);
+					}
 					//PrintByteArray(send, send.Length, "encrypted sent");
 				}
 			}

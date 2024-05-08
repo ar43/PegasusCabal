@@ -245,9 +245,8 @@ namespace WorldServer
 					_clients[i].TcpClient.Close();
 					FreeUserIndex(_clients[i].ConnectionInfo.UserId);
 					if (_clients[i].Character != null && _clients[i].Character.Location.Instance != null)
-						_clients[i].Character.Location.Instance.RemoveClient(_clients[i]);
+						_clients[i].Character.Location.Instance.RemoveClient(_clients[i], Enums.DelUserType.LOGOUT);
 					_clients.RemoveAt(i);
-					Log.Information($"Removed client with id {i}");
 				}
 			}
 		}
