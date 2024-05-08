@@ -8,10 +8,10 @@ namespace WorldServer.Enums
 {
 	internal enum NewUserType
 	{
-		OtherPlayers = 0,
-		NewInit = 48,
-		NewWarp,
-		NewMove,
-		NewResurrect
+		OTHERPLAYERS = 0,
+		NEWINIT = 48,
+		NEWWARP,
+		NEWMOVE,
+		NEWRESURRECT
 	}
 }

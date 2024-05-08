@@ -30,7 +30,7 @@ namespace WorldServer.Logic.Delegates
 			client.PacketManager.Send(packet_rsp);
 
 			var packet_nfy = new NFY_ChangeStyle(client.Character);
-			client.BroadcastAround(packet_nfy);
+			client.BroadcastNearby(packet_nfy);
 		}
 	}
 }

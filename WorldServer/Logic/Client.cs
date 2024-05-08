@@ -22,8 +22,7 @@ namespace WorldServer.Logic
 		public TcpClient TcpClient { private set; get; }
 
 		public ConnectionInfo? ConnectionInfo { private set; get; }
-
-		internal byte[] Ip { private set; get; }
+		public string Ip { private set; get; }
 
 		public PacketManager PacketManager;
 
@@ -53,7 +52,7 @@ namespace WorldServer.Logic
 			_masterRpcChannel = masterChannel;
 
 			var remoteEndPoint = TcpClient.Client.RemoteEndPoint as IPEndPoint;
-			Ip = remoteEndPoint.Address.GetAddressBytes();
+			Ip = remoteEndPoint.Address.ToString();
 
 			_databaseManager = databaseManager;
 			_instanceManager = instanceManager;
@@ -74,7 +73,7 @@ namespace WorldServer.Logic
 			}
 
 			var stream = TcpClient.GetStream();
-
+			
 			if (stream != null && stream.CanRead && stream.DataAvailable)
 			{
 				Byte[] bytes = new Byte[1024];
@@ -144,6 +143,10 @@ namespace WorldServer.Logic
 						}
 					}
 				}
+				else if(length == 0)
+				{
+					throw new NotImplementedException();
+				}
 			}
 		}
 
@@ -196,7 +199,7 @@ namespace WorldServer.Logic
 			//TODO: proper logout
 		}
 
-		internal async void Update()
+		internal void Update()
 		{
 			if (_busy || Dropped)
 				return;
@@ -253,6 +256,14 @@ namespace WorldServer.Logic
 			return reply;
 		}
 
+		internal async Task<GetChatServerInfoReply> RequestChatServerInfo()
+		{
+			var client = new ChatMaster.ChatMasterClient(_masterRpcChannel);
+			bool isLocalhost = Ip == "127.0.0.1";
+			var reply = await client.GetChatServerInfoAsync(new GetChatServerInfoRequest { IsLocalhost = isLocalhost});
+			return reply;
+		}
+
 		internal async Task<GetMyCharactersReply> SendCharListRequest()
 		{
 			var client = new CharacterMaster.CharacterMasterClient(_masterRpcChannel);
@@ -279,9 +290,9 @@ namespace WorldServer.Logic
 			return reply;
 		}
 
-		public void BroadcastAround(PacketS2C packet)
+		public void BroadcastNearby(PacketS2C packet, bool excludeClient = false)
 		{
-			Character.Location.Instance.BroadcastAround(this, packet);
+			Character.Location.Instance.BroadcastNearby(this, packet, excludeClient);
 		}
 	}
 }

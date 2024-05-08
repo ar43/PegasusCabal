@@ -2,28 +2,23 @@
 using LibPegasus.Crypt;
 using LibPegasus.Packets;
 using LibPegasus.Utils;
-using LoginServer.Packets;
-using LoginServer.Packets.S2C;
 using Serilog;
-using Shared.Protos;
 using System.Net;
 using System.Net.Sockets;
 
-namespace LoginServer.Logic
+namespace MasterServer.Chat
 {
-	internal class Client
+	internal class ChatClient
 	{
 		public TcpClient TcpClient { private set; get; }
 
-		public ClientInfo? ClientInfo { private set; get; }
+		public ChatClientInfo? ClientInfo { private set; get; }
 
 		internal string Ip { private set; get; }
 
-		public PacketManager PacketManager;
+		public ChatPacketManager PacketManager;
 
 		public Encryption Encryption;
-
-		GrpcChannel _masterRpcChannel;
 
 		readonly double TIMEOUT_SECONDS = 99999.0;
 
@@ -33,12 +28,11 @@ namespace LoginServer.Logic
 
 		internal bool Dropped { get; private set; } = false;
 
-		public Client(TcpClient tcpClient, XorKeyTable xorKeyTable, GrpcChannel masterChannel)
+		public ChatClient(TcpClient tcpClient, XorKeyTable xorKeyTable)
 		{
 			TcpClient = tcpClient;
-			PacketManager = new PacketManager();
+			PacketManager = new ChatPacketManager();
 			Encryption = new(xorKeyTable);
-			_masterRpcChannel = masterChannel;
 
 			var remoteEndPoint = TcpClient.Client.RemoteEndPoint as IPEndPoint;
 			Ip = remoteEndPoint.Address.ToString();
@@ -51,7 +45,7 @@ namespace LoginServer.Logic
 			UInt32 unixTime = (UInt32)((DateTimeOffset)timeConnected).ToUnixTimeSeconds();
 			ClientInfo = new(userIndex, unixTime);
 		}
-
+		/*
 		internal async Task<LoginAccountReply> SendLoginRequest(string username, string password)
 		{
 			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
@@ -65,7 +59,7 @@ namespace LoginServer.Logic
 			var reply = await client.CreateSessionAsync(new SessionRequest { AuthKey = authKey, UserId = userId, ChannelId = channelId, ServerId = serverId, AccountId = ClientInfo.AccountId });
 			return reply;
 		}
-
+		*/
 		internal void ReceiveData()
 		{
 			if (!TcpClient.Connected || Dropped)
@@ -201,19 +195,13 @@ namespace LoginServer.Logic
 			//todo - send session timeout
 		}
 
-		internal async Task<ServerStateReply> GetServerState(bool isLocalhost)
-		{
-			var client = new ChannelMaster.ChannelMasterClient(_masterRpcChannel);
-			var reply = await client.GetServerStateAsync(new ServerStateRequest { IsLocalhost = isLocalhost });
-			return reply;
-		}
-
 		internal async void OnLinkedLogin(UInt32 authKey, UInt32 accountId)
 		{
 			if (authKey != ClientInfo.AuthKey)
 			{
 				throw new NotImplementedException("wrong auth key");
 			}
+			/*
 			if (ClientInfo.ConnState == Enums.ConnState.VERSION_CHECKED)
 			{
 				ClientInfo.AccountId = accountId;
@@ -229,6 +217,7 @@ namespace LoginServer.Logic
 			{
 				throw new NotImplementedException("LinkedLogin without version check");
 			}
+			*/
 		}
 
 		internal void OnLinkedLogout(UInt32 authKey, UInt32 accountId)

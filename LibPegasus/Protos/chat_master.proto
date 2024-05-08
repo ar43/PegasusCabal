@@ -1,0 +1,21 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Shared.Protos";
+
+package chat_master;
+
+service ChatMaster 
+{
+	rpc GetChatServerInfo (GetChatServerInfoRequest) returns (GetChatServerInfoReply);
+}
+
+message GetChatServerInfoRequest
+{
+	bool isLocalhost = 1;
+}
+
+message GetChatServerInfoReply
+{
+	string ip = 1;
+	uint32 port = 2;
+}

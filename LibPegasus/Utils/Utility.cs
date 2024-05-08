@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using System.Net;
 using System.Text;
 
 namespace LibPegasus.Utils
@@ -28,6 +29,14 @@ namespace LibPegasus.Utils
 			UInt32 result = input & mask;
 			result = result >> startBit;
 			return result;
+		}
+
+		public static async Task<IPAddress?> GetExternalIpAddress()
+		{
+			var externalIpString = (await new HttpClient().GetStringAsync("http://icanhazip.com"))
+				.Replace("\\r\\n", "").Replace("\\n", "").Trim();
+			if (!IPAddress.TryParse(externalIpString, out var ipAddress)) return null;
+			return ipAddress;
 		}
 
 		public static void PrintCharArray(byte[] bytes, int len, string Type)

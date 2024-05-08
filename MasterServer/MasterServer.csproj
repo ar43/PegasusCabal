@@ -33,14 +33,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\LibPegasus\Protos\auth_master.proto" GrpcServices="Server">
+    <Protobuf Include="..\LibPegasus\Protos\auth_master.proto" GrpcServices="Both">
       <Link>Protos\auth_master.proto</Link>
     </Protobuf>
-    <Protobuf Include="..\LibPegasus\Protos\channel_master.proto" GrpcServices="Server">
+    <Protobuf Include="..\LibPegasus\Protos\channel_master.proto" GrpcServices="Both">
       <Link>Protos\channel_master.proto</Link>
     </Protobuf>
-    <Protobuf Include="..\LibPegasus\Protos\character_master.proto" GrpcServices="Server">
+    <Protobuf Include="..\LibPegasus\Protos\character_master.proto" GrpcServices="Both">
       <Link>Protos\character_master.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\LibPegasus\Protos\chat_master.proto">
+      <Link>Protos\chat_master.proto</Link>
     </Protobuf>
     <Protobuf Include="..\LibPegasus\Protos\db_serialization.proto" GrpcServices="Both">
       <Link>Protos\db_serialization.proto</Link>

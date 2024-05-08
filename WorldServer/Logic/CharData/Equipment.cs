@@ -29,6 +29,22 @@ namespace WorldServer.Logic.CharData
 			return bytes.ToArray();
 		}
 
+		public byte[] SerializeEx()
+		{
+			var bytes = new List<byte>();
+			for (int i = 0; i < List.Length; i++)
+			{
+				var item = List[i];
+				if (item != null && item.Kind != 0)
+				{
+					bytes.Add((byte)i);
+					bytes.AddRange(BitConverter.GetBytes(item.Kind));
+					bytes.AddRange(BitConverter.GetBytes(item.Option));
+				}
+			}
+			return bytes.ToArray();
+		}
+
 		public UInt16 Count()
 		{
 			UInt16 count = 0;

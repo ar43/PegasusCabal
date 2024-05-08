@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
+using WorldServer.Logic.CharData;
 
 namespace WorldServer.Logic.World
 {
@@ -58,7 +60,6 @@ namespace WorldServer.Logic.World
                 }
 			}
 		}
-
 		private static List<(Int16, Int16)> GetNeighbours(Int16 tileX, Int16 tileY)
 		{
 			List<(Int16, Int16)> values = new List<(Int16, Int16)>();
@@ -79,7 +80,7 @@ namespace WorldServer.Logic.World
 			return values;
 		}
 
-		public void BroadcastAround(Client client, PacketS2C packet)
+		public void BroadcastNearby(Client client, PacketS2C packet, bool excludeClient)
 		{
 			var tileX = client.Character.Location.TileX;
 			var tileY = client.Character.Location.TileY;
@@ -88,9 +89,35 @@ namespace WorldServer.Logic.World
 			{
 				foreach(var c in Tiles[tilePos.Item2, tilePos.Item1].localClients)
 				{
+					if (c == client && excludeClient)
+						continue;
+
 					c.PacketManager.Send(packet);
 				}
 			}
+		}
+
+		public List<Character> GetNearbyCharacters(Client client)
+		{
+			List<Character> characters = new List<Character>();
+
+			var tileX = client.Character.Location.TileX;
+			var tileY = client.Character.Location.TileY;
+
+			foreach (var tilePos in GetNeighbours((Int16)tileX, (Int16)tileY))
+			{
+				foreach (var c in Tiles[tilePos.Item2, tilePos.Item1].localClients)
+				{
+					if (c == client)
+						continue;
+
+					if(c.Character == null)
+						throw new NullReferenceException("null character");
+
+					characters.Add(c.Character);
+				}
+			}
+			return characters;
 		}
 
 

@@ -60,7 +60,7 @@ namespace WorldServer
 
 			_masterRpcChannel.ConnectAsync().Wait();
 
-			var externalIpTask = GetExternalIpAddress();
+			var externalIpTask = LibPegasus.Utils.Utility.GetExternalIpAddress();
 			externalIpTask.Wait();
 			_externalIp = externalIpTask.Result ?? IPAddress.Loopback;
 
@@ -72,14 +72,7 @@ namespace WorldServer
 			_databaseManager = new DatabaseManager();
 			_instanceManager = new InstanceManager();
 		}
-		private static async Task<IPAddress?> GetExternalIpAddress()
-		{
-			var externalIpString = (await new HttpClient().GetStringAsync("http://icanhazip.com"))
-				.Replace("\\r\\n", "").Replace("\\n", "").Trim();
-			if (!IPAddress.TryParse(externalIpString, out var ipAddress)) return null;
-			return ipAddress;
-		}
-
+		
 		void SendHeartbeat()
 		{
 			Log.Information("Starting to send heartbeats...");
@@ -193,7 +186,7 @@ namespace WorldServer
 			_pendingSessionChanges.Enqueue(sessionChangeData);
 		}
 
-		private async void RunTest()
+		private void RunTest()
 		{
 		}
 
@@ -254,6 +247,7 @@ namespace WorldServer
 					if (_clients[i].Character != null && _clients[i].Character.Location.Instance != null)
 						_clients[i].Character.Location.Instance.RemoveClient(_clients[i]);
 					_clients.RemoveAt(i);
+					Log.Information($"Removed client with id {i}");
 				}
 			}
 		}

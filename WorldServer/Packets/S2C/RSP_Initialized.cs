@@ -15,11 +15,15 @@ namespace WorldServer.Packets.S2C
 	{
 		Character _character;
 		UInt16 _userCount;
+		IPAddress _chatServerIp;
+		UInt16 _chatServerPort;
 
-		public RSP_Initialized(Character character, ushort userCount) : base((UInt16)Opcode.CSC_INITIALIZED)
+		public RSP_Initialized(Character character, ushort userCount, IPAddress chatServerIp, UInt16 chatServerPort) : base((UInt16)Opcode.CSC_INITIALIZED)
 		{
 			_character = character;
 			_userCount = userCount;
+			_chatServerIp = chatServerIp;
+			_chatServerPort = chatServerPort;
 		}
 
 		public override void WritePayload()
@@ -27,6 +31,7 @@ namespace WorldServer.Packets.S2C
 			var cfg = ServerConfig.Get();
 			UInt16 maxUserCount = 60; //add this to ServerConfig
 			var ip = BitConverter.ToUInt32(IPAddress.Parse("127.0.0.1").GetAddressBytes(), 0); //fixme
+			var chatIp = BitConverter.ToUInt32(_chatServerIp.GetAddressBytes(), 0);
 			UInt32 channelType = 0; //fixme
 
 			PacketWriter.WriteNull(_data, 57); //unknown
@@ -89,8 +94,8 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt64(_data, 0); //death penalty mp
 			PacketWriter.WriteUInt16(_data, 0); //pk penalty
 
-			PacketWriter.WriteUInt32(_data, ip); //chat ip
-			PacketWriter.WriteUInt16(_data, 27095); //chat port
+			PacketWriter.WriteUInt32(_data, chatIp); //chat ip
+			PacketWriter.WriteUInt16(_data, _chatServerPort); //chat port
 
 			PacketWriter.WriteUInt32(_data, ip); //agent ip
 			PacketWriter.WriteUInt16(_data, 27096); //agent port
