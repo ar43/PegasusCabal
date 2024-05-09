@@ -25,7 +25,7 @@ namespace WorldServer.Logic.CharData
 			Y = y;
 			TileX = (UInt16)(X / 16);
 			TileY = (UInt16)(Y / 16);
-			Movement = new MovementData(false, X, Y, X, Y, DateTime.MinValue);
+			Movement = new MovementData(false, X, Y, X, Y);
 		}
 
 		public void UpdateTilePos()

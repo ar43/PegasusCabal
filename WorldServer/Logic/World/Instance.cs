@@ -68,8 +68,8 @@ namespace WorldServer.Logic.World
 		}
 		public void MoveClient(Client client, UInt16 newTileX, UInt16 newTileY, NewUserType tileMoveType)
 		{
-			var tileX = client.Character.Location.TileX;
-			var tileY = client.Character.Location.TileY;
+			var tileX = client.Character.Location.TileX; //old tile pos x
+			var tileY = client.Character.Location.TileY; //old tile pos y
 
 			var currentTile = _tiles[tileY, tileX];
 			var newTile = _tiles[newTileY, newTileX];
@@ -148,7 +148,6 @@ namespace WorldServer.Logic.World
 						continue;
 
 					c.PacketManager.Send(packet);
-					Serilog.Log.Debug($"WTFFFFFF {c.Character.Id}");
 				}
 			}
 		}

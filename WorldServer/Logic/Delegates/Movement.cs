@@ -26,14 +26,52 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
+			if (loc.Movement.IsMoving == true)
+			{
+				client.Disconnect("Already moving", Enums.ConnState.ERROR);
+				return;
+			}
+
 			//terrible
 			loc.X = fromX;
 			loc.Y = fromY;
 
 			loc.Movement.Start(fromX, fromY, toX, toY);
-			long unixTime = ((DateTimeOffset)loc.Movement.StartTime).ToUnixTimeSeconds();
 
-			var packet = new NFY_MoveBegined((UInt32)client.Character.Id, (UInt32)unixTime, fromX, fromY, toX, toY);
+			var packet = new NFY_MoveBegined((UInt32)client.Character.Id, (UInt32)loc.Movement.StartTime, fromX, fromY, toX, toY);
+			client.BroadcastNearby(packet);
+		}
+
+		internal static void OnMoveChanged(Client client, UInt16 fromX, UInt16 fromY, UInt16 toX, UInt16 toY, UInt16 pntX, UInt16 pntY, UInt16 worldId)
+		{
+			//TODO: verify
+			if (client.Character == null)
+			{
+				client.Disconnect("OnMoveBegin null", Enums.ConnState.ERROR);
+				return;
+			}
+
+			var loc = client.Character.Location;
+
+			if (loc.Instance == null)
+			{
+				client.Disconnect("OnMoveBegin null", Enums.ConnState.ERROR);
+				return;
+			}
+
+			if(loc.Movement.IsMoving == false)
+			{
+				client.Disconnect("Wasn't moving", Enums.ConnState.ERROR);
+				return;
+			}
+
+			//terrible
+			loc.X = fromX;
+			loc.Y = fromY;
+
+			loc.Movement.Change(fromX, fromY, toX, toY);
+
+			var packet = new NFY_MoveChanged((UInt32)client.Character.Id, (UInt32)loc.Movement.StartTime, fromX, fromY, toX, toY);
 			client.BroadcastNearby(packet);
 		}
 
@@ -54,6 +92,12 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
+			if (loc.Movement.IsMoving == false)
+			{
+				client.Disconnect("Wasn't moving", Enums.ConnState.ERROR);
+				return;
+			}
+
 			//terrible
 			loc.X = x;
 			loc.Y = y;
@@ -63,6 +107,11 @@ namespace WorldServer.Logic.Delegates
 			var packet = new NFY_MoveEnded00((UInt32)client.Character.Id, x,y);
 			client.BroadcastNearby(packet);
 
+		}
+
+		internal static void OnMoveWaypoint(Client client, UInt16 fromX, UInt16 fromY, UInt16 toX, UInt16 toY)
+		{
+			//TODO?
 		}
 
 		internal static void OnTileChange(Client client, UInt16 x, UInt16 y)

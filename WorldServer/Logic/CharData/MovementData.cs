@@ -13,16 +13,16 @@ namespace WorldServer.Logic.CharData
 		public UInt16 StartY { get; private set; }
 		public UInt16 EndX { get; private set; }
 		public UInt16 EndY { get; private set; }
-		public DateTime StartTime { get; private set; }
+		public Int32 StartTime { get; private set; }
 
-		public MovementData(Boolean isMoving, UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY, DateTime startTime)
+		public MovementData(Boolean isMoving, UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY)
 		{
 			IsMoving = isMoving;
 			StartX = startX;
 			StartY = startY;
 			EndX = endX;
 			EndY = endY;
-			StartTime = startTime;
+			StartTime = 0;
 		}
 
 		public void Start(UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY)
@@ -32,7 +32,16 @@ namespace WorldServer.Logic.CharData
 			StartY = startY;
 			EndX = endX;
 			EndY = endY;
-			StartTime = DateTime.Now;
+			StartTime = Environment.TickCount;
+		}
+
+		public void Change(UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY)
+		{
+			StartX = startX;
+			StartY = startY;
+			EndX = endX;
+			EndY = endY;
+			StartTime = Environment.TickCount;
 		}
 
 		public void End()
