@@ -1,5 +1,6 @@
 ﻿using LibPegasus.Packets;
 using LoginServer.Enums;
+using Nito.Collections;
 
 namespace LoginServer.Packets.S2C
 {
@@ -14,11 +15,11 @@ namespace LoginServer.Packets.S2C
 			_isVerified = isVerified;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteByte(_data, _channelId);
-			PacketWriter.WriteByte(_data, _serverId);
-			PacketWriter.WriteByte(_data, Convert.ToByte(_isVerified));
+			PacketWriter.WriteByte(data, _channelId);
+			PacketWriter.WriteByte(data, _serverId);
+			PacketWriter.WriteByte(data, Convert.ToByte(_isVerified));
 		}
 	}
 }

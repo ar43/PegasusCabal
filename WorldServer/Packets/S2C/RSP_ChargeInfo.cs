@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C
@@ -13,11 +14,11 @@ namespace WorldServer.Packets.S2C
 			_serviceKind = serviceKind;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteInt32(_data, _payMode);
-			PacketWriter.WriteInt32(_data, _remainingTime);
-			PacketWriter.WriteInt32(_data, _serviceKind);
+			PacketWriter.WriteInt32(data, _payMode);
+			PacketWriter.WriteInt32(data, _remainingTime);
+			PacketWriter.WriteInt32(data, _serviceKind);
 		}
 	}
 }

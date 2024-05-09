@@ -17,10 +17,19 @@ namespace WorldServer.Logic.CharData
 
 		public Instance? Instance;
 
+		public MovementData Movement {get; private set;}
+
 		public Location(UInt16 x, UInt16 y)
 		{
 			X = x;
 			Y = y;
+			TileX = (UInt16)(X / 16);
+			TileY = (UInt16)(Y / 16);
+			Movement = new MovementData(false, X, Y, X, Y, DateTime.MinValue);
+		}
+
+		public void UpdateTilePos()
+		{
 			TileX = (UInt16)(X / 16);
 			TileY = (UInt16)(Y / 16);
 		}

@@ -1,5 +1,6 @@
 ﻿using LibPegasus.Enums;
 using LibPegasus.Packets;
+using Nito.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +19,10 @@ namespace WorldServer.Packets.S2C
 			_pinRequired = pinRequired;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteBool(_data, _pinRequired);
-			PacketWriter.WriteNull(_data, 3);
+			PacketWriter.WriteBool(data, _pinRequired);
+			PacketWriter.WriteNull(data, 3);
 		}
 	}
 }

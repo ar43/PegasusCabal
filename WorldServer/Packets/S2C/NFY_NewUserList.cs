@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,35 +20,46 @@ namespace WorldServer.Packets.S2C
 			_newUserType = newUserType;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteByte(_data, (Byte)_characters.Count);
-			PacketWriter.WriteByte(_data, (Byte)_newUserType);
+			PacketWriter.WriteByte(data, (Byte)_characters.Count);
+			PacketWriter.WriteByte(data, (Byte)_newUserType);
 			foreach(Character character in _characters)
 			{
-				PacketWriter.WriteUInt32(_data, (UInt32)character.Id);
-				PacketWriter.WriteUInt16(_data, character.ObjectIndexData.UserId);
-				PacketWriter.WriteByte(_data, character.ObjectIndexData.WorldIndex);
-				PacketWriter.WriteByte(_data, (Byte)character.ObjectIndexData.ObjectType);
-				PacketWriter.WriteUInt32(_data, character.Stats.Level);
-				PacketWriter.WriteUInt32(_data, character.Stats.MoveSpeed);
-				PacketWriter.WriteUInt16(_data, character.Location.X);
-				PacketWriter.WriteUInt16(_data, character.Location.Y);
-				PacketWriter.WriteUInt16(_data, character.Location.X);
-				PacketWriter.WriteUInt16(_data, character.Location.Y);
-				PacketWriter.WriteByte(_data, 0); //unknown
-				PacketWriter.WriteInt32(_data, 0); //unknown
-				PacketWriter.WriteInt16(_data, 0); //unknown
-				PacketWriter.WriteUInt32(_data, character.Style.Serialize());
-				PacketWriter.WriteByte(_data, (Byte)character.LiveStyle.Serialize()); //TODO: Why is this a byte? mistake?
-				PacketWriter.WriteUInt16(_data, 0); //unknown
-				PacketWriter.WriteUInt16(_data, character.Equipment.Count());
-				PacketWriter.WriteInt16(_data, 0); //unknown
-				PacketWriter.WriteNull(_data, 21); //unknown
-				PacketWriter.WriteByte(_data, (Byte)(character.Name.Length + 1));
-				PacketWriter.WriteArray(_data, Encoding.ASCII.GetBytes(character.Name), character.Name.Length);
-				PacketWriter.WriteByte(_data, 0); //guild name len
-				PacketWriter.WriteArray(_data, character.Equipment.SerializeEx());
+				PacketWriter.WriteUInt32(data, (UInt32)character.Id);
+				PacketWriter.WriteUInt16(data, character.ObjectIndexData.UserId);
+				PacketWriter.WriteByte(data, character.ObjectIndexData.WorldIndex);
+				PacketWriter.WriteByte(data, (Byte)character.ObjectIndexData.ObjectType);
+				PacketWriter.WriteUInt32(data, character.Stats.Level);
+				PacketWriter.WriteUInt32(data, character.Stats.MoveSpeed);
+				PacketWriter.WriteUInt16(data, character.Location.X);
+				PacketWriter.WriteUInt16(data, character.Location.Y);
+
+				//dest
+				if(character.Location.Movement.IsMoving)
+				{
+					PacketWriter.WriteUInt16(data, character.Location.Movement.EndX);
+					PacketWriter.WriteUInt16(data, character.Location.Movement.EndY);
+				}
+				else
+				{
+					PacketWriter.WriteUInt16(data, character.Location.X);
+					PacketWriter.WriteUInt16(data, character.Location.Y);
+				}
+				
+				PacketWriter.WriteByte(data, 0); //unknown
+				PacketWriter.WriteInt32(data, 0); //unknown
+				PacketWriter.WriteInt16(data, 0); //unknown
+				PacketWriter.WriteUInt32(data, character.Style.Serialize());
+				PacketWriter.WriteByte(data, (Byte)character.LiveStyle.Serialize()); //TODO: Why is this a byte? mistake?
+				PacketWriter.WriteUInt16(data, 0); //unknown
+				PacketWriter.WriteUInt16(data, character.Equipment.Count());
+				PacketWriter.WriteInt16(data, 0); //unknown
+				PacketWriter.WriteNull(data, 21); //unknown
+				PacketWriter.WriteByte(data, (Byte)(character.Name.Length + 1));
+				PacketWriter.WriteArray(data, Encoding.ASCII.GetBytes(character.Name), character.Name.Length);
+				PacketWriter.WriteByte(data, 0); //guild name len
+				PacketWriter.WriteArray(data, character.Equipment.SerializeEx());
 			}
 		}
 	}

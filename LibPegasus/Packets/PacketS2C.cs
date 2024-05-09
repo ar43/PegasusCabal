@@ -6,7 +6,6 @@ namespace LibPegasus.Packets
 	public class PacketS2C
 	{
 		private readonly UInt16 _id;
-		protected Deque<byte> _data = new();
 
 		public static readonly UInt16 HEADER_SIZE = 6;
 
@@ -15,23 +14,24 @@ namespace LibPegasus.Packets
 			this._id = id;
 		}
 
-		private void WriteHeader()
+		private void WriteHeader(Deque<byte> data)
 		{
 			// in reverse order
-			var size = (UInt16)(HEADER_SIZE + _data.Count);
-			PacketWriter.WriteHeader(_data, (UInt16)_id);
-			PacketWriter.WriteHeader(_data, size);
-			PacketWriter.WriteHeader(_data, Encryption.MagicKey);
+			var size = (UInt16)(HEADER_SIZE + data.Count);
+			PacketWriter.WriteHeader(data, (UInt16)_id);
+			PacketWriter.WriteHeader(data, size);
+			PacketWriter.WriteHeader(data, Encryption.MagicKey);
 		}
 
 		public Deque<byte> Send()
 		{
-			WritePayload();
-			WriteHeader();
-			return _data;
+			Deque<byte> data = new();
+			WritePayload(data);
+			WriteHeader(data);
+			return data;
 		}
 
-		public virtual void WritePayload()
+		public virtual void WritePayload(Deque<byte> data)
 		{
 			throw new NotImplementedException();
 		}

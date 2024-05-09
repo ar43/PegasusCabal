@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Packets;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -16,6 +17,7 @@ namespace WorldServer.Logic.World
 		public Instance(UInt16 worldId, InstanceType type)
 		{
 			WorldId = (Enums.WorldId)worldId;
+			_tiles = new Tile[16, 16];
 			Type = type;
 
 			for(int i = 0; i < _tiles.GetLength(0); i++)
@@ -39,7 +41,7 @@ namespace WorldServer.Logic.World
 
 		public Instance(Enums.WorldId worldId, InstanceType type) : this((UInt16)worldId, type) { }
 
-		private Tile[,] _tiles = new Tile[16, 16];
+		private readonly Tile[,] _tiles;
 		public UInt128 Id { get;}
 		public Enums.WorldId WorldId { get; }
 		public InstanceType Type { get;}
@@ -64,6 +66,51 @@ namespace WorldServer.Logic.World
                 }
 			}
 		}
+		public void MoveClient(Client client, UInt16 newTileX, UInt16 newTileY, NewUserType tileMoveType)
+		{
+			var tileX = client.Character.Location.TileX;
+			var tileY = client.Character.Location.TileY;
+
+			var currentTile = _tiles[tileY, tileX];
+			var newTile = _tiles[newTileY, newTileX];
+
+			//TODO verify difference between current and new Tile
+
+			var currentNeighbours = GetNeighbours((Int16)tileX, (Int16)tileY);
+			var newNeightbours = GetNeighbours((Int16)newTileX, (Int16)newTileY);
+
+			var relevantTiles = newNeightbours.Except(currentNeighbours).ToList();
+
+			List<Character> newChars = new List<Character>();
+
+			foreach (var tilePos in relevantTiles)
+			{
+				foreach (var c in _tiles[tilePos.Item2, tilePos.Item1].localClients)
+				{
+					if (c == client)
+						continue;
+					if (c.Character == null)
+						throw new Exception("Character should not be null here");
+					if (client.Character == null)
+						throw new Exception("Character should not be null here");
+
+					newChars.Add(c.Character);
+					var packetNewUser = new NFY_NewUserList(new List<Character>() { client.Character }, tileMoveType);
+					c.PacketManager.Send(packetNewUser);
+				}
+			}
+
+			if(newChars.Count > 0)
+			{
+				var packetOtherPlayers = new NFY_NewUserList(newChars, NewUserType.OTHERPLAYERS);
+				client.PacketManager.Send(packetOtherPlayers);
+			}
+
+			currentTile.localClients.Remove(client);
+			newTile.localClients.Add(client);
+
+			client.Character.Location.UpdateTilePos();
+		}
 		private static List<(Int16, Int16)> GetNeighbours(Int16 tileX, Int16 tileY)
 		{
 			List<(Int16, Int16)> values = new List<(Int16, Int16)>();
@@ -75,7 +122,7 @@ namespace WorldServer.Logic.World
 			for(int i = 0; i < 13; i++)
 			{
 				var x = tileX + offsets[i, 0];
-				var y = tileX + offsets[i, 1];
+				var y = tileY + offsets[i, 1];
 				if(x >= 0 && y >= 0)
 				{
 					values.Add(((Int16, Int16))(x, y));
@@ -93,14 +140,18 @@ namespace WorldServer.Logic.World
 			{
 				foreach(var c in _tiles[tilePos.Item2, tilePos.Item1].localClients)
 				{
+					if (c == null)
+						throw new NullReferenceException("null client");
+					if (c.Character == null)
+						throw new NullReferenceException("null client");
 					if (c == client && excludeClient)
 						continue;
 
 					c.PacketManager.Send(packet);
+					Serilog.Log.Debug($"WTFFFFFF {c.Character.Id}");
 				}
 			}
 		}
-
 		public List<Character> GetNearbyCharacters(Client client)
 		{
 			List<Character> characters = new List<Character>();

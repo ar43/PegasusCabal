@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,16 +26,16 @@ namespace WorldServer.Packets.S2C
 			_warMapid = warMapid;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteInt32(_data, _resultId);
-			PacketWriter.WriteInt32(_data, _totalRounds);
-			PacketWriter.WriteInt32(_data, _capellaWins);
-			PacketWriter.WriteInt32(_data, _procyonWinds);
-			PacketWriter.WriteUInt64(_data, (UInt64)_rewardStartDate.ToUnixTimeSeconds());
-			PacketWriter.WriteUInt64(_data, (UInt64)_rewardEndDate.ToUnixTimeSeconds());
-			PacketWriter.WriteInt32(_data, 0); //unknown
-			PacketWriter.WriteByte(_data, _warMapid);
+			PacketWriter.WriteInt32(data, _resultId);
+			PacketWriter.WriteInt32(data, _totalRounds);
+			PacketWriter.WriteInt32(data, _capellaWins);
+			PacketWriter.WriteInt32(data, _procyonWinds);
+			PacketWriter.WriteUInt64(data, (UInt64)_rewardStartDate.ToUnixTimeSeconds());
+			PacketWriter.WriteUInt64(data, (UInt64)_rewardEndDate.ToUnixTimeSeconds());
+			PacketWriter.WriteInt32(data, 0); //unknown
+			PacketWriter.WriteByte(data, _warMapid);
 		}
 	}
 }

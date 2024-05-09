@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C
@@ -18,12 +19,12 @@ namespace WorldServer.Packets.S2C
 			_recvXorKeyIdx = recvXorKeyIdx;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteUInt32(_data, _seed2nd); // should prolly be a random value?
-			PacketWriter.WriteUInt32(_data, _authKey);
-			PacketWriter.WriteUInt16(_data, _userIdx);
-			PacketWriter.WriteUInt16(_data, _recvXorKeyIdx);
+			PacketWriter.WriteUInt32(data, _seed2nd); // should prolly be a random value?
+			PacketWriter.WriteUInt32(data, _authKey);
+			PacketWriter.WriteUInt16(data, _userIdx);
+			PacketWriter.WriteUInt16(data, _recvXorKeyIdx);
 			//Serilog.Log.Debug($"Expecting to see {_recvXorKeyIdx}");
 		}
 	}

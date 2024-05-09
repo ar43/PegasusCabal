@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C
@@ -13,11 +14,10 @@ namespace WorldServer.Packets.S2C
 			_timezoneOffset = timezoneOffset;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-
-			PacketWriter.WriteUInt64(_data, (ulong)_time);
-			PacketWriter.WriteInt16(_data, _timezoneOffset);
+			PacketWriter.WriteUInt64(data, (ulong)_time);
+			PacketWriter.WriteInt16(data, _timezoneOffset);
 		}
 	}
 }

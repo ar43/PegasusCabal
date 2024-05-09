@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,15 @@ namespace WorldServer.Packets.S2C
 		{
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteUInt32(_data, 0); //unk
-			PacketWriter.WriteUInt32(_data, 0); //unk
-			PacketWriter.WriteUInt32(_data, 0); //unk
-			PacketWriter.WriteUInt32(_data, 0); //unk
-			PacketWriter.WriteUInt32(_data, 0); //unk
-			PacketWriter.WriteUInt32(_data, 0); //unk
-			PacketWriter.WriteUInt32(_data, 0); //unk
+			PacketWriter.WriteUInt32(data, 0); //unk
+			PacketWriter.WriteUInt32(data, 0); //unk
+			PacketWriter.WriteUInt32(data, 0); //unk
+			PacketWriter.WriteUInt32(data, 0); //unk
+			PacketWriter.WriteUInt32(data, 0); //unk
+			PacketWriter.WriteUInt32(data, 0); //unk
+			PacketWriter.WriteUInt32(data, 0); //unk
 		}
 	}
 }

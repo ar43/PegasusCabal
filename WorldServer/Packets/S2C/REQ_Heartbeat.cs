@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C
@@ -9,7 +10,7 @@ namespace WorldServer.Packets.S2C
 		{
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
 		}
 	}

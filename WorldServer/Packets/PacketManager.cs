@@ -58,6 +58,9 @@ namespace WorldServer.Packets
 				Opcode.CSC_CHANGESTYLE => new REQ_ChangeStyle(data),
 				Opcode.CSC_UPDATEHELPINFO => new REQ_UpdateHelpInfo(data),
 				Opcode.CSC_HEARTBEAT => new RSP_Heartbeat(data),
+				Opcode.REQ_MOVEBEGINED => new REQ_MoveBegined(data),
+				Opcode.REQ_MOVEENDED00 => new REQ_MoveEnded00(data),
+				Opcode.REQ_MOVETILEPOS => new REQ_MoveTilePos(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

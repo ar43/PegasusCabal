@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C
@@ -14,12 +15,12 @@ namespace WorldServer.Packets.S2C
 			_serializedItemData = serializedItemData;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteInt32(_data, _count);
+			PacketWriter.WriteInt32(data, _count);
 			if(_count > 0)
 			{
-				PacketWriter.WriteArray(_data, _serializedItemData);
+				PacketWriter.WriteArray(data, _serializedItemData);
 			}
 		}
 	}

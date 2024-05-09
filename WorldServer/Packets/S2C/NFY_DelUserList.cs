@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C
@@ -14,10 +15,10 @@ namespace WorldServer.Packets.S2C
 			_delUserType = delUserType;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteInt32(_data, _charId);
-			PacketWriter.WriteByte(_data, (byte)_delUserType);
+			PacketWriter.WriteInt32(data, _charId);
+			PacketWriter.WriteByte(data, (byte)_delUserType);
 		}
 	}
 }

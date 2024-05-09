@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,12 +24,12 @@ namespace WorldServer.Packets.S2C
 			_subPasswordLockType = subPasswordLockType;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteUInt32(_data, _result);
-			PacketWriter.WriteUInt32(_data, _changePassword);
-			PacketWriter.WriteUInt32(_data, (UInt32)_subPasswordType);
-			PacketWriter.WriteUInt32(_data, (UInt32)_subPasswordLockType);
+			PacketWriter.WriteUInt32(data, _result);
+			PacketWriter.WriteUInt32(data, _changePassword);
+			PacketWriter.WriteUInt32(data, (UInt32)_subPasswordType);
+			PacketWriter.WriteUInt32(data, (UInt32)_subPasswordLockType);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using Nito.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +19,10 @@ namespace WorldServer.Packets.S2C
 			_remainingPoints = remainingPoints;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteUInt32(_data, _remainingTime);
-			PacketWriter.WriteUInt32(_data, _remainingPoints);
+			PacketWriter.WriteUInt32(data, _remainingTime);
+			PacketWriter.WriteUInt32(data, _remainingPoints);
 		}
 	}
 }

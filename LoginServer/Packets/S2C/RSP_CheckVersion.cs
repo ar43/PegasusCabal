@@ -1,5 +1,6 @@
 ﻿using LibPegasus.Packets;
 using LoginServer.Enums;
+using Nito.Collections;
 
 namespace LoginServer.Packets.S2C
 {
@@ -12,12 +13,12 @@ namespace LoginServer.Packets.S2C
 			_clientVersion = clientVersion;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteUInt32(_data, _clientVersion);
-			PacketWriter.WriteUInt32(_data, 0);
-			PacketWriter.WriteUInt32(_data, 0);
-			PacketWriter.WriteUInt32(_data, 0);
+			PacketWriter.WriteUInt32(data, _clientVersion);
+			PacketWriter.WriteUInt32(data, 0);
+			PacketWriter.WriteUInt32(data, 0);
+			PacketWriter.WriteUInt32(data, 0);
 
 		}
 	}

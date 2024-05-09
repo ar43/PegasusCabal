@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Enums;
 using LibPegasus.Packets;
 using LoginServer.Enums;
+using Nito.Collections;
 using Shared.Protos;
 using System.Text;
 
@@ -15,29 +16,29 @@ namespace LoginServer.Packets.S2C
 			_reply = reply;
 		}
 
-		public override void WritePayload()
+		public override void WritePayload(Deque<byte> data)
 		{
 			if ((byte)_reply.Status == (byte)AuthResult.Normal)
 			{
-				PacketWriter.WriteByte(_data, (byte)_reply.Status);
-				PacketWriter.WriteUInt32(_data, _reply.AccountId);
-				PacketWriter.WriteInt16(_data, 0); //unknown
-				PacketWriter.WriteByte(_data, (byte)_reply.ServerCount);
-				PacketWriter.WriteNull(_data, 8); // unknown
-				PacketWriter.WriteUInt32(_data, _reply.PremServId);
-				PacketWriter.WriteUInt32(_data, _reply.PremServExpired);
-				PacketWriter.WriteByte(_data, 0); //unknown
-				PacketWriter.WriteByte(_data, Convert.ToByte(_reply.SubPassSet));
-				PacketWriter.WriteNull(_data, 7); // unknown
-				PacketWriter.WriteInt32(_data, (int)_reply.Language);
-				PacketWriter.WriteArray(_data, Encoding.ASCII.GetBytes(_reply.AuthKey));
-				PacketWriter.WriteByte(_data, 0); //null byte after string
-				PacketWriter.WriteArray(_data, _reply.CharData.ToByteArray());
+				PacketWriter.WriteByte(data, (byte)_reply.Status);
+				PacketWriter.WriteUInt32(data, _reply.AccountId);
+				PacketWriter.WriteInt16(data, 0); //unknown
+				PacketWriter.WriteByte(data, (byte)_reply.ServerCount);
+				PacketWriter.WriteNull(data, 8); // unknown
+				PacketWriter.WriteUInt32(data, _reply.PremServId);
+				PacketWriter.WriteUInt32(data, _reply.PremServExpired);
+				PacketWriter.WriteByte(data, 0); //unknown
+				PacketWriter.WriteByte(data, Convert.ToByte(_reply.SubPassSet));
+				PacketWriter.WriteNull(data, 7); // unknown
+				PacketWriter.WriteInt32(data, (int)_reply.Language);
+				PacketWriter.WriteArray(data, Encoding.ASCII.GetBytes(_reply.AuthKey));
+				PacketWriter.WriteByte(data, 0); //null byte after string
+				PacketWriter.WriteArray(data, _reply.CharData.ToByteArray());
 			}
 			else
 			{
-				PacketWriter.WriteByte(_data, (byte)_reply.Status);
-				PacketWriter.WriteNull(_data, 70);
+				PacketWriter.WriteByte(data, (byte)_reply.Status);
+				PacketWriter.WriteNull(data, 70);
 			}
 
 		}
