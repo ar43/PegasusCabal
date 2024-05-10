@@ -17,7 +17,7 @@ namespace WorldServer.Logic.World
 		public Instance(UInt16 worldId, InstanceType type)
 		{
 			WorldId = (Enums.WorldId)worldId;
-			_tiles = new Tile[16, 16];
+			_tiles = new Tile[NUM_TILES_Y, NUM_TILES_X];
 			Type = type;
 
 			for(int i = 0; i < _tiles.GetLength(0); i++)
@@ -47,6 +47,9 @@ namespace WorldServer.Logic.World
 		public InstanceType Type { get;}
 
 		private static UInt128 InstanceIdGenerator = 1000;
+
+		public static readonly int NUM_TILES_X = 16;
+		public static readonly int NUM_TILES_Y = 16;
 
 		public void AddNewClient(Client client, UInt16 tileX, UInt16 tileY)
 		{
@@ -123,7 +126,7 @@ namespace WorldServer.Logic.World
 			{
 				var x = tileX + offsets[i, 0];
 				var y = tileY + offsets[i, 1];
-				if(x >= 0 && y >= 0)
+				if(x >= 0 && y >= 0 && x < NUM_TILES_X && y < NUM_TILES_Y)
 				{
 					values.Add(((Int16, Int16))(x, y));
 				}
