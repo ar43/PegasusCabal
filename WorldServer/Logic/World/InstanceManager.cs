@@ -34,7 +34,7 @@ namespace WorldServer.Logic.World
 
 		public void AddClient(Client client, UInt128 instanceId)
 		{
-			_instances[instanceId].AddNewClient(client, client.Character.Location.TileX, client.Character.Location.TileY);
+			_instances[instanceId].AddNewClient(client, (UInt16)client.Character.Location.Movement.TileX, (UInt16)client.Character.Location.Movement.TileY);
 			client.Character.Location.Instance = _instances[instanceId];
 
 			var otherCharacters = client.Character.Location.Instance.GetNearbyCharacters(client);

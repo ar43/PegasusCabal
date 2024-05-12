@@ -13,6 +13,6 @@ namespace WorldServer.Logic.World
 			localClients = new();
 		}
 
-		public List<Client> localClients { get; private set; }
+		public HashSet<Client> localClients { get; private set; }
 	}
 }

@@ -57,8 +57,8 @@ namespace WorldServer.Packets.S2C
 
 			PacketWriter.WriteUInt32(data, _worldId);
 			PacketWriter.WriteUInt32(data, 0); //todo dungeon
-			PacketWriter.WriteUInt16(data, _character.Location.X);
-			PacketWriter.WriteUInt16(data, _character.Location.Y);
+			PacketWriter.WriteUInt16(data, (UInt16)_character.Location.Movement.X);
+			PacketWriter.WriteUInt16(data, (UInt16)_character.Location.Movement.Y);
 			PacketWriter.WriteUInt64(data, _character.Stats.Exp);
 			PacketWriter.WriteUInt64(data, _character.Inventory.Alz);
 			PacketWriter.WriteUInt64(data, 0); //todo warxp

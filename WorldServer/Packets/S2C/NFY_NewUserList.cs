@@ -31,20 +31,20 @@ namespace WorldServer.Packets.S2C
 				PacketWriter.WriteByte(data, character.ObjectIndexData.WorldIndex);
 				PacketWriter.WriteByte(data, (Byte)character.ObjectIndexData.ObjectType);
 				PacketWriter.WriteUInt32(data, character.Stats.Level);
-				PacketWriter.WriteUInt32(data, character.Stats.MoveSpeed);
-				PacketWriter.WriteUInt16(data, character.Location.X);
-				PacketWriter.WriteUInt16(data, character.Location.Y);
+				PacketWriter.WriteUInt32(data, (UInt32)(character.Location.Movement.MoveSpeed * 100)); //TODO: verify this cast...
+				PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.X);
+				PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.Y);
 
 				//dest
 				if(character.Location.Movement.IsMoving)
 				{
-					PacketWriter.WriteUInt16(data, character.Location.Movement.EndX);
-					PacketWriter.WriteUInt16(data, character.Location.Movement.EndY);
+					PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.EndX); //TODO: perhaps PntX is meant here. need to verify
+					PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.EndY);
 				}
 				else
 				{
-					PacketWriter.WriteUInt16(data, character.Location.X);
-					PacketWriter.WriteUInt16(data, character.Location.Y);
+					PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.X);
+					PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.Y);
 				}
 				
 				PacketWriter.WriteByte(data, 0); //unknown

@@ -37,8 +37,6 @@ namespace WorldServer.Logic
 		public Character? Character;
 		public Account? Account;
 
-		readonly double TIMEOUT_SECONDS = 99999.0;
-
 		public LibPegasus.Utils.Timer? TimerHeartbeat = null; //set to 40
 		public LibPegasus.Utils.Timer? TimerHeartbeatTimeout = null; //set this to null on successfull heartbeat
 
@@ -249,10 +247,30 @@ namespace WorldServer.Logic
 
 			if(TimerHeartbeatTimeout != null && TimerHeartbeatTimeout.Tick())
 			{
-				Disconnect("Heartbeat timeout", ConnState.TIMEOUT);
+				if (Character != null)
+				{
+					Disconnect("Heartbeat timeout", ConnState.TIMEOUT);
+				}
+				else
+				{
+					TimerHeartbeat = null;
+				}
+			}
+
+			if(Character != null && Character.Location.Instance != null)
+			{
+				UpdateInWorld();
 			}
 
 
+		}
+
+		private void UpdateInWorld()
+		{
+			if(Character.Location.Movement.IsDeadReckoning)
+			{
+				Character.Location.Movement.DeadReckoning();
+			}
 		}
 
 		internal void Disconnect(string reason, ConnState newState)

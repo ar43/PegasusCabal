@@ -20,7 +20,7 @@ namespace WorldServer.Enums
 		RING2,
 		VEHICLE,
 		PET,
-		UNKNOWN,
+		UNKNOWN, 
 		LEFTEARRING,
 		RIGHTEARRING,
 		LEFTBRACELET,
@@ -28,6 +28,6 @@ namespace WorldServer.Enums
 		RING3,
 		RING4,
 		BELT,
-		NUM_EQUIPMENT
+		NUM_EQUIPMENT //actually extended pet slot
 	}
 }

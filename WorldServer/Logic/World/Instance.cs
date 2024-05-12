@@ -71,8 +71,8 @@ namespace WorldServer.Logic.World
 		}
 		public void MoveClient(Client client, UInt16 newTileX, UInt16 newTileY, NewUserType tileMoveType)
 		{
-			var tileX = client.Character.Location.TileX; //old tile pos x
-			var tileY = client.Character.Location.TileY; //old tile pos y
+			var tileX = client.Character.Location.Movement.TileX; //old tile pos x
+			var tileY = client.Character.Location.Movement.TileY; //old tile pos y
 
 			var currentTile = _tiles[tileY, tileX];
 			var newTile = _tiles[newTileY, newTileX];
@@ -112,7 +112,7 @@ namespace WorldServer.Logic.World
 			currentTile.localClients.Remove(client);
 			newTile.localClients.Add(client);
 
-			client.Character.Location.UpdateTilePos();
+			client.Character.Location.Movement.UpdateTilePos();
 		}
 		private static List<(Int16, Int16)> GetNeighbours(Int16 tileX, Int16 tileY)
 		{
@@ -136,8 +136,8 @@ namespace WorldServer.Logic.World
 
 		public void BroadcastNearby(Client client, PacketS2C packet, bool excludeClient)
 		{
-			var tileX = client.Character.Location.TileX;
-			var tileY = client.Character.Location.TileY;
+			var tileX = client.Character.Location.Movement.TileX;
+			var tileY = client.Character.Location.Movement.TileY;
 
 			foreach(var tilePos in GetNeighbours((Int16)tileX, (Int16)tileY))
 			{
@@ -158,8 +158,8 @@ namespace WorldServer.Logic.World
 		{
 			List<Character> characters = new List<Character>();
 
-			var tileX = client.Character.Location.TileX;
-			var tileY = client.Character.Location.TileY;
+			var tileX = client.Character.Location.Movement.TileX;
+			var tileY = client.Character.Location.Movement.TileY;
 
 			foreach (var tilePos in GetNeighbours((Int16)tileX, (Int16)tileY))
 			{

@@ -17,7 +17,6 @@ namespace WorldServer.Logic.CharData
 			Int = @int;
 			Pnt = pnt;
 			Rank = rank;
-			MoveSpeed = 450;
 		}
 
 		public UInt32 Level { get; private set; }
@@ -27,6 +26,5 @@ namespace WorldServer.Logic.CharData
 		public UInt32 Int { get; private set; }
 		public UInt32 Pnt { get; private set; }
 		public UInt32 Rank { get; private set; }
-		public UInt32 MoveSpeed { get; private set; }
 	}
 }
