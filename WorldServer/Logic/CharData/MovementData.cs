@@ -32,7 +32,7 @@ namespace WorldServer.Logic.CharData
 		public float Sin {  get; private set; }
 		public float Cos { get; private set; }
 		public bool IsDeadReckoning { get; private set; }
-		public int LastDeadReackoning;
+		public int LastDeadReckoning;
 		public int CurrentWaypoint { get; private set; } // thinking
 
 		public float MoveSpeed { get; private set; }
@@ -55,7 +55,7 @@ namespace WorldServer.Logic.CharData
 			Sin = 0;
 			Cos = 0;
 			MoveSpeed = moveSpeed;
-			LastDeadReackoning = 0;
+			LastDeadReckoning = 0;
 			CurrentWaypoint = 0;
 		}
 
@@ -97,7 +97,40 @@ namespace WorldServer.Logic.CharData
 			IsMoving = true;
 			IsDeadReckoning = true;
 			StartTime = Environment.TickCount;
-			LastDeadReackoning = 0;
+			LastDeadReckoning = 0;
+		}
+
+		private void ChangeDeadReckoning()
+		{
+			var waypoint = _waypoints[0];
+			var waypoint2 = _waypoints[1];
+
+			var dx = waypoint2.X - waypoint.X;
+			var dy = waypoint2.Y - waypoint.Y;
+
+			var adx = Math.Abs(dx);
+			var ady = Math.Abs(dy);
+
+			if (adx >= DistanceCache.TABLE_LENGTH)
+			{
+				Serilog.Log.Error("ChangeDeadReckoning: adx >= DistanceCache.TABLE_LENGTH");
+				throw new Exception("ChangeDeadReckoning");
+			}
+
+			if (ady >= DistanceCache.TABLE_LENGTH)
+			{
+				Serilog.Log.Error("ChangeDeadReckoning: ady >= DistanceCache.TABLE_LENGTH");
+				throw new Exception("ChangeDeadReckoning");
+			}
+
+			Base += Distance;
+			Distance = DistanceCache.Get.GetDistance(adx, ady);
+			CurrentWaypoint = 0;
+			Sin = (float)dy / Distance;
+			Cos = (float)dx / Distance;
+
+			IsDeadReckoning = true;
+			LastDeadReckoning = 0;
 		}
 
 		public bool Begin(UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY, UInt16 pntX, UInt16 pntY)
@@ -152,9 +185,9 @@ namespace WorldServer.Logic.CharData
 		{
 			var tickCount = Environment.TickCount;
 
-			if(tickCount > LastDeadReackoning) //dont run this function multiple times per tick
+			if(tickCount > LastDeadReckoning) //dont run this function multiple times per tick
 			{
-				LastDeadReackoning = tickCount;
+				LastDeadReckoning = tickCount;
 			}
 			else
 			{
@@ -448,6 +481,30 @@ namespace WorldServer.Logic.CharData
 
 			X = x;
 			Y = y;
+
+			return true;
+		}
+
+		public bool SwitchWaypoint(UInt16 startX, UInt16 startY, UInt16 pntX, UInt16 pntY)
+		{
+			_waypoints.Clear();
+			_waypoints.Add(new Waypoint(startX, startY));
+			_waypoints.Add(new Waypoint(pntX, pntY));
+
+			var dx = pntX - startX;
+			var dy = pntY - startY;
+			var adx = Math.Abs(dx);
+			var ady = Math.Abs(dy);
+
+			if(adx >= DistanceCache.TABLE_LENGTH || ady >= DistanceCache.TABLE_LENGTH)
+			{
+				return false;
+			}
+
+			ChangeDeadReckoning();
+
+			X = startX; 
+			Y = startY;
 
 			return true;
 		}

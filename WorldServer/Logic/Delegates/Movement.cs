@@ -120,14 +120,35 @@ namespace WorldServer.Logic.Delegates
 				client.Disconnect("Error in Movement.End", Enums.ConnState.ERROR);
 				return;
 			}
-
-			
-
 		}
 
 		internal static void OnMoveWaypoint(Client client, UInt16 fromX, UInt16 fromY, UInt16 toX, UInt16 toY)
 		{
-			//TODO?
+			//TODO: verify
+			if (client.Character == null)
+			{
+				client.Disconnect("OnMoveWaypoint null", Enums.ConnState.ERROR);
+				return;
+			}
+			var loc = client.Character.Location;
+
+			if (loc.Instance == null)
+			{
+				client.Disconnect("OnMoveWaypoint null", Enums.ConnState.ERROR);
+				return;
+			}
+
+			if (loc.Movement.IsMoving == false)
+			{
+				client.Disconnect("OnMoveWaypoint: Wasn't moving", Enums.ConnState.ERROR);
+				return;
+			}
+
+			if(!loc.Movement.SwitchWaypoint(fromX, fromY, toX, toY))
+			{
+				client.Disconnect("Movement.SwitchWaypoint: error", Enums.ConnState.ERROR);
+				return;
+			}
 		}
 
 		internal static void OnTileChange(Client client, UInt16 x, UInt16 y)
