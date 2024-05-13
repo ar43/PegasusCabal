@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Packets;
+using LibPegasus.Parsers.Mcl;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -42,6 +43,7 @@ namespace WorldServer.Logic.World
 		public Instance(Enums.MapId worldId, InstanceType type) : this((UInt16)worldId, type) { }
 
 		private readonly Cell[,] _cells;
+		public TileAttributeData? TileAttributeData { get; set; }
 		public UInt128 Id { get;}
 		public Enums.MapId MapId { get; }
 		public InstanceType Type { get;}

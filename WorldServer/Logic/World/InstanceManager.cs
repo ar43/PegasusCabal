@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LibPegasus.Parsers.Mcl;
+using Npgsql.TypeMapping;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,10 +14,12 @@ namespace WorldServer.Logic.World
 	internal class InstanceManager
 	{
 		private Dictionary<UInt128, Instance> _instances;
+		private Dictionary<int, TileAttributeData> _tileAttributes;
 
 		public InstanceManager()
 		{
 			_instances = new Dictionary<UInt128, Instance>();
+			_tileAttributes = new Dictionary<int, TileAttributeData>();
 
 			AddInstance(new Instance(Enums.MapId.BLOODY_ICE, InstanceType.PERMANENT));
 			AddInstance(new Instance(Enums.MapId.GREEN_DESPAIR, InstanceType.PERMANENT));
@@ -29,7 +33,29 @@ namespace WorldServer.Logic.World
 				throw new Exception("Instance manager already contains and instance with that id");
 			}
 
+			instance.TileAttributeData = GetTileAttributeData((Int32)instance.MapId);
+
 			_instances[instance.Id] = instance;
+		}
+
+		private TileAttributeData GetTileAttributeData(int mapId) //this needs to be async probably
+		{
+			if(_tileAttributes.ContainsKey(mapId))
+			{
+				return _tileAttributes[mapId];
+			}
+			else
+			{
+				var mapIdString = mapId.ToString("00");
+				string workingDirectory = Environment.CurrentDirectory;
+				string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.Parent.FullName;
+				var path = $"{projectDirectory}\\LibPegasus\\Data\\Maps\\mcl\\world_{mapIdString}.mcl";
+				Serilog.Log.Information($"Loading map {path}");
+				MclParser mclParser = new MclParser();
+				mclParser.Parse(path);
+				_tileAttributes.Add(mapId, mclParser.AttributeData);
+				return _tileAttributes[mapId];
+			}
 		}
 
 		public void AddClient(Client client, UInt128 instanceId)
