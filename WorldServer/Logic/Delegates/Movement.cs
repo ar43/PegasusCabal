@@ -9,9 +9,9 @@ namespace WorldServer.Logic.Delegates
 {
 	internal static class Movement
 	{
+		//TODO: detect stupid values, which are obvious injections, and auto ban
 		internal static void OnMoveBegin(Client client, UInt16 fromX, UInt16 fromY, UInt16 toX, UInt16 toY, UInt16 pntX, UInt16 pntY, UInt16 worldId)
 		{
-			//TODO: verify
 			if (client.Character == null)
 			{
 				client.Disconnect("OnMoveBegin null", Enums.ConnState.ERROR);
@@ -42,13 +42,10 @@ namespace WorldServer.Logic.Delegates
 				client.Disconnect("Error in Movement.Begin", Enums.ConnState.ERROR);
 				return;
 			}
-
-			
 		}
 
 		internal static void OnMoveChanged(Client client, UInt16 fromX, UInt16 fromY, UInt16 toX, UInt16 toY, UInt16 pntX, UInt16 pntY, UInt16 worldId)
 		{
-			//TODO: verify
 			if (client.Character == null)
 			{
 				client.Disconnect("OnMoveChanged null", Enums.ConnState.ERROR);
@@ -89,7 +86,6 @@ namespace WorldServer.Logic.Delegates
 
 		internal static void OnMoveEnd(Client client, UInt16 x, UInt16 y)
 		{
-			//TODO: verify
 			if (client.Character == null)
 			{
 				client.Disconnect("OnMoveEnd null", Enums.ConnState.ERROR);
@@ -124,7 +120,6 @@ namespace WorldServer.Logic.Delegates
 
 		internal static void OnMoveWaypoint(Client client, UInt16 fromX, UInt16 fromY, UInt16 toX, UInt16 toY)
 		{
-			//TODO: verify
 			if (client.Character == null)
 			{
 				client.Disconnect("OnMoveWaypoint null", Enums.ConnState.ERROR);
@@ -150,10 +145,8 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 		}
-
 		internal static void OnTileChange(Client client, UInt16 x, UInt16 y)
 		{
-			//TODO: verify
 			if(client.Character == null)
 			{
 				client.Disconnect("OnTileChange null", Enums.ConnState.ERROR);
@@ -173,21 +166,16 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if (loc.Movement.TileMove(x, y))
+			if (loc.Movement.CellMove(x, y))
 			{
 				loc.Instance.MoveClient(client, (UInt16)(x / 16), (UInt16)(y / 16), Enums.NewUserType.NEWMOVE);
-				loc.Movement.UpdateTilePos();
+				loc.Movement.UpdateCellPos();
 			}
 			else
 			{
 				client.Disconnect("OnTileChange: fail", Enums.ConnState.ERROR);
 				return;
 			}
-			
-
-			
-
-			
 		}
 	}
 }

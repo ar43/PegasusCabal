@@ -22,8 +22,8 @@ namespace WorldServer.Logic.CharData
 		public int X { get; private set; }
 		public int Y { get; private set; }
 
-		public int TileX { get; private set; }
-		public int TileY { get; private set; }
+		public int CellX { get; private set; }
+		public int CellY { get; private set; }
 
 		List<Waypoint> _waypoints = new List<Waypoint>();
 
@@ -46,8 +46,8 @@ namespace WorldServer.Logic.CharData
 			EndY = startY;
 			X = startX;
 			Y = startY;
-			TileX = X / 16;
-			TileY = Y / 16;
+			CellX = X / 16;
+			CellY = Y / 16;
 			StartTime = 0;
 			IsDeadReckoning = false;
 			Distance = 0;
@@ -59,10 +59,10 @@ namespace WorldServer.Logic.CharData
 			CurrentWaypoint = 0;
 		}
 
-		public void UpdateTilePos()
+		public void UpdateCellPos()
 		{
-			TileX = X / 16;
-			TileY = Y / 16;
+			CellX = X / 16;
+			CellY = Y / 16;
 		}
 
 		private void StartDeadReckoning()
@@ -160,10 +160,10 @@ namespace WorldServer.Logic.CharData
 			X -= dxCurrent;
 			Y -= dyCurrent;
 
-			var tileDx = pntX / 16 - TileX;
-			var tileDy = pntY / 16 - TileY;
+			var cellDx = pntX / 16 - CellX;
+			var cellDy = pntY / 16 - CellY;
 
-			if(tileDx > 1 || tileDy > 1 || tileDx < -1 || tileDy < -1)
+			if(cellDx > 1 || cellDy > 1 || cellDx < -1 || cellDy < -1)
 			{
 				Serilog.Log.Warning("Movement begin: TileDiff problem");
 				return false;
@@ -330,13 +330,13 @@ namespace WorldServer.Logic.CharData
 				return false;
 			}
 
-			var newTileX = pntX / 16;
-			var newTileY = pntY / 16;
+			var newCellX = pntX / 16;
+			var newCellY = pntY / 16;
 
-			var tileDx = newTileX - TileX;
-			var tileDy = newTileY - TileY;
+			var cellDx = newCellX - CellX;
+			var cellDy = newCellY - CellY;
 
-			if (tileDx < -1 || tileDy < -1 || tileDx > 1 || tileDy > 1)
+			if (cellDx < -1 || cellDy < -1 || cellDx > 1 || cellDy > 1)
 			{
 				return false;
 			}
@@ -413,7 +413,7 @@ namespace WorldServer.Logic.CharData
 			return true;
 		}
 
-		public bool TileMove(UInt16 x, UInt16 y)
+		public bool CellMove(UInt16 x, UInt16 y)
 		{
 			if(x >= MAX_SQR_MOVE_DIFF || y >= MAX_SQR_MOVE_DIFF)
 			{
@@ -463,18 +463,18 @@ namespace WorldServer.Logic.CharData
 				return false;
 			}
 
-			var newTileX = x / 16;
-			var newTileY = y / 16;
+			var newCellX = x / 16;
+			var newCellY = y / 16;
 
-			var tileDx = newTileX - TileX;
-			var tileDy = newTileY - TileY;
+			var cellDx = newCellX - CellX;
+			var cellDy = newCellY - CellY;
 
-			if (tileDx == 0 && tileDy == 0)
+			if (cellDx == 0 && cellDy == 0)
 			{
 				return false;
 			}
 
-			if(tileDx < -1 || tileDy < -1 || tileDx > 1 || tileDy > 1)
+			if(cellDx < -1 || cellDy < -1 || cellDx > 1 || cellDy > 1)
 			{
 				return false;
 			}

@@ -14,23 +14,23 @@ namespace WorldServer.Logic.World
 {
 	internal class Instance
 	{
-		public Instance(UInt16 worldId, InstanceType type)
+		public Instance(UInt16 mapId, InstanceType type)
 		{
-			WorldId = (Enums.WorldId)worldId;
-			_tiles = new Tile[NUM_TILES_Y, NUM_TILES_X];
+			MapId = (Enums.MapId)mapId;
+			_cells = new Cell[NUM_CELL_X, NUM_CELL_Y];
 			Type = type;
 
-			for(int i = 0; i < _tiles.GetLength(0); i++)
+			for(int i = 0; i < _cells.GetLength(0); i++)
 			{
-				for(int j = 0; j < _tiles.GetLength(1); j++)
+				for(int j = 0; j < _cells.GetLength(1); j++)
 				{
-					_tiles[i, j] = new Tile();
+					_cells[i, j] = new Cell();
 				}
 			}
 
 			if (type == InstanceType.PERMANENT)
 			{
-				Id = (UInt64)WorldId;
+				Id = (UInt64)MapId;
 			}
 			else
 			{
@@ -39,21 +39,21 @@ namespace WorldServer.Logic.World
 			}
 		}
 
-		public Instance(Enums.WorldId worldId, InstanceType type) : this((UInt16)worldId, type) { }
+		public Instance(Enums.MapId worldId, InstanceType type) : this((UInt16)worldId, type) { }
 
-		private readonly Tile[,] _tiles;
+		private readonly Cell[,] _cells;
 		public UInt128 Id { get;}
-		public Enums.WorldId WorldId { get; }
+		public Enums.MapId MapId { get; }
 		public InstanceType Type { get;}
 
 		private static UInt128 InstanceIdGenerator = 1000;
 
-		public static readonly int NUM_TILES_X = 16;
-		public static readonly int NUM_TILES_Y = 16;
+		public static readonly int NUM_CELL_X = 16;
+		public static readonly int NUM_CELL_Y = 16;
 
-		public void AddNewClient(Client client, UInt16 tileX, UInt16 tileY)
+		public void AddNewClient(Client client, UInt16 cellX, UInt16 cellY)
 		{
-			_tiles[tileY, tileX].localClients.Add(client);
+			_cells[cellX, cellY].LocalClients.Add(client);
 		}
 
 		public void RemoveClient(Client client, DelUserType reason)
@@ -61,34 +61,34 @@ namespace WorldServer.Logic.World
 			var packet_del = new NFY_DelUserList(client.Character.Id, reason);
 			BroadcastNearby(client, packet_del, true);
 
-			foreach(var tile in _tiles)
+			foreach(var cell in _cells)
 			{
-                if (tile.localClients.Remove(client))
+                if (cell.LocalClients.Remove(client))
                 {
 					return;
                 }
 			}
 		}
-		public void MoveClient(Client client, UInt16 newTileX, UInt16 newTileY, NewUserType tileMoveType)
+		public void MoveClient(Client client, UInt16 newCellX, UInt16 newCellY, NewUserType cellMoveType)
 		{
-			var tileX = client.Character.Location.Movement.TileX; //old tile pos x
-			var tileY = client.Character.Location.Movement.TileY; //old tile pos y
+			var cellX = client.Character.Location.Movement.CellX; //old cell pos x
+			var cellY = client.Character.Location.Movement.CellY; //old cell pos y
 
-			var currentTile = _tiles[tileY, tileX];
-			var newTile = _tiles[newTileY, newTileX];
+			var currentCell = _cells[cellX, cellY];
+			var newCell = _cells[newCellX, newCellY];
 
-			//TODO verify difference between current and new Tile
+			//TODO verify difference between current and new Cell
 
-			var currentNeighbours = GetNeighbours((Int16)tileX, (Int16)tileY);
-			var newNeightbours = GetNeighbours((Int16)newTileX, (Int16)newTileY);
+			var currentNeighbours = GetNeighbours((Int16)cellX, (Int16)cellY);
+			var newNeightbours = GetNeighbours((Int16)newCellX, (Int16)newCellY);
 
-			var relevantTiles = newNeightbours.Except(currentNeighbours).ToList();
+			var relevantCells = newNeightbours.Except(currentNeighbours).ToList();
 
 			List<Character> newChars = new List<Character>();
 
-			foreach (var tilePos in relevantTiles)
+			foreach (var cellPos in relevantCells)
 			{
-				foreach (var c in _tiles[tilePos.Item2, tilePos.Item1].localClients)
+				foreach (var c in _cells[cellPos.Item1, cellPos.Item2].LocalClients)
 				{
 					if (c == client)
 						continue;
@@ -98,7 +98,7 @@ namespace WorldServer.Logic.World
 						throw new Exception("Character should not be null here");
 
 					newChars.Add(c.Character);
-					var packetNewUser = new NFY_NewUserList(new List<Character>() { client.Character }, tileMoveType);
+					var packetNewUser = new NFY_NewUserList(new List<Character>() { client.Character }, cellMoveType);
 					c.PacketManager.Send(packetNewUser);
 				}
 			}
@@ -109,12 +109,12 @@ namespace WorldServer.Logic.World
 				client.PacketManager.Send(packetOtherPlayers);
 			}
 
-			currentTile.localClients.Remove(client);
-			newTile.localClients.Add(client);
+			currentCell.LocalClients.Remove(client);
+			newCell.LocalClients.Add(client);
 
-			client.Character.Location.Movement.UpdateTilePos();
+			client.Character.Location.Movement.UpdateCellPos();
 		}
-		private static List<(Int16, Int16)> GetNeighbours(Int16 tileX, Int16 tileY)
+		private static List<(Int16, Int16)> GetNeighbours(Int16 cellX, Int16 cellY)
 		{
 			List<(Int16, Int16)> values = new List<(Int16, Int16)>();
 
@@ -124,9 +124,9 @@ namespace WorldServer.Logic.World
 
 			for(int i = 0; i < 13; i++)
 			{
-				var x = tileX + offsets[i, 0];
-				var y = tileY + offsets[i, 1];
-				if(x >= 0 && y >= 0 && x < NUM_TILES_X && y < NUM_TILES_Y)
+				var x = cellX + offsets[i, 0];
+				var y = cellY + offsets[i, 1];
+				if(x >= 0 && y >= 0 && x < NUM_CELL_X && y < NUM_CELL_Y)
 				{
 					values.Add(((Int16, Int16))(x, y));
 				}
@@ -136,12 +136,12 @@ namespace WorldServer.Logic.World
 
 		public void BroadcastNearby(Client client, PacketS2C packet, bool excludeClient)
 		{
-			var tileX = client.Character.Location.Movement.TileX;
-			var tileY = client.Character.Location.Movement.TileY;
+			var cellX = client.Character.Location.Movement.CellX;
+			var cellY = client.Character.Location.Movement.CellY;
 
-			foreach(var tilePos in GetNeighbours((Int16)tileX, (Int16)tileY))
+			foreach(var cellPos in GetNeighbours((Int16)cellX, (Int16)cellY))
 			{
-				foreach(var c in _tiles[tilePos.Item2, tilePos.Item1].localClients)
+				foreach(var c in _cells[cellPos.Item1, cellPos.Item2].LocalClients)
 				{
 					if (c == null)
 						throw new NullReferenceException("null client");
@@ -158,12 +158,12 @@ namespace WorldServer.Logic.World
 		{
 			List<Character> characters = new List<Character>();
 
-			var tileX = client.Character.Location.Movement.TileX;
-			var tileY = client.Character.Location.Movement.TileY;
+			var cellX = client.Character.Location.Movement.CellX;
+			var cellY = client.Character.Location.Movement.CellY;
 
-			foreach (var tilePos in GetNeighbours((Int16)tileX, (Int16)tileY))
+			foreach (var cellPos in GetNeighbours((Int16)cellX, (Int16)cellY))
 			{
-				foreach (var c in _tiles[tilePos.Item2, tilePos.Item1].localClients)
+				foreach (var c in _cells[cellPos.Item1, cellPos.Item2].LocalClients)
 				{
 					if (c == client)
 						continue;

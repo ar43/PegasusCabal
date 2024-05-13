@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorldServer.Enums
 {
-	internal enum WorldId
+	internal enum MapId
 	{
 		BLOODY_ICE = 1,
 		DESERT_SCREAM,

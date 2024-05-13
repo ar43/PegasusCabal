@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace WorldServer.Logic.World
 {
-	internal class Tile
+	internal class Cell
 	{
-		public Tile()
+		public Cell()
 		{
-			localClients = new();
+			LocalClients = new();
 		}
 
-		public HashSet<Client> localClients { get; private set; }
+		public HashSet<Client> LocalClients { get; private set; }
 	}
 }

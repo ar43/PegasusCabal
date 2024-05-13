@@ -17,9 +17,9 @@ namespace WorldServer.Logic.World
 		{
 			_instances = new Dictionary<UInt128, Instance>();
 
-			AddInstance(new Instance(Enums.WorldId.BLOODY_ICE, InstanceType.PERMANENT));
-			AddInstance(new Instance(Enums.WorldId.GREEN_DESPAIR, InstanceType.PERMANENT));
-			AddInstance(new Instance(Enums.WorldId.DESERT_SCREAM, InstanceType.PERMANENT));
+			AddInstance(new Instance(Enums.MapId.BLOODY_ICE, InstanceType.PERMANENT));
+			AddInstance(new Instance(Enums.MapId.GREEN_DESPAIR, InstanceType.PERMANENT));
+			AddInstance(new Instance(Enums.MapId.DESERT_SCREAM, InstanceType.PERMANENT));
 		}
 
 		public void AddInstance(Instance instance)
@@ -34,7 +34,7 @@ namespace WorldServer.Logic.World
 
 		public void AddClient(Client client, UInt128 instanceId)
 		{
-			_instances[instanceId].AddNewClient(client, (UInt16)client.Character.Location.Movement.TileX, (UInt16)client.Character.Location.Movement.TileY);
+			_instances[instanceId].AddNewClient(client, (UInt16)client.Character.Location.Movement.CellX, (UInt16)client.Character.Location.Movement.CellY);
 			client.Character.Location.Instance = _instances[instanceId];
 
 			var otherCharacters = client.Character.Location.Instance.GetNearbyCharacters(client);
