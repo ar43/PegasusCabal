@@ -33,6 +33,7 @@ namespace WorldServer.Logic.CharData
 		public float Cos { get; private set; }
 		public bool IsDeadReckoning { get; private set; }
 		public int LastDeadReckoning;
+		public int IllegalMovementCounter;
 		public int CurrentWaypoint { get; private set; } // thinking
 
 		public float MoveSpeed { get; private set; }
@@ -57,6 +58,7 @@ namespace WorldServer.Logic.CharData
 			MoveSpeed = moveSpeed;
 			LastDeadReckoning = 0;
 			CurrentWaypoint = 0;
+			IllegalMovementCounter = 0;
 		}
 
 		public void UpdateCellPos()
@@ -98,6 +100,7 @@ namespace WorldServer.Logic.CharData
 			IsDeadReckoning = true;
 			StartTime = Environment.TickCount;
 			LastDeadReckoning = 0;
+			IllegalMovementCounter = 0;
 		}
 
 		private void ChangeDeadReckoning()

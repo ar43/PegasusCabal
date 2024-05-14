@@ -269,7 +269,24 @@ namespace WorldServer.Logic
 		{
 			if(Character.Location.Movement.IsDeadReckoning)
 			{
+				var oldX = Character.Location.Movement.X;
+				var oldY = Character.Location.Movement.Y;
 				Character.Location.Movement.DeadReckoning();
+				var newX = Character.Location.Movement.X;
+				var newY = Character.Location.Movement.Y;
+
+				if(oldX != newX || oldY != newY)
+				{
+					if(Character.Location.Instance.CheckTerrainCollision((UInt16)newX, (UInt16)newY))
+					{
+						Character.Location.Movement.IllegalMovementCounter++;
+					}
+					if(Character.Location.Movement.IllegalMovementCounter >= 1)
+					{
+						Disconnect("IllegalMovementCounter >= 1", ConnState.ERROR);
+						return;
+					}
+				}
 			}
 		}
 

@@ -9,7 +9,7 @@ namespace WorldServer.Logic.Delegates
 {
 	internal static class Movement
 	{
-		//TODO: detect stupid values, which are obvious injections, and auto ban
+		//TODO: detect stupid values > 255, which are obvious injections, and auto ban
 		internal static void OnMoveBegin(Client client, UInt16 fromX, UInt16 fromY, UInt16 toX, UInt16 toY, UInt16 pntX, UInt16 pntY, UInt16 worldId)
 		{
 			if (client.Character == null)
@@ -34,6 +34,22 @@ namespace WorldServer.Logic.Delegates
 
 			if(loc.Movement.Begin(fromX, fromY, toX, toY, pntX, pntY))
 			{
+				if (loc.Instance.CheckTerrainCollision(fromX, fromY))
+				{
+					client.Disconnect("OnMoveBegin: Illegal tile movement", Enums.ConnState.ERROR);
+					return;
+				}
+				if (loc.Instance.CheckTerrainCollision(toX, toY))
+				{
+					client.Disconnect("OnMoveBegin: Illegal tile movement", Enums.ConnState.ERROR);
+					return;
+				}
+				if (loc.Instance.CheckTerrainCollision(pntX, pntY))
+				{
+					client.Disconnect("OnMoveBegin: Illegal tile movement", Enums.ConnState.ERROR);
+					return;
+				}
+
 				var packet = new NFY_MoveBegined((UInt32)client.Character.Id, (UInt32)loc.Movement.StartTime, fromX, fromY, toX, toY);
 				client.BroadcastNearby(packet);
 			}
@@ -74,6 +90,22 @@ namespace WorldServer.Logic.Delegates
 
 			if(loc.Movement.Change(fromX, fromY, toX,toY,pntX,pntY))
 			{
+				if (loc.Instance.CheckTerrainCollision(fromX, fromY))
+				{
+					client.Disconnect("OnMoveChanged: Illegal tile movement", Enums.ConnState.ERROR);
+					return;
+				}
+				if (loc.Instance.CheckTerrainCollision(toX, toY))
+				{
+					client.Disconnect("OnMoveChanged: Illegal tile movement", Enums.ConnState.ERROR);
+					return;
+				}
+				if (loc.Instance.CheckTerrainCollision(pntX, pntY))
+				{
+					client.Disconnect("OnMoveChanged: Illegal tile movement", Enums.ConnState.ERROR);
+					return;
+				}
+
 				var packet = new NFY_MoveChanged((UInt32)client.Character.Id, (UInt32)loc.Movement.StartTime, fromX, fromY, toX, toY);
 				client.BroadcastNearby(packet);
 			}
@@ -108,6 +140,12 @@ namespace WorldServer.Logic.Delegates
 
 			if(loc.Movement.End(x, y))
 			{
+				if (loc.Instance.CheckTerrainCollision(x, y))
+				{
+					client.Disconnect("OnMoveEnd: Illegal tile movement", Enums.ConnState.ERROR);
+					return;
+				}
+
 				var packet = new NFY_MoveEnded00((UInt32)client.Character.Id, x, y);
 				client.BroadcastNearby(packet);
 			}
@@ -144,6 +182,12 @@ namespace WorldServer.Logic.Delegates
 				client.Disconnect("Movement.SwitchWaypoint: error", Enums.ConnState.ERROR);
 				return;
 			}
+
+			if (loc.Instance.CheckTerrainCollision((UInt16)loc.Movement.X, (UInt16)loc.Movement.Y))
+			{
+				client.Disconnect("OnMoveWaypoint: Illegal tile movement", Enums.ConnState.ERROR);
+				return;
+			}
 		}
 		internal static void OnTileChange(Client client, UInt16 x, UInt16 y)
 		{
@@ -170,6 +214,12 @@ namespace WorldServer.Logic.Delegates
 			{
 				loc.Instance.MoveClient(client, (UInt16)(x / 16), (UInt16)(y / 16), Enums.NewUserType.NEWMOVE);
 				loc.Movement.UpdateCellPos();
+
+				//if(loc.Instance.CheckTerrainCollision(x, y))
+				//{
+				//	client.Disconnect($"OnTileChange: Illegal tile movement {x} {y}", Enums.ConnState.ERROR);
+				//	return;
+				//}
 			}
 			else
 			{
