@@ -12,6 +12,12 @@ namespace WorldServer
 			Log.Information("Starting Pegasus WorldServer...");
 
 			Server server = new();
+
+			Console.CancelKeyPress += delegate (object? sender, ConsoleCancelEventArgs e) {
+				e.Cancel = true;
+				server.Running = false;
+			};
+
 			server.Run();
 
 		}

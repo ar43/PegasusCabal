@@ -16,7 +16,7 @@ namespace WorldServer
 {
 	internal class Server
 	{
-		bool _running = false;
+		public bool Running = false;
 		bool _started = false;
 		TcpListener _listener;
 		IPAddress _externalIp;
@@ -78,7 +78,7 @@ namespace WorldServer
 			const double heartbeatTime = 5.0;
 			DateTime lastUpdate = DateTime.MinValue;
 
-			while (_masterRpcChannel != null)
+			while (_masterRpcChannel != null && Running)
 			{
 				if (DateTime.UtcNow.Ticks - lastUpdate.Ticks >= TimeSpan.FromSeconds(heartbeatTime).Ticks)
 				{
@@ -126,14 +126,20 @@ namespace WorldServer
 		{
 			Log.Information("Listening for connections...");
 
-
-			while (_listener != null)
+			while (_listener != null && Running)
 			{
-				TcpClient tcpClient = _listener.AcceptTcpClient();
-				if (tcpClient != null)
+				try
 				{
-					Log.Debug("Client connected");
-					_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel, _databaseManager, _world));
+					TcpClient tcpClient = _listener.AcceptTcpClient();
+					if (tcpClient != null)
+					{
+						Log.Debug("Client connected");
+						_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel, _databaseManager, _world));
+					}
+				}
+				catch(SocketException)
+				{
+					return;
 				}
 			}
 
@@ -151,7 +157,7 @@ namespace WorldServer
 			Task.Factory.StartNew(() => SendHeartbeat(), TaskCreationOptions.LongRunning);
 			Task.Factory.StartNew(() => SessionChangeListener(), TaskCreationOptions.LongRunning);
 
-			_running = true;
+			Running = true;
 
 			RunTest();
 		}
@@ -223,7 +229,7 @@ namespace WorldServer
 				Start();
 			}
 
-			while (_running)
+			while (Running)
 			{
 				AddNewClients();
 				ProcessClients();
@@ -233,6 +239,7 @@ namespace WorldServer
 			}
 
 			Quit();
+			Task.WaitAll();
 		}
 
 		private void RemoveClients()

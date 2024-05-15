@@ -43,6 +43,7 @@ namespace WorldServer.Logic.Delegates
 			{
 				case 62:
 				{
+					//todo: inventory code
 					if(!client.World.InstanceManager.WarpClientReturn(client))
 					{
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error while warping (return)");
