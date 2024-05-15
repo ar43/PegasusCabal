@@ -9,16 +9,18 @@ using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Packets.S2C;
 
-namespace WorldServer.Logic.World
+namespace WorldServer.Logic.WorldRuntime
 {
 	internal class Instance
 	{
-		public Instance(UInt16 mapId, InstanceType type)
+		public Instance(UInt16 mapId, InstanceType type, MapData mapData)
 		{
 			MapId = (Enums.MapId)mapId;
 			_cells = new Cell[NUM_CELL_X, NUM_CELL_Y];
+			MapData = mapData;
 			Type = type;
 
 			for(int i = 0; i < _cells.GetLength(0); i++)
@@ -40,9 +42,10 @@ namespace WorldServer.Logic.World
 			}
 		}
 
-		public Instance(Enums.MapId worldId, InstanceType type) : this((UInt16)worldId, type) { }
+		public Instance(Enums.MapId mapId, InstanceType type, MapData mapData) : this((UInt16)mapId, type, mapData) { }
 
 		private readonly Cell[,] _cells;
+		public readonly MapData MapData;
 		public TileAttributeData? TileAttributeData { get; set; }
 		public UInt128 Id { get;}
 		public Enums.MapId MapId { get; }
@@ -58,15 +61,35 @@ namespace WorldServer.Logic.World
 			_cells[cellX, cellY].LocalClients.Add(client);
 		}
 
+		public List<(int, int)> CalculateValidCellSpots(UInt16 cellX, UInt16 cellY)
+		{
+			List<(int, int)> values = new List<(int, int)> ();
+			var baseX = cellX * 16;
+			var baseY = cellY * 16;
+
+			for(int i = 0; i < 16; i++) 
+			{
+				for(int j = 0; j < 16; j++)
+				{
+					if(!CheckTerrainCollision((UInt16)(baseX + i), (UInt16)(baseY + j)))
+					{
+						values.Add((baseX+i,baseY+j));
+					}
+				}
+			}
+			return values;
+		}
+
 		public void RemoveClient(Client client, DelUserType reason)
 		{
 			var packet_del = new NFY_DelUserList(client.Character.Id, reason);
-			BroadcastNearby(client, packet_del, true);
+			BroadcastNearby(client, packet_del, false);
 
 			foreach(var cell in _cells)
 			{
                 if (cell.LocalClients.Remove(client))
                 {
+					client.Character.Location.Instance = null;
 					return;
                 }
 			}

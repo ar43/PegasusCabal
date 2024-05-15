@@ -12,7 +12,7 @@ using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.ClientData;
-using WorldServer.Logic.World;
+using WorldServer.Logic.WorldRuntime;
 using WorldServer.Packets;
 using WorldServer.Packets.S2C;
 
@@ -32,7 +32,7 @@ namespace WorldServer.Logic
 		GrpcChannel _masterRpcChannel;
 
 		private DatabaseManager _databaseManager;
-		private InstanceManager _instanceManager;
+		public World World;
 
 		public Character? Character;
 		public Account? Account;
@@ -46,7 +46,7 @@ namespace WorldServer.Logic
 
 		internal bool Dropped { get; private set; } = false;
 
-		public Client(TcpClient tcpClient, XorKeyTable xorKeyTable, GrpcChannel masterChannel, DatabaseManager databaseManager, InstanceManager instanceManager)
+		public Client(TcpClient tcpClient, XorKeyTable xorKeyTable, GrpcChannel masterChannel, DatabaseManager databaseManager, World world)
 		{
 			TcpClient = tcpClient;
 			PacketManager = new PacketManager();
@@ -57,7 +57,7 @@ namespace WorldServer.Logic
 			Ip = remoteEndPoint.Address.ToString();
 
 			_databaseManager = databaseManager;
-			_instanceManager = instanceManager;
+			World = world;
 		}
 
 		internal void OnClientAccept(UInt16 userIndex)
@@ -219,7 +219,7 @@ namespace WorldServer.Logic
 				return;
 			}
 
-			var actions = PacketManager.ReceiveAll(ConnectionInfo.IsAuthenticated(), _instanceManager);
+			var actions = PacketManager.ReceiveAll(ConnectionInfo.IsAuthenticated());
 
 			if (actions != null)
 			{
@@ -288,6 +288,11 @@ namespace WorldServer.Logic
 					}
 				}
 			}
+		}
+
+		internal void Error(string funcName, string message)
+		{
+			Disconnect($"{funcName} - {message}", ConnState.ERROR);
 		}
 
 		internal void Disconnect(string reason, ConnState newState)

@@ -4,7 +4,7 @@ using System.Net;
 using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
-using WorldServer.Logic.World;
+using WorldServer.Logic.WorldRuntime;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
@@ -143,7 +143,7 @@ namespace WorldServer.Logic.Delegates
 			}
 		}
 
-		internal static async void OnInitialize(Client client, UInt32 charId, InstanceManager instanceManager)
+		internal static async void OnInitialize(Client client, UInt32 charId)
 		{
 			if(client.Character != null)
 			{
@@ -193,7 +193,7 @@ namespace WorldServer.Logic.Delegates
 
 				client.Account = new Account(client.ConnectionInfo.AccountId); //TODO: actually load the account data
 
-				instanceManager.AddClient(client, (UInt128)worldId);
+				client.World.InstanceManager.AddClient(client, (UInt128)worldId, NewUserType.NEWINIT);
 
 				client.TimerHeartbeat = new LibPegasus.Utils.Timer(DateTime.UtcNow, 40.0, true);
 			}

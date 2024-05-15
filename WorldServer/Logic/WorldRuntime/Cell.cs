@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorldServer.Logic.World
+namespace WorldServer.Logic.WorldRuntime
 {
 	internal class Cell
 	{

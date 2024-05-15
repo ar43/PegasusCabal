@@ -3,7 +3,7 @@ using Nito.Collections;
 using Serilog;
 using WorldServer.Enums;
 using WorldServer.Logic;
-using WorldServer.Logic.World;
+using WorldServer.Logic.WorldRuntime;
 using WorldServer.Packets.C2S;
 
 namespace WorldServer.Packets
@@ -39,7 +39,7 @@ namespace WorldServer.Packets
 			_decryptedOutboundPackets.Enqueue(p);
 		}
 
-		private PacketC2S<Client> GetPacket(Opcode opcode, Queue<byte> data, InstanceManager instanceManager)
+		private PacketC2S<Client> GetPacket(Opcode opcode, Queue<byte> data)
 		{
 			return opcode switch
 			{
@@ -53,7 +53,7 @@ namespace WorldServer.Packets
 				Opcode.CSC_SUBPASSWORDCHECKREQUEST => new REQ_SubPasswordCheckRequest(data),
 				Opcode.CSC_SUBPASSWORDSET => new REQ_SubPasswordSet(data),
 				Opcode.CSC_SUBPASSWORDCHECK => new REQ_SubPasswordCheck(data),
-				Opcode.CSC_INITIALIZED => new REQ_Initialized(data, instanceManager),
+				Opcode.CSC_INITIALIZED => new REQ_Initialized(data),
 				Opcode.CSC_QUERYCASHITEM => new REQ_QueryCashItem(data),
 				Opcode.CSC_CHANGESTYLE => new REQ_ChangeStyle(data),
 				Opcode.CSC_UPDATEHELPINFO => new REQ_UpdateHelpInfo(data),
@@ -63,11 +63,12 @@ namespace WorldServer.Packets
 				Opcode.REQ_MOVETILEPOS => new REQ_MoveTilePos(data),
 				Opcode.REQ_MOVECHANGED => new REQ_MoveChanged(data),
 				Opcode.REQ_MOVEWAYPNTS => new REQ_MoveWayPnts(data),
+				Opcode.CSC_WARPCOMMAND => new REQ_WarpCommand(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}
 
-		public Queue<Action<Client>>? ReceiveAll(bool isAuthenticated, InstanceManager instanceManager)
+		public Queue<Action<Client>>? ReceiveAll(bool isAuthenticated)
 		{
 			Queue<Action<Client>>? actions = null;
 
@@ -97,7 +98,7 @@ namespace WorldServer.Packets
 					continue;
 				}
 
-				var packet = GetPacket((Opcode)opcodeNum, dataQueue, instanceManager);
+				var packet = GetPacket((Opcode)opcodeNum, dataQueue);
 				Log.Debug($"Processing opcode {opcodeNum} ({packet.GetType().Name})");
 
 				bool verifyHeader = packet.ReadHeader();

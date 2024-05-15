@@ -19,7 +19,7 @@ namespace MasterServer.Services
 
 		public override Task<CreateCharacterReply> CreateCharacter(CreateCharacterRequest request, ServerCallContext context)
 		{
-			var jsonString = File.ReadAllText("..\\LibPegasus\\Data\\char_init.json");
+			var jsonString = File.ReadAllText("..\\LibPegasus\\Data\\char_init_dev.json");
 			var json = JsonSerializer.Deserialize<CharInitRoot>(jsonString);
 			var result = _databaseManager.CharacterManager.CreateCharacter(request, json.CharInitData[(request.Style & 7) - 1]);
 			return Task.FromResult(new CreateCharacterReply

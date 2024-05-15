@@ -1,0 +1,908 @@
+{
+  "CharInitData": [
+    {
+      "ClassType": 1,
+      "LEV": 1,
+      "Exp": 0,
+      "STR": 24,
+      "DEX": 8,
+      "INT": 3,
+      "PNT": 0,
+      "Rank": 257,
+      "Alz": 0,
+      "WorldIdx": 1,
+      "Position": {
+        "X": 32,
+        "Y": 37
+      },
+      "HP": 50,
+      "MP": 20,
+      "SP": 0,
+      "SwdPNT": 0,
+      "MagPNT": 0,
+      "RankEXP": 0,
+      "Flags": 0,
+      "WarpBField": 0,
+      "MapsBField": 1,
+      "InventoryData": {
+        "0": {
+          "Kind": 3,
+          "Option": 5
+        },
+        "1": {
+          "Kind": 6,
+          "Option": 20
+        },
+        "2": {
+          "Kind": 240,
+          "Option": 0
+        },
+        "9": {
+          "Kind": 12,
+          "Option": 500
+        }
+      },
+      "EquipmentData": {
+        "1": {
+          "Kind": 105
+        },
+        "2": {
+          "Kind": 150
+        },
+        "3": {
+          "Kind": 195
+        },
+        "4": {
+          "Kind": 90
+        }
+      },
+      "SkillData": {
+        "0": {
+          "Id": 2,
+          "Level": 1
+        },
+        "1": {
+          "Id": 1,
+          "Level": 1
+        },
+        "70": {
+          "Id": 333,
+          "Level": 1
+        },
+        "72": {
+          "Id": 340,
+          "Level": 1
+        },
+        "73": {
+          "Id": 341,
+          "Level": 1
+        },
+        "75": {
+          "Id": 400,
+          "Level": 1
+        },
+        "78": {
+          "Id": 380,
+          "Level": 1
+        },
+        "79": {
+          "Id": 381,
+          "Level": 1
+        },
+        "80": {
+          "Id": 382,
+          "Level": 1
+        },
+        "81": {
+          "Id": 383,
+          "Level": 1
+        },
+        "102": {
+          "Id": 421,
+          "Level": 1
+        },
+        "103": {
+          "Id": 422,
+          "Level": 1
+        },
+        "104": {
+          "Id": 474,
+          "Level": 1
+        },
+        "105": {
+          "Id": 481,
+          "Level": 1
+        },
+        "106": {
+          "Id": 482,
+          "Level": 1
+        },
+        "107": {
+          "Id": 483,
+          "Level": 1
+        }
+      },
+      "QuickSlotData": {
+        "0": {
+          "Id": 132
+        },
+        "1": {
+          "Id": 0
+        },
+        "2": {
+          "Id": 1
+        },
+        "8": {
+          "Id": 131
+        },
+        "9": {
+          "Id": 237
+        },
+        "10": {
+          "Id": 239
+        },
+        "11": {
+          "Id": 130
+        }
+      },
+      "QuestData": 0,
+      "QuestFlagsData": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+      "ClassType": 2,
+      "LEV": 1,
+      "Exp": 0,
+      "STR": 16,
+      "DEX": 16,
+      "INT": 3,
+      "PNT": 0,
+      "Rank": 257,
+      "Alz": 0,
+      "WorldIdx": 2,
+      "Position": {
+        "X": 87,
+        "Y": 233
+      },
+      "HP": 50,
+      "MP": 20,
+      "SP": 0,
+      "SwdPNT": 0,
+      "MagPNT": 0,
+      "RankEXP": 0,
+      "Flags": 0,
+      "WarpBField": 0,
+      "MapsBField": 2,
+      "InventoryData": {
+        "0": {
+          "Kind": 3,
+          "Option": 5
+        },
+        "1": {
+          "Kind": 6,
+          "Option": 20
+        },
+        "2": {
+          "Kind": 270,
+          "Option": 0
+        },
+        "9": {
+          "Kind": 12,
+          "Option": 5
+        }
+      },
+      "EquipmentData": {
+        "1": {
+          "Kind": 135
+        },
+        "2": {
+          "Kind": 180
+        },
+        "3": {
+          "Kind": 225
+        },
+        "4": {
+          "Kind": 45
+        },
+        "5": {
+          "Kind": 60
+        }
+      },
+      "SkillData": {
+        "0": {
+          "Id": 2,
+          "Level": 1
+        },
+        "1": {
+          "Id": 1,
+          "Level": 1
+        },
+        "70": {
+          "Id": 333,
+          "Level": 1
+        },
+        "72": {
+          "Id": 342,
+          "Level": 1
+        },
+        "73": {
+          "Id": 343,
+          "Level": 1
+        },
+        "75": {
+          "Id": 402,
+          "Level": 1
+        },
+        "78": {
+          "Id": 384,
+          "Level": 1
+        },
+        "79": {
+          "Id": 385,
+          "Level": 1
+        },
+        "80": {
+          "Id": 386,
+          "Level": 1
+        },
+        "81": {
+          "Id": 387,
+          "Level": 1
+        },
+        "102": {
+          "Id": 421,
+          "Level": 1
+        },
+        "103": {
+          "Id": 422,
+          "Level": 1
+        },
+        "104": {
+          "Id": 474,
+          "Level": 1
+        },
+        "105": {
+          "Id": 486,
+          "Level": 1
+        },
+        "106": {
+          "Id": 487,
+          "Level": 1
+        },
+        "107": {
+          "Id": 488,
+          "Level": 1
+        }
+      },
+      "QuickSlotData": {
+        "0": {
+          "Id": 132
+        },
+        "1": {
+          "Id": 0
+        },
+        "2": {
+          "Id": 1
+        },
+        "8": {
+          "Id": 131
+        },
+        "9": {
+          "Id": 237
+        },
+        "10": {
+          "Id": 239
+        },
+        "11": {
+          "Id": 130
+        }
+      },
+      "QuestData": 0,
+      "QuestFlagsData": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+      "ClassType": 3,
+      "LEV": 1,
+      "Exp": 0,
+      "STR": 3,
+      "DEX": 6,
+      "INT": 26,
+      "PNT": 0,
+      "Rank": 257,
+      "Alz": 0,
+      "WorldIdx": 2,
+      "Position": {
+        "X": 87,
+        "Y": 233
+      },
+      "HP": 40,
+      "MP": 35,
+      "SP": 0,
+      "SwdPNT": 0,
+      "MagPNT": 0,
+      "RankEXP": 0,
+      "Flags": 0,
+      "WarpBField": 0,
+      "MapsBField": 2,
+      "InventoryData": {
+        "0": {
+          "Kind": 3,
+          "Option": 5
+        },
+        "1": {
+          "Kind": 6,
+          "Option": 20
+        },
+        "2": {
+          "Kind": 270,
+          "Option": 0
+        },
+        "9": {
+          "Kind": 12,
+          "Option": 5
+        }
+      },
+      "EquipmentData": {
+        "1": {
+          "Kind": 135
+        },
+        "2": {
+          "Kind": 180
+        },
+        "3": {
+          "Kind": 225
+        },
+        "4": {
+          "Kind": 15
+        },
+        "5": {
+          "Kind": 15
+        }
+      },
+      "SkillData": {
+        "32": {
+          "Id": 100,
+          "Level": 1
+        },
+        "33": {
+          "Id": 129,
+          "Level": 1
+        },
+        "70": {
+          "Id": 333,
+          "Level": 1
+        },
+        "72": {
+          "Id": 344,
+          "Level": 1
+        },
+        "73": {
+          "Id": 345,
+          "Level": 1
+        },
+        "75": {
+          "Id": 404,
+          "Level": 1
+        },
+        "102": {
+          "Id": 421,
+          "Level": 1
+        },
+        "103": {
+          "Id": 422,
+          "Level": 1
+        },
+        "104": {
+          "Id": 474,
+          "Level": 1
+        },
+        "105": {
+          "Id": 491,
+          "Level": 1
+        },
+        "106": {
+          "Id": 492,
+          "Level": 1
+        },
+        "107": {
+          "Id": 493,
+          "Level": 1
+        }
+      },
+      "QuickSlotData": {
+        "0": {
+          "Id": 132
+        },
+        "1": {
+          "Id": 32
+        },
+        "2": {
+          "Id": 33
+        },
+        "8": {
+          "Id": 131
+        },
+        "9": {
+          "Id": 237
+        },
+        "10": {
+          "Id": 239
+        },
+        "11": {
+          "Id": 130
+        }
+      },
+      "QuestData": 0,
+      "QuestFlagsData": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+      "ClassType": 4,
+      "LEV": 1,
+      "Exp": 0,
+      "STR": 6,
+      "DEX": 12,
+      "INT": 17,
+      "PNT": 0,
+      "Rank": 257,
+      "Alz": 0,
+      "WorldIdx": 3,
+      "Position": {
+        "X": 219,
+        "Y": 44
+      },
+      "HP": 40,
+      "MP": 35,
+      "SP": 0,
+      "SwdPNT": 0,
+      "MagPNT": 0,
+      "RankEXP": 0,
+      "Flags": 0,
+      "WarpBField": 0,
+      "MapsBField": 4,
+      "InventoryData": {
+        "0": {
+          "Kind": 3,
+          "Option": 5
+        },
+        "1": {
+          "Kind": 6,
+          "Option": 20
+        },
+        "2": {
+          "Kind": 255,
+          "Option": 0
+        },
+        "9": {
+          "Kind": 12,
+          "Option": 5
+        }
+      },
+      "EquipmentData": {
+        "1": {
+          "Kind": 120
+        },
+        "2": {
+          "Kind": 165
+        },
+        "3": {
+          "Kind": 210
+        },
+        "4": {
+          "Kind": 30
+        },
+        "5": {
+          "Kind": 30
+        }
+      },
+      "SkillData": {
+        "32": {
+          "Id": 424,
+          "Level": 1
+        },
+        "33": {
+          "Id": 148,
+          "Level": 1
+        },
+        "67": {
+          "Id": 331,
+          "Level": 1
+        },
+        "70": {
+          "Id": 333,
+          "Level": 1
+        },
+        "72": {
+          "Id": 346,
+          "Level": 1
+        },
+        "73": {
+          "Id": 347,
+          "Level": 1
+        },
+        "75": {
+          "Id": 406,
+          "Level": 1
+        },
+        "78": {
+          "Id": 391,
+          "Level": 1
+        },
+        "79": {
+          "Id": 392,
+          "Level": 1
+        },
+        "80": {
+          "Id": 393,
+          "Level": 1
+        },
+        "81": {
+          "Id": 394,
+          "Level": 1
+        },
+        "102": {
+          "Id": 421,
+          "Level": 1
+        },
+        "103": {
+          "Id": 422,
+          "Level": 1
+        },
+        "104": {
+          "Id": 474,
+          "Level": 1
+        },
+        "105": {
+          "Id": 496,
+          "Level": 1
+        },
+        "106": {
+          "Id": 497,
+          "Level": 1
+        },
+        "107": {
+          "Id": 498,
+          "Level": 1
+        }
+      },
+      "QuickSlotData": {
+        "0": {
+          "Id": 132
+        },
+        "1": {
+          "Id": 32
+        },
+        "2": {
+          "Id": 33
+        },
+        "3": {
+          "Id": 67
+        },
+        "8": {
+          "Id": 131
+        },
+        "9": {
+          "Id": 237
+        },
+        "10": {
+          "Id": 239
+        },
+        "11": {
+          "Id": 130
+        }
+      },
+      "QuestData": 0,
+      "QuestFlagsData": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+      "ClassType": 5,
+      "LEV": 1,
+      "Exp": 0,
+      "STR": 15,
+      "DEX": 9,
+      "INT": 11,
+      "PNT": 0,
+      "Rank": 257,
+      "Alz": 0,
+      "WorldIdx": 1,
+      "Position": {
+        "X": 32,
+        "Y": 37
+      },
+      "HP": 45,
+      "MP": 30,
+      "SP": 0,
+      "SwdPNT": 0,
+      "MagPNT": 0,
+      "RankEXP": 0,
+      "Flags": 0,
+      "WarpBField": 0,
+      "MapsBField": 1,
+      "InventoryData": {
+        "0": {
+          "Kind": 3,
+          "Option": 5
+        },
+        "1": {
+          "Kind": 6,
+          "Option": 20
+        },
+        "2": {
+          "Kind": 240,
+          "Option": 0
+        },
+        "9": {
+          "Kind": 12,
+          "Option": 5
+        }
+      },
+      "EquipmentData": {
+        "1": {
+          "Kind": 105
+        },
+        "2": {
+          "Kind": 150
+        },
+        "3": {
+          "Kind": 195
+        },
+        "4": {
+          "Kind": 60
+        },
+        "5": {
+          "Kind": 30
+        }
+      },
+      "SkillData": {
+        "0": {
+          "Id": 2,
+          "Level": 1
+        },
+        "32": {
+          "Id": 157,
+          "Level": 1
+        },
+        "67": {
+          "Id": 332,
+          "Level": 1
+        },
+        "70": {
+          "Id": 333,
+          "Level": 1
+        },
+        "72": {
+          "Id": 348,
+          "Level": 1
+        },
+        "73": {
+          "Id": 349,
+          "Level": 1
+        },
+        "75": {
+          "Id": 408,
+          "Level": 1
+        },
+        "78": {
+          "Id": 388,
+          "Level": 1
+        },
+        "79": {
+          "Id": 389,
+          "Level": 1
+        },
+        "80": {
+          "Id": 390,
+          "Level": 1
+        },
+        "102": {
+          "Id": 421,
+          "Level": 1
+        },
+        "103": {
+          "Id": 422,
+          "Level": 1
+        },
+        "104": {
+          "Id": 474,
+          "Level": 1
+        },
+        "105": {
+          "Id": 501,
+          "Level": 1
+        },
+        "106": {
+          "Id": 502,
+          "Level": 1
+        },
+        "107": {
+          "Id": 503,
+          "Level": 1
+        }
+      },
+      "QuickSlotData": {
+        "0": {
+          "Id": 132
+        },
+        "1": {
+          "Id": 0
+        },
+        "2": {
+          "Id": 32
+        },
+        "3": {
+          "Id": 67
+        },
+        "8": {
+          "Id": 131
+        },
+        "9": {
+          "Id": 237
+        },
+        "10": {
+          "Id": 239
+        },
+        "11": {
+          "Id": 130
+        }
+      },
+      "QuestData": 0,
+      "QuestFlagsData": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+      "ClassType": 6,
+      "LEV": 1,
+      "Exp": 0,
+      "STR": 12,
+      "DEX": 11,
+      "INT": 12,
+      "PNT": 0,
+      "Rank": 257,
+      "Alz": 0,
+      "WorldIdx": 3,
+      "Position": {
+        "X": 219,
+        "Y": 44
+      },
+      "HP": 45,
+      "MP": 30,
+      "SP": 0,
+      "SwdPNT": 0,
+      "MagPNT": 0,
+      "RankEXP": 0,
+      "Flags": 0,
+      "WarpBField": 0,
+      "MapsBField": 4,
+      "InventoryData": {
+        "0": {
+          "Kind": 3,
+          "Option": 5
+        },
+        "1": {
+          "Kind": 6,
+          "Option": 20
+        },
+        "2": {
+          "Kind": 255,
+          "Option": 0
+        },
+        "9": {
+          "Kind": 12,
+          "Option": 5
+        }
+      },
+      "EquipmentData": {
+        "1": {
+          "Kind": 120
+        },
+        "2": {
+          "Kind": 165
+        },
+        "3": {
+          "Kind": 210
+        },
+        "4": {
+          "Kind": 45
+        },
+        "5": {
+          "Kind": 15
+        }
+      },
+      "SkillData": {
+        "0": {
+          "Id": 2,
+          "Level": 1
+        },
+        "32": {
+          "Id": 100,
+          "Level": 1
+        },
+        "33": {
+          "Id": 252,
+          "Level": 1
+        },
+        "70": {
+          "Id": 333,
+          "Level": 1
+        },
+        "72": {
+          "Id": 350,
+          "Level": 1
+        },
+        "73": {
+          "Id": 351,
+          "Level": 1
+        },
+        "75": {
+          "Id": 410,
+          "Level": 1
+        },
+        "78": {
+          "Id": 464,
+          "Level": 1
+        },
+        "79": {
+          "Id": 465,
+          "Level": 1
+        },
+        "80": {
+          "Id": 466,
+          "Level": 1
+        },
+        "81": {
+          "Id": 467,
+          "Level": 1
+        },
+        "102": {
+          "Id": 421,
+          "Level": 1
+        },
+        "103": {
+          "Id": 422,
+          "Level": 1
+        },
+        "104": {
+          "Id": 474,
+          "Level": 1
+        },
+        "105": {
+          "Id": 506,
+          "Level": 1
+        },
+        "106": {
+          "Id": 507,
+          "Level": 1
+        },
+        "107": {
+          "Id": 508,
+          "Level": 1
+        }
+      },
+      "QuickSlotData": {
+        "0": {
+          "Id": 132
+        },
+        "1": {
+          "Id": 0
+        },
+        "2": {
+          "Id": 32
+        },
+        "3": {
+          "Id": 33
+        },
+        "8": {
+          "Id": 131
+        },
+        "9": {
+          "Id": 237
+        },
+        "10": {
+          "Id": 239
+        },
+        "11": {
+          "Id": 130
+        }
+      },
+      "QuestData": 0,
+      "QuestFlagsData": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    }
+  ]
+}

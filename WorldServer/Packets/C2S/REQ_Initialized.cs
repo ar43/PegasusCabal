@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 using WorldServer.Logic.Delegates;
 using WorldServer.Logic;
 using WorldServer.Enums;
-using WorldServer.Logic.World;
+using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Packets.C2S
 {
 	internal class REQ_Initialized : PacketC2S<Client>
 	{
-		InstanceManager _instanceManager;
-		public REQ_Initialized(Queue<byte> data, InstanceManager instanceManager) : base((UInt16)Opcode.CSC_INITIALIZED, data)
+		public REQ_Initialized(Queue<byte> data) : base((UInt16)Opcode.CSC_INITIALIZED, data)
 		{
-			_instanceManager = instanceManager;
 		}
 
 		public override bool ReadPayload(Queue<Action<Client>> actions)
@@ -32,7 +30,7 @@ namespace WorldServer.Packets.C2S
 				return false;
 			}
 
-			actions.Enqueue((client) => CharSelect.OnInitialize(client, charId, _instanceManager));
+			actions.Enqueue((client) => CharSelect.OnInitialize(client, charId));
 
 			return true;
 		}

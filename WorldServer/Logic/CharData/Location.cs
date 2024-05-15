@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WorldServer.Logic.World;
+using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData
 {

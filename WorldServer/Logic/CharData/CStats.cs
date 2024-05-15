@@ -17,10 +17,12 @@ namespace WorldServer.Logic.CharData
 			Int = @int;
 			Pnt = pnt;
 			Rank = rank;
+			Axp = 0;
 		}
 
 		public UInt32 Level { get; private set; }
 		public UInt32 Exp { get; private set; }
+		public UInt32 Axp { get; private set; }
 		public UInt32 Str { get; private set; }
 		public UInt32 Dex { get; private set; }
 		public UInt32 Int { get; private set; }

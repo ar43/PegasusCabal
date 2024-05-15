@@ -360,6 +360,16 @@ namespace WorldServer.Logic.CharData
 			return true;
 		}
 
+		public void SetPosition(int x, int y)
+		{
+			StartX = x;
+			StartY = y;
+			X = x;
+			Y = y;
+			EndX = x;
+			EndY = y;
+		}
+
 		public bool End(UInt16 x, UInt16 y)
 		{
 			var waypoint = _waypoints[0];

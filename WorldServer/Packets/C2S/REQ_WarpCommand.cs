@@ -1,0 +1,46 @@
+﻿using LibPegasus.Packets;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WorldServer.Logic.Delegates;
+using WorldServer.Logic;
+using WorldServer.Enums;
+
+namespace WorldServer.Packets.C2S
+{
+	internal class REQ_WarpCommand : PacketC2S<Client>
+	{
+		public REQ_WarpCommand(Queue<byte> data) : base((UInt16)Opcode.CSC_WARPCOMMAND, data)
+		{
+
+		}
+
+		public override bool ReadPayload(Queue<Action<Client>> actions)
+		{
+			byte warpCommandId;
+			UInt16 slot;
+			UInt32 worldType; //??? this is prolly warpId
+			UInt32 target, u0, u1;
+
+			try
+			{
+				warpCommandId = PacketReader.ReadByte(_data);
+				slot = PacketReader.ReadUInt16(_data);
+				worldType = PacketReader.ReadUInt32(_data);
+				target = PacketReader.ReadUInt32(_data);
+				u0 = PacketReader.ReadUInt32(_data);
+				u1 = PacketReader.ReadUInt32(_data);
+			}
+			catch (IndexOutOfRangeException)
+			{
+				return false;
+			}
+
+			actions.Enqueue((client) => Warping.OnWarpCommand(client, warpCommandId, slot, worldType, target));
+
+			return true;
+		}
+	}
+}
