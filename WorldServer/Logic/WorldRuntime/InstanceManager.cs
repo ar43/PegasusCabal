@@ -38,10 +38,24 @@ namespace WorldServer.Logic.WorldRuntime
 			AddInstance(Enums.MapId.BLOODY_ICE, InstanceType.PERMANENT);
 			AddInstance(Enums.MapId.GREEN_DESPAIR, InstanceType.PERMANENT);
 			AddInstance(Enums.MapId.DESERT_SCREAM, InstanceType.PERMANENT);
+			AddInstance(Enums.MapId.WARP_CENTER, InstanceType.PERMANENT);
 		}
 
 		private void WarpClient(Client client, Instance newInstance, UInt32 warpType, int newX, int newY)
 		{
+			//this is a guess, but looks that way (emulates the randomized warp effect observed on first 4 maps on town tiles)
+			if ((int)newInstance.MapId >= 1 && (int)newInstance.MapId <= 4 && newInstance.CheckTileTown((UInt16)newX, (UInt16)newY))
+			{
+				var cellX = (newX / 16);
+				var cellY = (newY / 16);
+
+				var list = newInstance.CalculateValidCellSpots((UInt16)cellX, (UInt16)cellY);
+
+				var position = list[_random.Next(list.Count)];
+				newX = position.Item1;
+				newY = position.Item2;
+			}
+
 			var oldInstance = client.Character.Location.Instance;
 			oldInstance.RemoveClient(client, DelUserType.WARP);
 
@@ -56,21 +70,44 @@ namespace WorldServer.Logic.WorldRuntime
 			AddClient(client, newInstance.Id, NewUserType.NEWWARP);
 		}
 
-		public void WarpClientReturn(Client client)
+		public bool WarpClientReturn(Client client)
 		{
 			var instance = client.Character.Location.Instance;
 
 			var warpId = instance.MapData.TerrainInfo.WarpIdxForRetn;
 			var warp = _warpManager.Get(warpId);
+            if (warp == null)
+            {
+				return false;
+            }
 
-			var cellX = (warp.PosXPnt / 16);
-			var cellY = (warp.PosYPnt / 16);
+            //TODO: Nation checking
+            WarpClient(client, instance, 8, warp.PosXPnt, warp.PosYPnt);
+			return true;
+		}
 
-			var list = instance.CalculateValidCellSpots((UInt16)cellX, (UInt16)cellY);
+		public bool WarpClientByNpcId(Client client, int npcId)
+		{
+			var instance = client.Character.Location.Instance;
 
-			var position = list[_random.Next(list.Count)];
+			if (!instance.MapData.NpcData.TryGetValue(npcId, out var npc))
+				return false;
+			if (!npc.NpcWarpData.TryGetValue(0, out var npcWarp))
+				return false;
+			var warpId = npcWarp.TargetId;
+			var warp = _warpManager.Get(warpId);
+			if(warp == null) return false;
 
-			WarpClient(client, instance, 8, position.Item1, position.Item2);
+			//TODO: Nation checking
+			if(_instances.TryGetValue((UInt128)warp.WorldIdx, out var newInstance))
+			{
+				if (newInstance.Type != InstanceType.PERMANENT)
+					return false;
+				WarpClient(client, newInstance, 8, warp.PosXPnt, warp.PosYPnt);
+				return true;
+			}
+			
+			return false;
 		}
 
 		public void AddInstance(MapId mapId, InstanceType instanceType)

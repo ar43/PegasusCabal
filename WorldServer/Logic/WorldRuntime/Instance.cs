@@ -98,6 +98,10 @@ namespace WorldServer.Logic.WorldRuntime
 		{
 			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.WALL);
 		}
+		public bool CheckTileTown(UInt16 x, UInt16 y)
+		{
+			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.TOWN);
+		}
 		public void MoveClient(Client client, UInt16 newCellX, UInt16 newCellY, NewUserType cellMoveType)
 		{
 			var cellX = client.Character.Location.Movement.CellX; //old cell pos x

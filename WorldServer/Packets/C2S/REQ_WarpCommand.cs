@@ -19,14 +19,14 @@ namespace WorldServer.Packets.C2S
 
 		public override bool ReadPayload(Queue<Action<Client>> actions)
 		{
-			byte warpCommandId;
+			byte npcId;
 			UInt16 slot;
 			UInt32 worldType; //??? this is prolly warpId
 			UInt32 target, u0, u1;
 
 			try
 			{
-				warpCommandId = PacketReader.ReadByte(_data);
+				npcId = PacketReader.ReadByte(_data);
 				slot = PacketReader.ReadUInt16(_data);
 				worldType = PacketReader.ReadUInt32(_data);
 				target = PacketReader.ReadUInt32(_data);
@@ -38,7 +38,7 @@ namespace WorldServer.Packets.C2S
 				return false;
 			}
 
-			actions.Enqueue((client) => Warping.OnWarpCommand(client, warpCommandId, slot, worldType, target));
+			actions.Enqueue((client) => Warping.OnWarpCommand(client, npcId, slot, worldType, target));
 
 			return true;
 		}

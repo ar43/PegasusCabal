@@ -26,7 +26,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 			else
 			{
 				var configStr = "[Terrain" + Convert.ToString(mapId) + "]";
-				var subConfig = _config.Config[configStr];
+				var subConfig = _config.GetConfig(configStr);
 				if(subConfig != null)
 				{
 					var terrainData = subConfig["0"];
@@ -43,7 +43,37 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 
 
 						var terrainInfo = new TerrainInfo(terrainX, terrainY, warpIdxForDead, warpIdxForRetn, warpIdxForLOut, dmgMin, dmgMax, warControl);
-						var mapData = new MapData(mapId, terrainInfo);
+
+						Dictionary<int, NpcData> npcData = new();
+						configStr = "[NpcPos" + Convert.ToString(mapId) + "]";
+						subConfig = _config.GetConfig(configStr);
+						foreach(var npcCfg in subConfig.Values)
+						{
+							var flags = Convert.ToInt32(npcCfg["Flags"]);
+							var index = Convert.ToInt32(npcCfg["Index"]);
+							var posX = Convert.ToInt32(npcCfg["PosX"]);
+							var posY = Convert.ToInt32(npcCfg["PosY"]);
+							var type = Convert.ToInt32(npcCfg["Type"]);
+							var isRangeCheck = Convert.ToBoolean(Convert.ToInt32((npcCfg["IsRangeCheck"])));
+							if (!npcData.TryAdd(index, new(index, flags, posX, posY, type, isRangeCheck)))
+								throw new Exception("Npc already exists");
+						}
+
+						configStr = "[WarpLst" + Convert.ToString(mapId) + "]";
+						subConfig = _config.GetConfig(configStr);
+						foreach (var warpCfg in subConfig.Values)
+						{
+							var npcId = Convert.ToInt32(warpCfg["NpcsIdx"]);
+							var setId = Convert.ToInt32(warpCfg["NSetIdx"]);
+							var targetId = Convert.ToInt32(warpCfg["TargetIdx"]);
+							var level = Convert.ToInt32(warpCfg["LV"]);
+							var fee = Convert.ToInt32(warpCfg["Fee"]);
+							var type = Convert.ToInt32(warpCfg["Type"]);
+							if(!npcData[npcId].NpcWarpData.TryAdd(setId, new(setId, level, fee, type, targetId)))
+								throw new Exception("Npc warp already exists");
+						}
+
+						var mapData = new MapData(mapId, terrainInfo, npcData);
 						if (!_maps.TryAdd(mapId, mapData))
 							throw new Exception($"Map {mapId} already exists");
 						return mapData;

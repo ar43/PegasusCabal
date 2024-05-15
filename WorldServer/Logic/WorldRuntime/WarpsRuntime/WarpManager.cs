@@ -13,7 +13,7 @@ namespace WorldServer.Logic.WorldRuntime.WarpsRuntime
 		public WarpManager(WorldConfig config)
 		{
 			_warps = new();
-			var warpConfig = config.Config["[Warp]"];
+			var warpConfig = config.GetConfig("[Warp]");
 			foreach (var item in warpConfig)
 			{
 				var warpId = Convert.ToInt32(item.Key);
