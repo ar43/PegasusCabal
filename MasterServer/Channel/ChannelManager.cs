@@ -109,16 +109,19 @@ namespace MasterServer.Channel
 
 		public byte[]? GetSerializedServerData()
 		{
-			if (_servers.Count > 0)
+			lock (_servers)
 			{
-				byte[] data = new byte[_servers.Count * 2];
-				int i = 0;
-				foreach (Server server in _servers)
+				if (_servers.Count > 0)
 				{
-					data[i] = (byte)server.Id;
-					i += 2;
+					byte[] data = new byte[_servers.Count * 2];
+					int i = 0;
+					foreach (Server server in _servers)
+					{
+						data[i] = (byte)server.Id;
+						i += 2;
+					}
+					return data;
 				}
-				return data;
 			}
 			return null;
 		}

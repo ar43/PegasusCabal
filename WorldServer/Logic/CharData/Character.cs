@@ -68,7 +68,8 @@ namespace WorldServer.Logic.CharData
 				SyncPending = prio;
 			if(prio == DBSyncPriority.NONE)
 				SyncPending = DBSyncPriority.NONE;
-			UninitOnSync = uninitOnSync;
+			if(uninitOnSync)
+				UninitOnSync = uninitOnSync;
 		}
 
 		public void ClearSync()
