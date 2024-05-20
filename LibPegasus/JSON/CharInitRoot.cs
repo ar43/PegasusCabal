@@ -28,8 +28,8 @@
 		public int Flags { get; set; }
 		public int WarpBField { get; set; }
 		public int MapsBField { get; set; }
-		public Dictionary<UInt32, InventoryDataItem> InventoryData { get; set; }
-		public Dictionary<UInt32, EquipmentDataItem> EquipmentData { get; set; }
+		public Dictionary<UInt32, InventoryDataJSONItem> InventoryData { get; set; }
+		public Dictionary<UInt32, EquipmentDataJSONItem> EquipmentData { get; set; }
 		public Dictionary<UInt16, SkillDataEntry> SkillData { get; set; }
 		public Dictionary<UInt16, QuickSlotDataEntry> QuickSlotData { get; set; }
 		public int QuestData { get; set; }

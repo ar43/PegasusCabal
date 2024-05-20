@@ -8,7 +8,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
+using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.DbSyncData;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WorldServer.DB
 {
@@ -33,6 +36,161 @@ namespace WorldServer.DB
 
 				MessageParser<T> parser = new MessageParser<T>(() => new T());
 				return parser.ParseFrom(ms);
+			}
+		}
+
+		public async Task<int> SyncEquipment(int charId, EquipmentData equipmentData)
+		{
+			var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET eq_data = @a WHERE char_id = @b", conn))
+			{
+				try
+				{
+					cmd.Parameters.AddWithValue("b", charId);
+					cmd.Parameters.AddWithValue("a", equipmentData.ToByteArray());
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
+		public async Task<int> SyncInventory(int charId, InventoryData inventoryData)
+		{
+			var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET inv_data = @a WHERE char_id = @b", conn))
+			{
+				try
+				{
+					cmd.Parameters.AddWithValue("b", charId);
+					cmd.Parameters.AddWithValue("a", inventoryData.ToByteArray());
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
+		public async Task<int> SyncSkills(int charId, SkillData skillData)
+		{
+			var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET skill_data = @a WHERE char_id = @b", conn))
+			{
+				try
+				{
+					cmd.Parameters.AddWithValue("b", charId);
+					cmd.Parameters.AddWithValue("a", skillData.ToByteArray());
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
+		public async Task<int> SyncLinks(int charId, QuickSlotData linksData)
+		{
+			var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET quickslot_data = @a WHERE char_id = @b", conn))
+			{
+				try
+				{
+					cmd.Parameters.AddWithValue("b", charId);
+					cmd.Parameters.AddWithValue("a", linksData.ToByteArray());
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
+		public async Task<int> SyncLocation(int charId, DbSyncLocation locationData)
+		{
+			var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET x = @b, y = @c, world_id = @d  WHERE char_id = @a", conn))
+			{
+				try
+				{
+					cmd.Parameters.AddWithValue("a", charId);
+					cmd.Parameters.AddWithValue("b", locationData.X);
+					cmd.Parameters.AddWithValue("c", locationData.Y);
+					cmd.Parameters.AddWithValue("d", locationData.WorldId);
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
+		public async Task<int> SyncStats(int charId, DbSyncStats statsData)
+		{
+			var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET level = @b, exp = @c, str = @d, dex = @e, int = @int, pnt = @pnt, rank = @rank  WHERE char_id = @a", conn))
+			{
+				try
+				{
+					//todo axp
+					cmd.Parameters.AddWithValue("a", charId);
+					cmd.Parameters.AddWithValue("b", statsData.Level);
+					cmd.Parameters.AddWithValue("c", statsData.Exp);
+					cmd.Parameters.AddWithValue("d", statsData.Str);
+					cmd.Parameters.AddWithValue("e", statsData.Dex);
+					cmd.Parameters.AddWithValue("int", statsData.Int);
+					cmd.Parameters.AddWithValue("pnt", statsData.Pnt);
+					cmd.Parameters.AddWithValue("rank", statsData.Rank);
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
+		public async Task<int> SyncStatus(int charId, DbSyncStatus statusData)
+		{
+			var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET hp = @hp, mp = @mp, sp = @sp, max_hp = @max_hp, max_mp = @max_mp, max_sp = @max_sp WHERE char_id = @a", conn))
+			{
+				try
+				{
+					//todo axp
+					cmd.Parameters.AddWithValue("a", charId);
+					cmd.Parameters.AddWithValue("hp", statusData.Hp);
+					cmd.Parameters.AddWithValue("mp", statusData.Mp);
+					cmd.Parameters.AddWithValue("sp", statusData.Sp);
+					cmd.Parameters.AddWithValue("max_hp", statusData.MaxHp);
+					cmd.Parameters.AddWithValue("max_sp", statusData.MaxSp);
+					cmd.Parameters.AddWithValue("max_mp", statusData.MaxMp);
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
 			}
 		}
 
@@ -144,8 +302,8 @@ namespace WorldServer.DB
 							cSkills,
 							cQuickSlotBar,
 							new Location((UInt16)reader.GetInt32(x), (UInt16)reader.GetInt32(y)),
-							new CStats((UInt32)reader.GetInt32(level), (UInt32)reader.GetInt32(exp), (UInt32)reader.GetInt32(str), (UInt32)reader.GetInt32(dex), (UInt32)reader.GetInt32(INT), (UInt32)reader.GetInt32(pnt), (UInt32)reader.GetInt32(rank)),
-							new CStatus((UInt32)reader.GetInt32(hp), (UInt32)reader.GetInt32(maxHp), (UInt32)reader.GetInt32(mp), (UInt32)reader.GetInt32(maxMp), (UInt32)reader.GetInt32(sp), (UInt32)reader.GetInt32(maxSp)),
+							new Stats((UInt32)reader.GetInt32(level), (UInt32)reader.GetInt32(exp), (UInt32)reader.GetInt32(str), (UInt32)reader.GetInt32(dex), (UInt32)reader.GetInt32(INT), (UInt32)reader.GetInt32(pnt), (UInt32)reader.GetInt32(rank)),
+							new Status((UInt32)reader.GetInt32(hp), (UInt32)reader.GetInt32(maxHp), (UInt32)reader.GetInt32(mp), (UInt32)reader.GetInt32(maxMp), (UInt32)reader.GetInt32(sp), (UInt32)reader.GetInt32(maxSp)),
 							reader.GetInt32(idLabel)
 						);
 						return (character, wid);

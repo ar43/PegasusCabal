@@ -2,6 +2,7 @@
 using LibPegasus.JSON;
 using MasterServer.Channel;
 using MasterServer.DB;
+using MasterServer.Sync;
 using Shared.Protos;
 using System.Text.Json;
 
@@ -11,10 +12,12 @@ namespace MasterServer.Services
 	{
 
 		private readonly DatabaseManager _databaseManager;
+		private readonly SyncManager _syncManager;
 
-		public CharacterMasterService(DatabaseManager databaseManager)
+		public CharacterMasterService(DatabaseManager databaseManager, SyncManager syncManager)
 		{
 			_databaseManager = databaseManager;
+			_syncManager = syncManager;
 		}
 
 		public override Task<CreateCharacterReply> CreateCharacter(CreateCharacterRequest request, ServerCallContext context)
@@ -26,6 +29,26 @@ namespace MasterServer.Services
 			{
 				Result = (UInt32)result.Result.Item2,
 				CharId = (UInt32)result.Result.Item1
+			});
+		}
+
+		public override Task<CharacterSyncStatusReply> CharacterSyncStatus(CharacterSyncStatusRequest request, ServerCallContext context)
+		{
+			//todo: serverId
+			var result = _syncManager.IsSynced((Int32)request.CharId);
+			return Task.FromResult(new CharacterSyncStatusReply
+			{
+				Status = Convert.ToUInt32(result)
+			});
+		}
+
+		public override Task<SetCharacterSyncStatusReply> SetCharacterSyncStatus(SetCharacterSyncStatusRequest request, ServerCallContext context)
+		{
+			//todo: exception on resync
+			_syncManager.SyncSection((Int32)request.CharId, (LibPegasus.Enums.SyncFlags)request.SyncFlags);
+			return Task.FromResult(new SetCharacterSyncStatusReply
+			{
+				Status = 1
 			});
 		}
 

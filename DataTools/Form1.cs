@@ -39,7 +39,7 @@ namespace DataTools
 					throw new Exception("byteArray.Length % 18 != 0");
 				}
 
-				var invData = new InventoryDataRoot(new Dictionary<uint, InventoryDataItem>());
+				var invData = new InventoryDataJSONRoot(new Dictionary<uint, InventoryDataJSONItem>());
 
 				for (int i = 0; i < byteArray.Length; i += entryLen)
 				{
@@ -50,7 +50,7 @@ namespace DataTools
 					var slot = BinaryPrimitives.ReadUInt32LittleEndian(span.Slice(12, 4));
 					var unknown2 = BinaryPrimitives.ReadUInt16LittleEndian(span.Slice(16, 2));
 
-					invData.InventoryData.Add(slot, new InventoryDataItem(kind, option));
+					invData.InventoryData.Add(slot, new InventoryDataJSONItem(kind, option));
 				}
 
 				string jsonString = JsonSerializer.Serialize(invData);
@@ -69,7 +69,7 @@ namespace DataTools
 					throw new Exception("byteArray.Length % 18 != 0");
 				}
 
-				var eqData = new EquipmentDataRoot(new Dictionary<uint, EquipmentDataItem>());
+				var eqData = new EquipmentDataJSONRoot(new Dictionary<uint, EquipmentDataJSONItem>());
 
 				for (int i = 0; i < byteArray.Length; i += entryLen)
 				{
@@ -80,7 +80,7 @@ namespace DataTools
 					var slot = BinaryPrimitives.ReadUInt32LittleEndian(span.Slice(12, 4));
 					var unknown2 = BinaryPrimitives.ReadUInt16LittleEndian(span.Slice(16, 2));
 
-					eqData.EquipmentData.Add(slot, new EquipmentDataItem(kind));
+					eqData.EquipmentData.Add(slot, new EquipmentDataJSONItem(kind));
 				}
 
 				string jsonString = JsonSerializer.Serialize(eqData);
@@ -231,12 +231,12 @@ namespace DataTools
 		private void button3_Click(object sender, EventArgs e)
 		{
 			Random random = new Random();
-			List<int> cores= new List<int>();
+			List<int> cores = new List<int>();
 			List<int> converters = new List<int>();
 			int[] chances = { 100, 80, 70, 55, 40, 36 };
 			int[] coreUsage = { 0, 2, 2, 4, 4, 5 };
 
-			for(int i = 0; i < 100000; i++)
+			for (int i = 0; i < 100000; i++)
 			{
 				int itemLvl = 0;
 				int coreNum = 0;
@@ -244,7 +244,7 @@ namespace DataTools
 
 				while (itemLvl != 6)
 				{
-					if(itemLvl == 0)
+					if (itemLvl == 0)
 					{
 						itemLvl = 1;
 						converterNum++;
@@ -265,7 +265,60 @@ namespace DataTools
 				converters.Add(converterNum);
 			}
 			int average = 0;
-			for(int i = 0; i <  cores.Count; i++)
+			for (int i = 0; i < cores.Count; i++)
+			{
+				average = average + cores[i];
+			}
+			average = average / cores.Count;
+
+			int average_conv = 0;
+			for (int i = 0; i < converters.Count; i++)
+			{
+				average_conv = average_conv + converters[i];
+			}
+			average_conv = average_conv / converters.Count;
+			textBox2.Text = $"{average} {average_conv}";
+		}
+
+		private void button4_Click_1(object sender, EventArgs e)
+		{
+			Random random = new Random();
+			List<int> cores = new List<int>();
+			List<int> converters = new List<int>();
+			int[] chances = { 100, 95, 90, 75, 65, 60, 40, 40, 36, 36 };
+			int[] coreUsage = { 1, 1, 1, 2, 2, 2, 3, 3, 3, 4 };
+
+			for (int i = 0; i < 100000; i++)
+			{
+				int itemLvl = 0;
+				int coreNum = 0;
+				int converterNum = 0;
+
+				while (itemLvl != 4)
+				{
+					if (itemLvl == 0)
+					{
+						coreNum += coreUsage[itemLvl];
+						itemLvl = 1;
+						converterNum++;
+					}
+					var num = random.Next(0, 100);
+					//int toBeat = 100 - chances[itemLvl];
+					coreNum += coreUsage[itemLvl];
+					if (num < chances[itemLvl])
+					{
+						itemLvl++;
+					}
+					else
+					{
+						itemLvl = 0;
+					}
+				}
+				cores.Add(coreNum);
+				converters.Add(converterNum);
+			}
+			int average = 0;
+			for (int i = 0; i < cores.Count; i++)
 			{
 				average = average + cores[i];
 			}

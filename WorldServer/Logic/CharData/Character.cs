@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Enums;
 
 namespace WorldServer.Logic.CharData
 {
 	internal class Character
 	{
-		public Character(Style style, string name)
+		public Character(Style style, string name) //used just in connection, not actually fr
 		{
 			Style = style;
 			Name = name;
@@ -19,7 +20,7 @@ namespace WorldServer.Logic.CharData
 			Id = 0;
 		}
 
-		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, Skills? skills, QuickSlotBar? quickSlotBar, Location location, CStats? stats, CStatus? status, int id)
+		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, Skills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id)
 		{
 			Equipment = equipment;
 			Inventory = inventory;
@@ -51,12 +52,20 @@ namespace WorldServer.Logic.CharData
 		public Skills? Skills { get; set; }
 		public QuickSlotBar? QuickSlotBar { get; set; }
 		public Location Location { get; private set; }
-		public CStats? Stats { get; set; }
-		public CStatus? Status { get; set; }
+		public Stats? Stats { get; set; }
+		public Status? Status { get; set; }
 
 		public LiveStyle LiveStyle { get; private set; }
 		public ActionFlag ActionFlag { get; private set; }
 		public BuffFlag BuffFlag { get; private set; }
+		public DBSyncPriority SyncPending { get; private set; }
+
+
+		public void Sync(DBSyncPriority prio)
+		{
+			if(SyncPending < prio)
+				SyncPending = prio;
+		}
 
 	}
 }

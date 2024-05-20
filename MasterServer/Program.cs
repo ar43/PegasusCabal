@@ -2,6 +2,7 @@ using MasterServer.Channel;
 using MasterServer.Chat;
 using MasterServer.DB;
 using MasterServer.Services;
+using MasterServer.Sync;
 using Serilog;
 
 namespace MasterServer
@@ -24,6 +25,7 @@ namespace MasterServer
 			builder.Services.AddGrpc();
 			builder.Services.AddScoped<DatabaseManager>();
 			builder.Services.AddSingleton<ChannelManager>();
+			builder.Services.AddSingleton<SyncManager>();
 			builder.Services.AddHostedService<TimedChannelService>();
 			builder.Services.AddSingleton<ChatServer>();
 			//builder.Services.AddHostedService<ChatServerService>();

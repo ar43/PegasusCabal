@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using WorldServer.DB;
+using WorldServer.DB.Sync;
 using WorldServer.Logic;
 using WorldServer.Logic.WorldRuntime;
 
@@ -29,6 +30,7 @@ namespace WorldServer
 		List<Client> _clients = new();
 		ConcurrentQueue<SessionChangeData> _pendingSessionChanges = new();
 		XorKeyTable _xorKeyTable = new();
+		SyncManager _syncManager;
 
 		DatabaseManager _databaseManager;
 		World _world;
@@ -70,6 +72,7 @@ namespace WorldServer
 
 			_databaseManager = new DatabaseManager();
 			_world = new World();
+			_syncManager = new SyncManager(_masterRpcChannel, _databaseManager);
 		}
 		
 		void SendHeartbeat()
@@ -139,6 +142,7 @@ namespace WorldServer
 				}
 				catch(SocketException)
 				{
+					Log.Information("Listener is closed, exiting AcceptNewConnections()");
 					return;
 				}
 			}
@@ -237,7 +241,7 @@ namespace WorldServer
 				ProcessSessionChanges();
 				Thread.Sleep(1);
 			}
-
+			//TODO: kick all clients and force sync
 			Quit();
 			Task.WaitAll();
 		}
@@ -263,6 +267,7 @@ namespace WorldServer
 			{
 				client.ReceiveData();
 				client.Update();
+				client.DbSync(_syncManager);
 				client.SendData();
 			}
 		}
@@ -283,6 +288,7 @@ namespace WorldServer
 
 		private void Quit()
 		{
+			_syncManager.Stop();
 			_listener.Stop();
 		}
 	}

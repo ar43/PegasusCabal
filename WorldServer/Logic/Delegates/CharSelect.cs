@@ -164,6 +164,13 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
+			var charSyncStatus = await client.IsCharacterSynced((Int32)charId);
+			if(charSyncStatus.Status != 1)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "char not yet ready");
+				return;
+			}
+
 			var character = await client.LoadCharacter(charId);
 			client.Character = character.Item1;
 			var worldId = character.Item2;

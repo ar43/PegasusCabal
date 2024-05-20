@@ -8,6 +8,8 @@ service CharacterMaster
 {
 	rpc GetMyCharacters (GetMyCharactersRequest) returns (GetMyCharactersReply);
 	rpc CreateCharacter (CreateCharacterRequest) returns (CreateCharacterReply);
+	rpc CharacterSyncStatus (CharacterSyncStatusRequest) returns (CharacterSyncStatusReply);
+	rpc SetCharacterSyncStatus (SetCharacterSyncStatusRequest) returns (SetCharacterSyncStatusReply);
 }
 
 message CreateCharacterRequest
@@ -24,6 +26,29 @@ message CreateCharacterReply
 {
 	uint32 result = 1;
 	uint32 charId = 2;
+}
+
+message SetCharacterSyncStatusRequest
+{
+	uint32 charId = 1;
+	uint32 serverId = 2;
+	uint32 syncFlags = 3;
+}
+
+message SetCharacterSyncStatusReply
+{
+	uint32 status = 1;
+}
+
+message CharacterSyncStatusRequest
+{
+	uint32 charId = 1;
+	uint32 serverId = 2;
+}
+
+message CharacterSyncStatusReply
+{
+	uint32 status = 1;
 }
 
 message GetMyCharactersRequest

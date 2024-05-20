@@ -8,9 +8,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection.PortableExecutable;
 using WorldServer.DB;
+using WorldServer.DB.Sync;
 using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.DbSyncData;
 using WorldServer.Logic.ClientData;
 using WorldServer.Logic.WorldRuntime;
 using WorldServer.Packets;
@@ -39,6 +41,7 @@ namespace WorldServer.Logic
 
 		public LibPegasus.Utils.Timer? TimerHeartbeat = null; //set to 40
 		public LibPegasus.Utils.Timer? TimerHeartbeatTimeout = null; //set this to null on successfull heartbeat
+		public LibPegasus.Utils.Timer? TimerDbSync = null;
 
 		DateTime timeClientAccepted;
 
@@ -302,6 +305,7 @@ namespace WorldServer.Logic
 			Dropped = true;
 			Log.Warning($"called Disconnect on client id {ConnectionInfo.UserId} with reason: {reason}");
 			ConnectionInfo.ConnState = newState;
+			Character.Sync(DBSyncPriority.HIGH);
 			//todo - send session timeout
 
 		}
@@ -337,6 +341,14 @@ namespace WorldServer.Logic
 			return reply;
 		}
 
+		internal async Task<CharacterSyncStatusReply> IsCharacterSynced(int charId)
+		{
+			var client = new CharacterMaster.CharacterMasterClient(_masterRpcChannel);
+			var serverId = ServerConfig.Get().GeneralSettings.ServerId;
+			var reply = await client.CharacterSyncStatusAsync(new CharacterSyncStatusRequest { CharId = (UInt32)charId, ServerId = (UInt32)serverId });
+			return reply;
+		}
+
 		internal async Task<(string, DateTime?)> GetSubPasswordData()
 		{
 			var reply = await _databaseManager.SubpassManager.GetSubPasswordData((Int32)ConnectionInfo.AccountId);
@@ -358,6 +370,91 @@ namespace WorldServer.Logic
 		public void BroadcastNearby(PacketS2C packet, bool excludeClient = false)
 		{
 			Character.Location.Instance.BroadcastNearby(this, packet, excludeClient);
+		}
+
+		internal void DbSync(SyncManager syncManager)
+		{
+			//do it periodically, eg every 5 seconds
+			//check flags to see what to update
+			//send DbSyncRequest object which contains attributes depending on DbSyncFlags (DbSyncInventory... etc)
+			//add bool to DbSyncRequest to notify master server on data save.
+			//add timestamp to DbSyncRequest
+			if (Character != null)
+			{
+				if(Character.SyncPending > DBSyncPriority.NONE || TimerDbSync != null && TimerDbSync.Tick())
+				{
+					DBSyncPriority globalPrio = Character.SyncPending;
+					DBSyncPriority highestPrio = DBSyncPriority.NONE;
+
+					DbSyncEquipment? dbSyncEquipment = null;
+					DbSyncInventory? dbSyncInventory = null;
+					DbSyncLocation? dbSyncLocation = null;
+					DbSyncQuickSlotBar? dbSyncQuickSlotBar = null;
+					DbSyncSkills? dbSyncSkills = null;
+					DbSyncStats? dbSyncStats = null;
+					DbSyncStatus? dbSyncStatus = null;
+
+					if(Character.Inventory.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if(Character.Inventory.SyncPending > highestPrio)
+							highestPrio = Character.Inventory.SyncPending;
+						dbSyncInventory = new(Character.Inventory.GetProtobuf(), Character.Inventory.Alz);
+					}
+					if (Character.Equipment.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if (Character.Equipment.SyncPending > highestPrio)
+							highestPrio = Character.Equipment.SyncPending;
+						dbSyncEquipment = new(Character.Equipment.GetProtobuf());
+					}
+					if (Character.Location.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if (Character.Location.SyncPending > highestPrio)
+							highestPrio = Character.Location.SyncPending;
+						dbSyncLocation = Character.Location.GetDB();
+					}
+					if (Character.QuickSlotBar.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if (Character.QuickSlotBar.SyncPending > highestPrio)
+							highestPrio = Character.QuickSlotBar.SyncPending;
+						dbSyncQuickSlotBar = new(Character.QuickSlotBar.GetProtobuf());
+					}
+					if (Character.Skills.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if (Character.Skills.SyncPending > highestPrio)
+							highestPrio = Character.Skills.SyncPending;
+						dbSyncSkills = new(Character.Skills.GetProtobuf());
+					}
+					if (Character.Stats.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if (Character.Stats.SyncPending > highestPrio)
+							highestPrio = Character.Stats.SyncPending;
+						dbSyncStats = Character.Stats.GetDB();
+					}
+					if (Character.Status.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if (Character.Status.SyncPending > highestPrio)
+							highestPrio = Character.Status.SyncPending;
+						dbSyncStatus = Character.Status.GetDB();
+					}
+
+					if(highestPrio > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if(globalPrio > DBSyncPriority.NONE)
+							highestPrio = globalPrio;
+						DbSyncRequest dbSyncRequest = new(highestPrio, Character.Id, Dropped);
+						dbSyncRequest.DbSyncInventory = dbSyncInventory;
+						dbSyncRequest.DbSyncQuickSlotBar = dbSyncQuickSlotBar;
+						dbSyncRequest.DbSyncSkills = dbSyncSkills;
+						dbSyncRequest.DbSyncStats = dbSyncStats;
+						dbSyncRequest.DbSyncStatus = dbSyncStatus;
+						dbSyncRequest.DbSyncEquipment = dbSyncEquipment;
+						dbSyncRequest.DbSyncLocation = dbSyncLocation;
+						syncManager.AddToQueue(dbSyncRequest, highestPrio);
+					}
+				}
+			}
+
+			//throw new NotImplementedException();
 		}
 	}
 }

@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <Folder Include="Enums\" />
-    <Folder Include="Managers\" />
     <Folder Include="Protos\" />
   </ItemGroup>
 

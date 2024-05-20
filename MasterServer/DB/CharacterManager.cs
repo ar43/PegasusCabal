@@ -40,7 +40,7 @@ namespace MasterServer.DB
 			return dict;
 		}
 
-		private static InventoryData JsonToProtobuf(Dictionary<uint, InventoryDataItem> invData)
+		private static InventoryData JsonToProtobuf(Dictionary<uint, InventoryDataJSONItem> invData)
 		{
 			var invSerial = new InventoryData();
 			foreach(var item in invData)
@@ -49,7 +49,7 @@ namespace MasterServer.DB
 			}
 			return invSerial;
 		}
-		private static EquipmentData JsonToProtobuf(Dictionary<uint, EquipmentDataItem> invData)
+		private static EquipmentData JsonToProtobuf(Dictionary<uint, EquipmentDataJSONItem> invData)
 		{
 			var invSerial = new EquipmentData();
 			foreach (var item in invData)
