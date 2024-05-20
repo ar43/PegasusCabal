@@ -226,6 +226,14 @@ namespace WorldServer
 			}
 		}
 
+		private void DisconnectAll()
+		{
+			foreach (var client in _clients)
+			{
+				client.Disconnect("WorldServer shutdown", Enums.ConnState.KICKED);
+			}
+		}
+
 		public void Run()
 		{
 			if (!_started)
@@ -241,9 +249,10 @@ namespace WorldServer
 				ProcessSessionChanges();
 				Thread.Sleep(1);
 			}
-			//TODO: kick all clients and force sync
+
 			Quit();
 			Task.WaitAll();
+			Thread.Sleep(1000);
 		}
 
 		private void RemoveClients()
@@ -288,6 +297,9 @@ namespace WorldServer
 
 		private void Quit()
 		{
+			DisconnectAll();
+			ProcessClients();
+			Thread.Sleep(500);
 			_syncManager.Stop();
 			_listener.Stop();
 		}

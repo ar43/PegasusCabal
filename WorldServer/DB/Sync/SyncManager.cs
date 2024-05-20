@@ -45,7 +45,7 @@ namespace WorldServer.DB.Sync
 
 		private void Run()
 		{
-			while(_running)
+			while(_running || _requestQueue[(Int32)DBSyncPriority.HIGH].Count > 0)
 			{
 				DbSyncRequest? request;
 				_ = _requestQueue[(Int32)DBSyncPriority.HIGH].TryDequeue(out request);

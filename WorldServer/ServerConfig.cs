@@ -32,6 +32,7 @@ namespace WorldServer
 		}
 	}
 
+
 	public class Config
 	{
 		public Generalsettings GeneralSettings { get; set; }
@@ -44,7 +45,7 @@ namespace WorldServer
 	{
 		public int ServerId { get; set; }
 		public int ChannelId { get; set; }
-		public UInt32 ClientMagicKey { get; set; }
+		public long ClientMagicKey { get; set; }
 	}
 
 	public class Connectionsettings
@@ -55,6 +56,7 @@ namespace WorldServer
 	public class Databasesettings
 	{
 		public string ConnString { get; set; }
+		public bool EnableDbSync { get; set; }
 	}
 
 	public class Gamesettings
@@ -86,6 +88,7 @@ namespace WorldServer
 		public int LimitTradeChatLev { get; set; }
 		public int MaxDPLimit { get; set; }
 	}
+
 
 
 

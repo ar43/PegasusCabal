@@ -379,7 +379,8 @@ namespace WorldServer.Logic
 			//send DbSyncRequest object which contains attributes depending on DbSyncFlags (DbSyncInventory... etc)
 			//add bool to DbSyncRequest to notify master server on data save.
 			//add timestamp to DbSyncRequest
-			if (Character != null)
+			var cfg = ServerConfig.Get();
+			if (Character != null && cfg.DatabaseSettings.EnableDbSync)
 			{
 				if(Character.SyncPending > DBSyncPriority.NONE || TimerDbSync != null && TimerDbSync.Tick())
 				{
