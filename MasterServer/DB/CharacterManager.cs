@@ -45,7 +45,7 @@ namespace MasterServer.DB
 			var invSerial = new InventoryData();
 			foreach(var item in invData)
 			{
-				invSerial.InventoryData_.Add(item.Key, new InventoryData.Types.InventoryDataItem { Kind = item.Value.Kind, Option = item.Value.Option});
+				invSerial.InventoryData_.Add(item.Key, new ItemData { Kind = item.Value.Kind, Option = item.Value.Option, Duration = 0, Serial = 0});
 			}
 			return invSerial;
 		}
@@ -54,7 +54,7 @@ namespace MasterServer.DB
 			var invSerial = new EquipmentData();
 			foreach (var item in invData)
 			{
-				invSerial.EquipmentData_.Add(item.Key, new EquipmentData.Types.EquipmentDataItem { Kind = item.Value.Kind, Option = 0 });
+				invSerial.EquipmentData_.Add(item.Key, new ItemData { Kind = item.Value.Kind, Option = 0, Duration = 0, Serial = 0 });
 			}
 			return invSerial;
 		}

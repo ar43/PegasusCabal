@@ -10,13 +10,21 @@ namespace WorldServer.Logic.CharData
 {
 	internal class Skills
 	{
-		public Dictionary<UInt16, Skill> LearnedSkills; //make private
+		private Dictionary<UInt16, Skill> _learnedSkills; //make private
 		public DBSyncPriority SyncPending { get; private set; }
 
-		public Skills()
+		public Skills(SkillData? protobuf)
 		{
-			LearnedSkills = new Dictionary<UInt16, Skill>();
+			_learnedSkills = new Dictionary<UInt16, Skill>();
 			SyncPending = DBSyncPriority.NONE;
+
+			if (protobuf != null)
+			{
+				foreach (var skill in protobuf.SkillData_)
+				{
+					_learnedSkills.Add((UInt16)skill.Key, new Skill((UInt16)skill.Value.Id, (Byte)skill.Value.Level));
+				}
+			}
 		}
 
 		public void Sync(DBSyncPriority prio)
@@ -30,7 +38,7 @@ namespace WorldServer.Logic.CharData
 		public SkillData GetProtobuf()
 		{
 			SkillData skillData = new SkillData();
-			foreach(var skillKeyPair in LearnedSkills)
+			foreach(var skillKeyPair in _learnedSkills)
 			{
 				var skill = skillKeyPair.Value;
 				var slot = skillKeyPair.Key;
@@ -43,7 +51,7 @@ namespace WorldServer.Logic.CharData
 		public byte[] Serialize()
 		{
 			var bytes = new List<byte>();
-			foreach (var skill in LearnedSkills)
+			foreach (var skill in _learnedSkills)
 			{
 				if (skill.Value != null)
 				{
@@ -53,6 +61,11 @@ namespace WorldServer.Logic.CharData
 				}
 			}
 			return bytes.ToArray();
+		}
+
+		public int Count()
+		{
+			return _learnedSkills.Count;
 		}
 	}
 }

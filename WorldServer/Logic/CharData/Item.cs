@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Protos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -17,12 +18,12 @@ namespace WorldServer.Logic.CharData
 			Duration = 0;
 		}
 
-		public Item(UInt32 kind, UInt32 option)
+		public Item(UInt32 kind, UInt32 option, UInt32 serial, UInt32 duration)
 		{
 			Kind = kind;
 			Option = option;
-			Serial = 0;
-			Duration = 0;
+			Serial = serial;
+			Duration = duration;
 		}
 
 		public UInt32 Kind { get; private set; }
@@ -39,6 +40,13 @@ namespace WorldServer.Logic.CharData
 		public void SetOption(UInt32 option)
 		{
 			Option = option;
+		}
+
+		public ItemData GetProtobuf()
+		{
+			ItemData data = new ItemData { Kind = Kind, Option = Option, Serial = Serial, Duration = Duration};
+
+			return data;
 		}
 
 

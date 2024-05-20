@@ -6,19 +6,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
-using static Shared.Protos.EquipmentData.Types;
 
 namespace WorldServer.Logic.CharData
 {
 	internal class Equipment
 	{
 		public DBSyncPriority SyncPending { get; private set; }
-		public Item[] List; //todo: set private
+		private Item[] _list;
 
-		public Equipment()
+		public Equipment(EquipmentData? protobuf)
 		{
 			SyncPending = DBSyncPriority.NONE;
-			List = new Item[(Int32)EquipmentIndex.NUM_EQUIPMENT];
+			_list = new Item[(Int32)EquipmentIndex.NUM_EQUIPMENT];
+
+			if(protobuf != null)
+			{
+				foreach (var eq in protobuf.EquipmentData_)
+				{
+					Item item = new Item(eq.Value.Kind, eq.Value.Option, eq.Value.Serial, eq.Value.Duration);
+					_list[(Int32)eq.Key] = item;
+				}
+			}
+			
 		}
 		public void Sync(DBSyncPriority prio)
 		{
@@ -32,13 +41,12 @@ namespace WorldServer.Logic.CharData
 		{
 			EquipmentData data = new EquipmentData();
 
-			for(uint i = 0; i < List.Length; i++)
+			for(uint i = 0; i < _list.Length; i++)
 			{
-				var item = List[i];
+				var item = _list[i];
 				if (item == null || item.Kind == 0)
 					continue;
-				EquipmentDataItem protoItem = new EquipmentDataItem { Option = item.Option, Kind = item.Kind };
-				data.EquipmentData_.Add(i, protoItem);
+				data.EquipmentData_.Add(i, item.GetProtobuf());
 			}
 
 			return data;
@@ -47,9 +55,9 @@ namespace WorldServer.Logic.CharData
 		public byte[] Serialize()
 		{
 			var bytes = new List<byte>();
-			for(int i = 0; i < List.Length; i++)
+			for(int i = 0; i < _list.Length; i++)
 			{
-				var item = List[i];
+				var item = _list[i];
 				if(item != null && item.Kind != 0)
 				{
 					bytes.AddRange(BitConverter.GetBytes(item.Kind));
@@ -65,9 +73,9 @@ namespace WorldServer.Logic.CharData
 		public byte[] SerializeEx()
 		{
 			var bytes = new List<byte>();
-			for (int i = 0; i < List.Length; i++)
+			for (int i = 0; i < _list.Length; i++)
 			{
-				var item = List[i];
+				var item = _list[i];
 				if (item != null && item.Kind != 0)
 				{
 					bytes.Add((byte)i);
@@ -81,9 +89,9 @@ namespace WorldServer.Logic.CharData
 		public UInt16 Count()
 		{
 			UInt16 count = 0;
-			for (int i = 0; i < List.Length; i++)
+			for (int i = 0; i < _list.Length; i++)
 			{
-				var item = List[i];
+				var item = _list[i];
 				if (item != null && item.Kind != 0)
 				{
 					count++;

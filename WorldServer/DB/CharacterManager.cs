@@ -245,13 +245,7 @@ namespace WorldServer.DB
 						}
 
 						var eqProtobuf = ToProtoObject<EquipmentData>(dbDataBytes, (int)dataLen);
-						Equipment cEquipment = new Equipment();
-
-						foreach(var eq in eqProtobuf.EquipmentData_)
-						{
-							Item item = new Item(eq.Value.Kind, eq.Value.Option);
-							cEquipment.List[eq.Key] = item;
-						}
+						Equipment cEquipment = new Equipment(eqProtobuf);
 
 						Array.Clear(dbDataBytes);
 						dataLen = reader.GetBytes(invData, 0, dbDataBytes, 0, dbDataBytes.Length);
@@ -260,13 +254,7 @@ namespace WorldServer.DB
 							throw new Exception("increase dbDataBytes buffer");
 						}
 						var invProtobuf = ToProtoObject<InventoryData>(dbDataBytes, (int)dataLen);
-						Inventory cInventory = new Inventory();
-						foreach(var inv in invProtobuf.InventoryData_)
-						{
-							cInventory.Items.Add((UInt16)inv.Key, new Item(inv.Value.Kind, inv.Value.Option));
-						}
-
-						cInventory.Alz = (UInt64)reader.GetInt64(alz);
+						Inventory cInventory = new Inventory(invProtobuf, (UInt64)reader.GetInt64(alz));
 
 						Array.Clear(dbDataBytes);
 						dataLen = reader.GetBytes(skillData, 0, dbDataBytes, 0, dbDataBytes.Length);
@@ -275,11 +263,7 @@ namespace WorldServer.DB
 							throw new Exception("increase dbDataBytes buffer");
 						}
 						var skillsProtobuf = ToProtoObject<SkillData>(dbDataBytes, (int)dataLen);
-						Skills cSkills = new Skills();
-						foreach (var skill in skillsProtobuf.SkillData_)
-						{
-							cSkills.LearnedSkills.Add((UInt16)skill.Key, new Skill((UInt16)skill.Value.Id, (Byte)skill.Value.Level));
-						}
+						Skills cSkills = new Skills(skillsProtobuf);
 
 						Array.Clear(dbDataBytes);
 						dataLen = reader.GetBytes(quickslotData, 0, dbDataBytes, 0, dbDataBytes.Length);
@@ -288,11 +272,8 @@ namespace WorldServer.DB
 							throw new Exception("increase dbDataBytes buffer");
 						}
 						var linksProtobuf = ToProtoObject<QuickSlotData>(dbDataBytes, (int)dataLen);
-						QuickSlotBar cQuickSlotBar = new QuickSlotBar();
-						foreach (var link in linksProtobuf.QuickSlotData_)
-						{
-							cQuickSlotBar.Links.Add((UInt16)link.Key, new SkillLink((UInt16)link.Value.Id));
-						}
+						QuickSlotBar cQuickSlotBar = new QuickSlotBar(linksProtobuf);
+						
 						var wid = reader.GetInt32(worldId);
 						Character character = new Character(
 							new Style((UInt32)reader.GetInt32(style)),

@@ -10,14 +10,24 @@ namespace WorldServer.Logic.CharData
 {
 	internal class Inventory
 	{
-		public Dictionary<UInt16, Item> Items; //make private
-		public UInt64 Alz; //make private
+		private Dictionary<UInt16, Item> _items;
+		public UInt64 Alz { get; private set; }
 		public DBSyncPriority SyncPending { get; private set; }
 
-		public Inventory()
+		public Inventory(InventoryData? protobuf, UInt64 alz)
 		{
-			Items = new Dictionary<UInt16, Item>();
+			_items = new Dictionary<UInt16, Item>();
 			SyncPending = DBSyncPriority.NONE;
+
+			if(protobuf != null )
+			{
+				foreach (var inv in protobuf.InventoryData_)
+				{
+					_items.Add((UInt16)inv.Key, new Item(inv.Value.Kind, inv.Value.Option, inv.Value.Serial, inv.Value.Duration));
+				}
+			}
+
+			Alz = alz;
 		}
 		public void Sync(DBSyncPriority prio)
 		{
@@ -30,11 +40,11 @@ namespace WorldServer.Logic.CharData
 		public InventoryData GetProtobuf()
 		{
 			InventoryData data = new InventoryData();
-			foreach(var item in Items)
+			foreach(var item in _items)
 			{
 				var slot = item.Key;
 				var itemObj = item.Value;
-				data.InventoryData_.Add(slot, new InventoryData.Types.InventoryDataItem { Kind = itemObj.Kind, Option = itemObj.Option }); //todo: add GetProtobuf to item and unify the object
+				data.InventoryData_.Add(slot, item.Value.GetProtobuf());
 			}
 			return data;
 		}
@@ -42,7 +52,7 @@ namespace WorldServer.Logic.CharData
 		public byte[] Serialize()
 		{
 			var bytes = new List<byte>();
-			foreach(var item in Items)
+			foreach(var item in _items)
 			{
 				if (item.Value != null && item.Value.Kind != 0)
 				{
@@ -54,6 +64,11 @@ namespace WorldServer.Logic.CharData
 				}
 			}
 			return bytes.ToArray();
+		}
+
+		public int Count()
+		{
+			return _items.Count;
 		}
 	}
 }

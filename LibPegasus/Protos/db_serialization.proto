@@ -4,24 +4,22 @@ option csharp_namespace = "Shared.Protos";
 
 package db_serialization;
 
+message ItemData
+{
+	uint32 kind = 1;
+	uint32 option = 2;
+	uint32 serial = 3;
+	uint32 duration = 4;
+}
+
 message EquipmentData
 {
-	message EquipmentDataItem 
-	{
-		uint32 kind = 1;
-		uint32 option = 2;
-	}
-	map<uint32, EquipmentDataItem> equipmentData = 1;
+	map<uint32, ItemData> equipmentData = 1;
 }
 
 message InventoryData
 {
-	message InventoryDataItem
-	{
-		uint32 kind = 1;
-		uint32 option = 2;
-	}
-	map<uint32, InventoryDataItem> inventoryData = 1;
+	map<uint32, ItemData> inventoryData = 1;
 }
 
 message QuickSlotData

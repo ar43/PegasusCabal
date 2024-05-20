@@ -155,7 +155,7 @@ namespace WorldServer
 			_listener.Start();
 			_started = true;
 
-			Log.Information("Started Pegasus LoginServer");
+			Log.Information("Started Pegasus WorldServer");
 
 			Task.Factory.StartNew(() => AcceptNewConnections(), TaskCreationOptions.LongRunning);
 			Task.Factory.StartNew(() => SendHeartbeat(), TaskCreationOptions.LongRunning);

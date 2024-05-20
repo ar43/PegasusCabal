@@ -112,9 +112,9 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteNull(data, 35); //??
 
 			PacketWriter.WriteUInt16(data, _character.Equipment.Count()); 
-			PacketWriter.WriteUInt16(data, (UInt16)_character.Inventory.Items.Count); //inv count
-			PacketWriter.WriteUInt16(data, (UInt16)_character.Skills.LearnedSkills.Count); //skill count
-			PacketWriter.WriteUInt16(data, (UInt16)_character.QuickSlotBar.Links.Count); //quickslot count
+			PacketWriter.WriteUInt16(data, (UInt16)_character.Inventory.Count()); //inv count
+			PacketWriter.WriteUInt16(data, (UInt16)_character.Skills.Count()); //skill count
+			PacketWriter.WriteUInt16(data, (UInt16)_character.QuickSlotBar.Count()) ; //quickslot count
 			PacketWriter.WriteUInt16(data, 0); //mercenary count
 			PacketWriter.WriteUInt16(data, 0); //??
 			PacketWriter.WriteUInt16(data, 0); //??
