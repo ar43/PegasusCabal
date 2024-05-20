@@ -23,6 +23,8 @@ namespace WorldServer.Logic.CharData
 		{
 			if (SyncPending < prio)
 				SyncPending = prio;
+			if (prio == DBSyncPriority.NONE)
+				SyncPending = DBSyncPriority.NONE;
 		}
 
 		public InventoryData GetProtobuf()

@@ -11,8 +11,8 @@ namespace WorldServer.Logic.CharData
 {
 	internal class Location
 	{
-		
 
+		public int LastMapId { private get; set; }
 		public Instance? Instance;
 
 		public MovementData Movement {get; private set;}
@@ -29,15 +29,23 @@ namespace WorldServer.Logic.CharData
 		{
 			if(prio > SyncPending)
 				SyncPending = prio;
+			if (prio == DBSyncPriority.NONE)
+				SyncPending = DBSyncPriority.NONE;
 		}
 
 		public DbSyncLocation GetDB()
 		{
 			//todo: check if X and Y are in WALL, reset pos
 			//todo: check if current map resets X and Y on logout, reset pos
+			//todo: check if in first 4 map towns, reset pos (weird ep8 behaviour)
+			int mapId;
 			if (Instance == null)
-				throw new Exception("fixme");
-			DbSyncLocation dbSyncLocation = new DbSyncLocation(Movement.X, Movement.Y, (Int32)Instance.MapId);
+				mapId = LastMapId;
+			else
+				mapId = (Int32)Instance.MapId;
+			if (mapId == 0)
+				throw new Exception("mapId == 0");
+			DbSyncLocation dbSyncLocation = new DbSyncLocation(Movement.X, Movement.Y, mapId);
 			return dbSyncLocation;
 		}
 

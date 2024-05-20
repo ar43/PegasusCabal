@@ -163,14 +163,18 @@ namespace WorldServer.Logic.Delegates
 				client.Disconnect("invalid char id", ConnState.ERROR);
 				return;
 			}
+			var cfg = ServerConfig.Get();
 
-			var charSyncStatus = await client.IsCharacterSynced((Int32)charId);
-			if(charSyncStatus.Status != 1)
+			if(cfg.DatabaseSettings.EnableDbSync)
 			{
-				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "char not yet ready");
-				return;
+				var charSyncStatus = await client.IsCharacterSynced((Int32)charId);
+				if (charSyncStatus.Status != 1)
+				{
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "char not yet ready");
+					return;
+				}
 			}
-
+			
 			var character = await client.LoadCharacter(charId);
 			client.Character = character.Item1;
 			var worldId = character.Item2;
@@ -198,7 +202,7 @@ namespace WorldServer.Logic.Delegates
 				var packet_994 = new NFY_Unk994();
 				client.PacketManager.Send(packet_994);
 
-				client.Account = new Account(client.ConnectionInfo.AccountId); //TODO: actually load the account data
+				client.Account = new Account(client.ConnectionInfo.AccountId); //TODO: actually load the account data, like premium
 
 				client.World.InstanceManager.AddClient(client, (UInt128)worldId, NewUserType.NEWINIT);
 

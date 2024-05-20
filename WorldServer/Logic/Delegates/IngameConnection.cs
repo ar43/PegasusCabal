@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WorldServer.Packets.S2C;
+
+namespace WorldServer.Logic.Delegates
+{
+	internal static class IngameConnection
+	{
+		internal static void OnBackToCharLobby(Client client)
+		{
+			if(client.Character == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "null Character");
+				return;
+			}
+
+			if(client.ConnectionInfo.RequestedBackToCharLobby == true )
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "already requested back to lobby");
+				return;
+			}
+
+			var packet = new RSP_BackToCharLobby(1);
+			client.PacketManager.Send(packet);
+
+			client.ConnectionInfo.RequestedBackToCharLobby = true;
+		}
+
+		internal static void OnUninitialize(Client client, UInt16 index, Byte mapId, Byte option)
+		{
+			if (client.Character == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "Null Character");
+				return;
+			}
+
+			if(option == 2 && client.ConnectionInfo.RequestedBackToCharLobby)
+			{
+				client.ConnectionInfo.RequestedBackToCharLobby = false;
+				client.Character.Location.LastMapId = (Int32)client.Character.Location.Instance.MapId;
+				client.Character.Location.Instance.RemoveClient(client, Enums.DelUserType.LOGOUT);
+				client.Character.Sync(Enums.DBSyncPriority.HIGH, true);
+			}
+			else
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "Unimplemented option");
+				return;
+			}
+		}
+	}
+}

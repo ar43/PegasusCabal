@@ -22,6 +22,8 @@ namespace WorldServer.Logic.ClientData
 
         public ConnState ConnState;
 
+		public bool RequestedBackToCharLobby = false;
+
         public UInt32 AccountId { get; private set; }
         private bool _accIdLock = false;
 

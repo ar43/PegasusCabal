@@ -64,6 +64,8 @@ namespace WorldServer.Packets
 				Opcode.REQ_MOVECHANGED => new REQ_MoveChanged(data),
 				Opcode.REQ_MOVEWAYPNTS => new REQ_MoveWayPnts(data),
 				Opcode.CSC_WARPCOMMAND => new REQ_WarpCommand(data),
+				Opcode.CSC_BACKTOCHARLOBBY => new REQ_BackToCharLobby(data),
+				Opcode.CSC_UNINITIALZE => new REQ_Uninitalze(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

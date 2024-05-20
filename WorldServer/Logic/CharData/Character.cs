@@ -59,12 +59,28 @@ namespace WorldServer.Logic.CharData
 		public ActionFlag ActionFlag { get; private set; }
 		public BuffFlag BuffFlag { get; private set; }
 		public DBSyncPriority SyncPending { get; private set; }
+		public bool UninitOnSync { get; private set; }
 
 
-		public void Sync(DBSyncPriority prio)
+		public void Sync(DBSyncPriority prio, bool uninitOnSync = false)
 		{
 			if(SyncPending < prio)
 				SyncPending = prio;
+			if(prio == DBSyncPriority.NONE)
+				SyncPending = DBSyncPriority.NONE;
+			UninitOnSync = uninitOnSync;
+		}
+
+		public void ClearSync()
+		{
+			SyncPending = DBSyncPriority.NONE;
+			Location.Sync(DBSyncPriority.NONE);
+			Equipment.Sync(DBSyncPriority.NONE);
+			Inventory.Sync(DBSyncPriority.NONE);
+			Status.Sync(DBSyncPriority.NONE);
+			Stats.Sync(DBSyncPriority.NONE);
+			Skills.Sync(DBSyncPriority.NONE);
+			QuickSlotBar.Sync(DBSyncPriority.NONE);
 		}
 
 	}

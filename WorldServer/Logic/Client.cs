@@ -305,7 +305,8 @@ namespace WorldServer.Logic
 			Dropped = true;
 			Log.Warning($"called Disconnect on client id {ConnectionInfo.UserId} with reason: {reason}");
 			ConnectionInfo.ConnState = newState;
-			Character.Sync(DBSyncPriority.HIGH);
+			Character?.Sync(DBSyncPriority.HIGH);
+			
 			//todo - send session timeout
 
 		}
@@ -386,6 +387,7 @@ namespace WorldServer.Logic
 				{
 					DBSyncPriority globalPrio = Character.SyncPending;
 					DBSyncPriority highestPrio = DBSyncPriority.NONE;
+					bool isFinal = Dropped || Character.UninitOnSync;
 
 					DbSyncEquipment? dbSyncEquipment = null;
 					DbSyncInventory? dbSyncInventory = null;
@@ -442,7 +444,7 @@ namespace WorldServer.Logic
 					{
 						if(globalPrio > DBSyncPriority.NONE)
 							highestPrio = globalPrio;
-						DbSyncRequest dbSyncRequest = new(highestPrio, Character.Id, Dropped);
+						DbSyncRequest dbSyncRequest = new(highestPrio, Character.Id, isFinal);
 						dbSyncRequest.DbSyncInventory = dbSyncInventory;
 						dbSyncRequest.DbSyncQuickSlotBar = dbSyncQuickSlotBar;
 						dbSyncRequest.DbSyncSkills = dbSyncSkills;
@@ -450,7 +452,11 @@ namespace WorldServer.Logic
 						dbSyncRequest.DbSyncStatus = dbSyncStatus;
 						dbSyncRequest.DbSyncEquipment = dbSyncEquipment;
 						dbSyncRequest.DbSyncLocation = dbSyncLocation;
+						Log.Information($"Sent sync request (prio: {highestPrio}, char: {Character.Id}, final: {isFinal})");
 						syncManager.AddToQueue(dbSyncRequest, highestPrio);
+						Character.ClearSync();
+						if (Character.UninitOnSync)
+							Character = null;
 					}
 				}
 			}
