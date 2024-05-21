@@ -1,4 +1,5 @@
-﻿using LibPegasus.Parsers.Scp;
+﻿using LibPegasus.Parsers.Mcl;
+using LibPegasus.Parsers.Scp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,7 @@ namespace WorldServer.Logic.WorldRuntime
 			string workingDirectory = Environment.CurrentDirectory;
 			string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.Parent.FullName;
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Warp.scp");
-			//ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world1-terrain.scp");
-			//ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world2-terrain.scp");
-			//ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world3-terrain.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\NPCShop.scp");
 		}
 
 		private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _config;

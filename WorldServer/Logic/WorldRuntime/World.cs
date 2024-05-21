@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
+using WorldServer.Logic.WorldRuntime.ShopRuntime;
 using WorldServer.Logic.WorldRuntime.WarpsRuntime;
 
 namespace WorldServer.Logic.WorldRuntime
@@ -13,12 +14,14 @@ namespace WorldServer.Logic.WorldRuntime
 		private WorldConfig _worldConfig;
 		private WarpManager _warpManager;
 		private MapDataManager _mapDataManager;
+		public ShopPoolManager ShopPoolManager { get; private set; }
 
 		public InstanceManager InstanceManager { get; private set; }
 
 		public World()
 		{
 			_worldConfig = new WorldConfig();
+			ShopPoolManager = new ShopPoolManager(_worldConfig);
 			_warpManager = new WarpManager(_worldConfig);
 			_mapDataManager = new MapDataManager(_worldConfig);
 			InstanceManager = new InstanceManager(_worldConfig, _warpManager, _mapDataManager);

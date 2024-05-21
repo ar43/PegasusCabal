@@ -55,7 +55,8 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							var posY = Convert.ToInt32(npcCfg["PosY"]);
 							var type = Convert.ToInt32(npcCfg["Type"]);
 							var isRangeCheck = Convert.ToBoolean(Convert.ToInt32((npcCfg["IsRangeCheck"])));
-							if (!npcData.TryAdd(index, new(index, flags, posX, posY, type, isRangeCheck)))
+							var npcObj = new NpcData(index, flags, posX, posY, type, isRangeCheck);
+							if (!npcData.TryAdd(index, npcObj))
 								throw new Exception("Npc already exists");
 						}
 
@@ -71,6 +72,25 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							var type = Convert.ToInt32(warpCfg["Type"]);
 							if(!npcData[npcId].NpcWarpData.TryAdd(setId, new(setId, level, fee, type, targetId)))
 								throw new Exception("Npc warp already exists");
+						}
+
+						var npcPoolData = _config.GetConfig("[NPC]");
+						foreach(var npcPool in npcPoolData.Values)
+						{
+							var worldId = Convert.ToInt32(npcPool["World_ID"]);
+							if (worldId != mapId)
+								continue;
+							var npcId = Convert.ToInt32(npcPool["NPC_ID"]);
+							var pool1Idx = Convert.ToInt32(npcPool["Pool_ID1"]);
+							var pool2Idx = Convert.ToInt32(npcPool["Pool_ID2"]);
+							if (npcData[npcId].Shop == null)
+							{
+								npcData[npcId].Shop = new(pool1Idx, pool2Idx);
+							}
+							else
+							{
+								throw new Exception("Shop already defined for that npc");
+							}
 						}
 
 						var mapData = new MapData(mapId, terrainInfo, npcData);

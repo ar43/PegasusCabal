@@ -74,6 +74,8 @@ namespace LibPegasus.Parsers.Scp
 								}
 								else
 								{
+									if (i >= section.Length)
+										break;
 									dict[section[i]] = token;
 								}
 								i++;

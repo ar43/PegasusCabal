@@ -66,6 +66,9 @@ namespace WorldServer.Packets
 				Opcode.CSC_WARPCOMMAND => new REQ_WarpCommand(data),
 				Opcode.CSC_BACKTOCHARLOBBY => new REQ_BackToCharLobby(data),
 				Opcode.CSC_UNINITIALZE => new REQ_Uninitalze(data),
+				Opcode.CSC_NPCSHOPPOOLIDLIST => new REQ_NpcShopPoolIdList(data),
+				Opcode.REQ_NPCSHOPSYNC => new REQ_NpcShopSync(data),
+				Opcode.CSC_NPCSHOPPOOL => new REQ_NpcShopPool(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

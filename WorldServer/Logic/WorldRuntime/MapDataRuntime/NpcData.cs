@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Enums;
 
 namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 {
@@ -26,5 +27,6 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 		public int Type { get; private set; }
 		public bool IsRangeCheck { get; private set; }
 		public Dictionary<int, NpcWarpData> NpcWarpData { get; private set; }
+		public ShopData? Shop {  get; set; }
 	}
 }

@@ -110,6 +110,5 @@ namespace LibPegasus.Packets
 				data.AddToBack(input[i]);
 			}
 		}
-
 	}
 }

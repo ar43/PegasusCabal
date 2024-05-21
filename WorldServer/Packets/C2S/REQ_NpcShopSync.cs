@@ -5,16 +5,16 @@ using WorldServer.Logic.Delegates;
 
 namespace WorldServer.Packets.C2S
 {
-	internal class REQ_ChargeInfo : PacketC2S<Client>
+	internal class REQ_NpcShopSync : PacketC2S<Client>
 	{
-		public REQ_ChargeInfo(Queue<byte> data) : base((UInt16)Opcode.CSC_CHARGEINFO, data)
+		public REQ_NpcShopSync(Queue<byte> data) : base((UInt16)Opcode.REQ_NPCSHOPSYNC, data)
 		{
 
 		}
 
 		public override bool ReadPayload(Queue<Action<Client>> actions)
 		{
-			actions.Enqueue((client) => CharSelect.OnChargeInfoRequest(client));
+			actions.Enqueue((client) => Shop.OnSyncRequest(client));
 
 			return true;
 		}
