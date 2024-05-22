@@ -4,12 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Enums;
 
 namespace WorldServer.Logic.CharData.Items
 {
 	internal class ItemInfo
 	{
-		public ItemInfo(UInt32 id, String type, Int32 typeId, Int32 priceSell, Int32 width, Int32 height, Int32 opt2_STRLmt1, Int32 dEXLmt1_Opt2Val, Int32 iNTLmt1_Opt3, Int32 opt3Val_STRLmt2, Int32 dEXLmt2_Opt4, Int32 iNTLmt2_Opt4Val, Int32 attckRate_Opt1, Int32 defenRate_Opt1Val_PhyAttMax, Int32 defense_LEVLmt_MagAttVal, Int32 valueLv, Int32 maxCore, Int32 dSTR1, Int32 dDEX1, Int32 dINT1, Int32 dSTR2, Int32 dDEX2, Int32 dINT2, Int32 limitLv, Int32 limitClass, Int32 limitReputation, Int32 grade, Int32 enchantCodeLnk, Int32 property, Int32 periodType, Int32 periodUse, Int32 fixType, Int32 price2, Int32 uniqueGrade, Int32 maxReputation)
+		public ItemInfo(UInt32 id, String type, ItemType typeId, Int32 priceSell, Int32 width, Int32 height, Int32 opt2_STRLmt1, Int32 dEXLmt1_Opt2Val, Int32 iNTLmt1_Opt3, Int32 opt3Val_STRLmt2, Int32 dEXLmt2_Opt4, Int32 iNTLmt2_Opt4Val, Int32 attckRate_Opt1, Int32 defenRate_Opt1Val_PhyAttMax, Int32 defense_LEVLmt_MagAttVal, Int32 valueLv, Int32 maxCore, Int32 dSTR1, Int32 dDEX1, Int32 dINT1, Int32 dSTR2, Int32 dDEX2, Int32 dINT2, Int32 limitLv, Int32 limitClass, Int32 limitReputation, Int32 grade, Int32 enchantCodeLnk, Int32 property, Int32 periodType, Int32 periodUse, Int32 fixType, Int32 price2, Int32 uniqueGrade, Int32 maxReputation)
 		{
 			Id = id;
 			Type = type;
@@ -50,7 +51,7 @@ namespace WorldServer.Logic.CharData.Items
 
 		public uint Id { get; private set; }
 		public string Type { get; private set; }
-		public int TypeId { get; private set; }
+		public ItemType TypeId { get; private set; }
 		public int PriceSell { get; private set; }
 		public int Width { get; private set; }
 		public int Height { get; private set; }

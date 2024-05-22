@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Enums;
 using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData.Items
@@ -79,7 +80,8 @@ namespace WorldServer.Logic.CharData.Items
 					continue;
 
 				var typeStr = item.Value["Type"];
-				var typeNum = 0; //TODO
+				if (!Enum.TryParse(typeStr.Substring(1), out ItemType typeNum))
+					throw new Exception("Invalid type");
 				if (!Int32.TryParse(item.Value["PriceSell"], out var priceSell))
 					priceSell = 0;
 				if (!Int32.TryParse(item.Value["Width"], out var width))
