@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
+using WorldServer.Logic.CharData.Items;
 
 namespace WorldServer.Logic.CharData
 {
-	internal class Inventory
+    internal class Inventory
 	{
 		private Dictionary<UInt16, Item> _items;
+		private bool[] _occupiedSlots;
+		private readonly int INV_SIZE = 64*4;
 		public UInt64 Alz { get; private set; }
 		public DBSyncPriority SyncPending { get; private set; }
 
@@ -18,12 +21,14 @@ namespace WorldServer.Logic.CharData
 		{
 			_items = new Dictionary<UInt16, Item>();
 			SyncPending = DBSyncPriority.NONE;
+			_occupiedSlots = new bool[INV_SIZE];
 
 			if(protobuf != null )
 			{
 				foreach (var inv in protobuf.InventoryData_)
 				{
-					_items.Add((UInt16)inv.Key, new Item(inv.Value.Kind, inv.Value.Option, inv.Value.Serial, inv.Value.Duration));
+					if (!AddItem((UInt16)inv.Key, new Item(inv.Value.Kind, inv.Value.Option, inv.Value.Serial, inv.Value.Duration)))
+						throw new Exception("Error on inv init");
 				}
 			}
 
@@ -43,10 +48,115 @@ namespace WorldServer.Logic.CharData
 			foreach(var item in _items)
 			{
 				var slot = item.Key;
-				var itemObj = item.Value;
 				data.InventoryData_.Add(slot, item.Value.GetProtobuf());
 			}
 			return data;
+		}
+
+		public bool ItemMove(int fromSlot, int toSlot, bool sync)
+		{
+			if(fromSlot < 0 || toSlot < 0)
+				return false;
+			if (fromSlot >= INV_SIZE || toSlot >= INV_SIZE)
+				return false;
+
+			if (!_items.TryGetValue((UInt16)fromSlot, out var item))
+				return false;
+			if (_items.ContainsKey((UInt16)toSlot))
+				return false;
+			_ = RemoveItem((UInt16)fromSlot);
+			if (!AddItem((UInt16)toSlot, item))
+				return false;
+			
+			if(sync)
+				Sync(DBSyncPriority.NORMAL);
+			return true;
+		}
+
+		public bool ItemSwap(int fromSlot1, int toSlot1, int fromSlot2, int toSlot2, bool sync)
+		{
+			if (fromSlot1 < 0 || toSlot1 < 0 || fromSlot2 < 0 || toSlot2 < 0)
+				return false;
+			if (fromSlot1 >= INV_SIZE || toSlot1 >= INV_SIZE || toSlot2 >= INV_SIZE || fromSlot2 >= INV_SIZE)
+				return false;
+
+			if (!_items.ContainsKey((UInt16)fromSlot2))
+				return false;
+			if (!_items.ContainsKey((UInt16)fromSlot1))
+				return false;
+
+			var savedItem = RemoveItem((UInt16)fromSlot2);
+			if (savedItem == null)
+				return false;
+            if (!ItemMove(fromSlot1, toSlot1, false))
+				return false;
+			if (!AddItem((UInt16)toSlot2, savedItem))
+				return false;
+
+			if (sync)
+				Sync(DBSyncPriority.NORMAL);
+			return true;
+		}
+
+		private static UInt16 PosToSlot(int x, int y)
+		{
+			return (UInt16)(y * 8 + x);
+		}
+
+		private bool AddItem(UInt16 slot, Item item)
+		{
+			//todo, check item collision with a cache
+			var slotX = slot % 8;
+			var slotY = slot / 8;
+			var itemWidth = item.GetWidth();
+			var itemHeight = item.GetHeight();
+
+			if (slotX > 8 - itemWidth)
+				return false;
+			if ((slotY % 8) > 8 - itemHeight)
+				return false;
+			for (int i = 0; i < itemWidth; i++)
+			{
+				for(int j = 0; j < itemHeight; j++)
+				{
+					if (_occupiedSlots[PosToSlot(slotX + i, slotY + j)])
+						return false;
+				}
+			}
+
+			_items.Add((UInt16)slot, item);
+
+			for (int i = 0; i < itemWidth; i++)
+			{
+				for (int j = 0; j < itemHeight; j++)
+				{
+					_occupiedSlots[PosToSlot(slotX + i, slotY + j)] = true;
+				}
+			}
+			return true;
+		}
+
+		private Item? RemoveItem(UInt16 slot)
+		{
+			//todo, check item collision with a cache
+
+			if (!_items.ContainsKey(slot))
+				return null;
+
+			var slotX = slot % 8;
+			var slotY = slot / 8;
+			var item = _items[slot];
+
+			_items.Remove((UInt16)slot);
+
+			for (int i = 0; i < item.GetWidth(); i++)
+			{
+				for (int j = 0; j < item.GetHeight(); j++)
+				{
+					_occupiedSlots[PosToSlot(slotX + i, slotY + j)] = false;
+				}
+			}
+			return item;
 		}
 
 		public byte[] Serialize()

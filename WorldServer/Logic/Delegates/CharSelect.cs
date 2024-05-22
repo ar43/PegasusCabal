@@ -207,6 +207,7 @@ namespace WorldServer.Logic.Delegates
 				client.World.InstanceManager.AddClient(client, (UInt128)worldId, NewUserType.NEWINIT);
 
 				client.TimerHeartbeat = new LibPegasus.Utils.Timer(DateTime.UtcNow, 40.0, true);
+				client.TimerDbSync = new LibPegasus.Utils.Timer(DateTime.UtcNow, 5.0, true);
 			}
 			else
 			{

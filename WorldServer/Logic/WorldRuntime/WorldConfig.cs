@@ -6,11 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using WorldServer.Logic.CharData.Items;
 
 namespace WorldServer.Logic.WorldRuntime
 {
-	internal class WorldConfig
+    internal class WorldConfig
 	{
+
 		public WorldConfig()
 		{
 			_config = [];
@@ -18,6 +20,9 @@ namespace WorldServer.Logic.WorldRuntime
 			string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.Parent.FullName;
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Warp.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\NPCShop.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Item.scp");
+
+			Item.LoadConfigs(this);
 		}
 
 		private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _config;

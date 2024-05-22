@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.Items;
 
 namespace WorldServer.Logic.AccountData
 {
-	internal class CashInventory
+    internal class CashInventory
 	{
 		public static readonly int MAX_ITEMS = 128;
 		private List<Item> _items;

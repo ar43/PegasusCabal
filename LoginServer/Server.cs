@@ -149,7 +149,9 @@ namespace LoginServer
 			var utcnow = DateTime.UtcNow;
 			var client = new AuthMaster.AuthMasterClient(_masterRpcChannel);
 			var reply = await client.RegisterAsync(new RegisterAccountRequest { Username = "dummybla", Password = "dummypa" });
-			Log.Debug("Account Registration return code from MasterServer: " + (InfoCodeLS)reply.InfoCode);
+			reply = await client.RegisterAsync(new RegisterAccountRequest { Username = "test1", Password = "test1" });
+			reply = await client.RegisterAsync(new RegisterAccountRequest { Username = "test2", Password = "test2" });
+			//Log.Debug("Account Registration return code from MasterServer: " + (InfoCodeLS)reply.InfoCode);
 		}
 
 		public void Run()

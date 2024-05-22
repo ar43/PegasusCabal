@@ -108,7 +108,7 @@ namespace WorldServer.Logic
 							PacketManager.EnqueuePacket(opcode, new Queue<byte>(packetBytes));
 
 							PacketManager.DanglingPacket = null;
-							Utility.PrintByteArray(packetBytes, packetLen, "received decrypted");
+							//Utility.PrintByteArray(packetBytes, packetLen, "received decrypted");
 						}
 
 					}
@@ -144,7 +144,7 @@ namespace WorldServer.Logic
 
 							PacketManager.EnqueuePacket(opcode, new Queue<byte>(packetBytes));
 
-							Utility.PrintByteArray(packetBytes, packetLen, "decrypted");
+							//Utility.PrintByteArray(packetBytes, packetLen, "decrypted");
 						}
 					}
 				}

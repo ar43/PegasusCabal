@@ -69,6 +69,8 @@ namespace WorldServer.Packets
 				Opcode.CSC_NPCSHOPPOOLIDLIST => new REQ_NpcShopPoolIdList(data),
 				Opcode.REQ_NPCSHOPSYNC => new REQ_NpcShopSync(data),
 				Opcode.CSC_NPCSHOPPOOL => new REQ_NpcShopPool(data),
+				Opcode.CSC_ITEMMOVE => new REQ_ItemMove(data),
+				Opcode.CSC_ITEMSWAP => new REQ_ItemSwap(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}
@@ -124,7 +126,8 @@ namespace WorldServer.Packets
 				if (!verifyReceived)
 				{
 					Log.Warning($"Data of opcode {opcodeNum} was not fully read");
-					continue;
+					//continue;
+					throw new Exception("fix the opcode");
 				}
 			}
 			return actions;

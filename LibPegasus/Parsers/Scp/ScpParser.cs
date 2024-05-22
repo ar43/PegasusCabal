@@ -40,7 +40,12 @@ namespace LibPegasus.Parsers.Scp
 				{
 					if(!String.IsNullOrWhiteSpace(line))
 					{
-						if (line.StartsWith('['))
+						if (line.StartsWith('@'))
+						{
+							//todo, add to special dictionary
+							continue;
+						}
+						else if (line.StartsWith('['))
 						{
 							if(sectDict != null && section != null)
 							{

@@ -140,9 +140,9 @@ namespace WorldServer
 						_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel, _databaseManager, _world));
 					}
 				}
-				catch(SocketException)
+				catch(SocketException e)
 				{
-					Log.Information("Listener is closed, exiting AcceptNewConnections()");
+					Log.Information($"Listener is closed due to SocketException {e.Message}, exiting AcceptNewConnections()");
 					return;
 				}
 			}
