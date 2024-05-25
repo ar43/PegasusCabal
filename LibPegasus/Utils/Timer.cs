@@ -28,7 +28,7 @@ namespace LibPegasus.Utils
 		{
 			var time = DateTime.UtcNow;
 
-			if (time.Ticks - _startTime.Ticks >= TimeSpan.FromSeconds(_interval).Ticks)
+			if (time.Ticks - _startTime.Ticks >= TimeSpan.FromMilliseconds(_interval).Ticks)
 			{
 				if(_autoRestart)
 				{

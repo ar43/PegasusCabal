@@ -21,8 +21,6 @@ namespace WorldServer.Logic.CharData.Items
             Serial = serial;
             Duration = duration;
 			_itemInfo = ItemConfig[GetId()];
-
-            //Width = ItemConfig
         }
 
         public UInt32 Kind { get; private set; }

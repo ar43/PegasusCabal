@@ -204,10 +204,10 @@ namespace WorldServer.Logic.Delegates
 
 				client.Account = new Account(client.ConnectionInfo.AccountId); //TODO: actually load the account data, like premium
 
-				client.World.InstanceManager.AddClient(client, (UInt128)worldId, NewUserType.NEWINIT);
+				client.World.InstanceManager.AddClient(client, (UInt64)worldId, NewUserType.NEWINIT);
 
-				client.TimerHeartbeat = new LibPegasus.Utils.Timer(DateTime.UtcNow, 40.0, true);
-				client.TimerDbSync = new LibPegasus.Utils.Timer(DateTime.UtcNow, 5.0, true);
+				client.TimerHeartbeat = new LibPegasus.Utils.Timer(DateTime.UtcNow, 40000.0, true);
+				client.TimerDbSync = new LibPegasus.Utils.Timer(DateTime.UtcNow, 5000.0, true);
 			}
 			else
 			{

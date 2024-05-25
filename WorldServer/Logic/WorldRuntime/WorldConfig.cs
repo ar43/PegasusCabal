@@ -21,6 +21,7 @@ namespace WorldServer.Logic.WorldRuntime
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Warp.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\NPCShop.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Item.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Mobs.scp");
 
 			Item.LoadConfigs(this);
 		}
@@ -42,8 +43,10 @@ namespace WorldServer.Logic.WorldRuntime
 				string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.Parent.FullName;
 				var terrainFile = $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world{mapId}-terrain.scp";
 				var npcFile = $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world{mapId}-npc.scp";
+				var mmapFile = $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world{mapId}-mmap.scp";
 				ScpParser.Parse(_config, terrainFile );
 				ScpParser.Parse( _config, npcFile );
+				ScpParser.Parse(_config, mmapFile);
 				if (_config.TryGetValue(section, out var cfg_created))
 				{
 					return cfg_created;

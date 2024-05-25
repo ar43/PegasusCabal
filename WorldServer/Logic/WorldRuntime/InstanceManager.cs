@@ -16,7 +16,7 @@ namespace WorldServer.Logic.WorldRuntime
 {
 	internal class InstanceManager
 	{
-		private readonly Dictionary<UInt128, Instance> _instances;
+		private readonly Dictionary<UInt64, Instance> _instances;
 		private readonly Dictionary<int, TileAttributeData> _tileAttributes;
 
 		private readonly WorldConfig _worldConfig;
@@ -31,7 +31,7 @@ namespace WorldServer.Logic.WorldRuntime
 			_worldConfig = worldConfig;
 			_mapDataManager = mapDataManager;
 
-			_instances = new Dictionary<UInt128, Instance>();
+			_instances = new Dictionary<UInt64, Instance>();
 			_tileAttributes = new Dictionary<int, TileAttributeData>();
 			_random = new Random();
 
@@ -99,7 +99,7 @@ namespace WorldServer.Logic.WorldRuntime
 			if(warp == null) return false;
 
 			//TODO: Nation checking
-			if(_instances.TryGetValue((UInt128)warp.WorldIdx, out var newInstance))
+			if(_instances.TryGetValue((UInt64)warp.WorldIdx, out var newInstance))
 			{
 				if (newInstance.Type != InstanceType.PERMANENT)
 					return false;
@@ -145,7 +145,7 @@ namespace WorldServer.Logic.WorldRuntime
 			}
 		}
 
-		public void AddClient(Client client, UInt128 instanceId, NewUserType type)
+		public void AddClient(Client client, UInt64 instanceId, NewUserType type)
 		{
 			_instances[instanceId].AddNewClient(client, (UInt16)client.Character.Location.Movement.CellX, (UInt16)client.Character.Location.Movement.CellY);
 			if (client.Character.Location.Instance != null)

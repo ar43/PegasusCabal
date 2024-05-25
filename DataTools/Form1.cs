@@ -285,6 +285,7 @@ namespace DataTools
 			Random random = new Random();
 			List<int> cores = new List<int>();
 			List<int> converters = new List<int>();
+			List<int> safeguards = new List<int>();
 			int[] chances = { 100, 95, 90, 75, 65, 60, 40, 40, 36, 36 };
 			int[] coreUsage = { 1, 1, 1, 2, 2, 2, 3, 3, 3, 4 };
 
@@ -293,8 +294,9 @@ namespace DataTools
 				int itemLvl = 0;
 				int coreNum = 0;
 				int converterNum = 0;
+				int safeguardNum = 0;
 
-				while (itemLvl != 4)
+				while (itemLvl != 10)
 				{
 					if (itemLvl == 0)
 					{
@@ -311,11 +313,17 @@ namespace DataTools
 					}
 					else
 					{
-						itemLvl = 0;
+						if (itemLvl >= 9)
+							safeguardNum += 2;
+						else if (itemLvl >= 15)
+							safeguardNum++;
+						else
+							itemLvl = 0;
 					}
 				}
 				cores.Add(coreNum);
 				converters.Add(converterNum);
+				safeguards.Add(safeguardNum);
 			}
 			int average = 0;
 			for (int i = 0; i < cores.Count; i++)
@@ -329,8 +337,21 @@ namespace DataTools
 			{
 				average_conv = average_conv + converters[i];
 			}
+
+			int average_safe = 0;
+			for (int i = 0; i < safeguards.Count; i++)
+			{
+				average_safe = average_safe + safeguards[i];
+			}
 			average_conv = average_conv / converters.Count;
-			textBox2.Text = $"{average} {average_conv}";
+			if (safeguards.Count > 0)
+			{
+				average_safe = average_safe / safeguards.Count;
+			}
+			else
+				average_safe = 0;
+			
+			textBox2.Text = $"{average} {average_conv} {average_safe}";
 		}
 	}
 }

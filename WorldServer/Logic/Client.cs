@@ -240,7 +240,7 @@ namespace WorldServer.Logic
 				{
 					var heartbeatPacket = new REQ_Heartbeat();
 					PacketManager.Send(heartbeatPacket);
-					TimerHeartbeatTimeout = new LibPegasus.Utils.Timer(DateTime.UtcNow, 10.0, false);
+					TimerHeartbeatTimeout = new LibPegasus.Utils.Timer(DateTime.UtcNow, 10000.0, false);
 				}
 				else
 				{

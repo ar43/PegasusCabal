@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 
 namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 {
@@ -10,11 +11,13 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 	{
 		Dictionary<int, MapData> _maps;
 		WorldConfig _config;
+		MobDataManager _mobDataManager;
 
-		public MapDataManager(WorldConfig config)
+		public MapDataManager(WorldConfig config, MobDataManager mobDataManager)
 		{
 			_maps = new();
 			_config = config;	
+			_mobDataManager = mobDataManager;
 		}
 
 		public MapData Get(int mapId)
@@ -43,6 +46,36 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 
 
 						var terrainInfo = new TerrainInfo(terrainX, terrainY, warpIdxForDead, warpIdxForRetn, warpIdxForLOut, dmgMin, dmgMax, warControl);
+
+						Dictionary<int, MobSpawnData> mobSpawnData = new();
+						configStr = "[MMap" + Convert.ToString(mapId) + "]";
+						subConfig = _config.GetConfig(configStr);
+						foreach(var entry in subConfig)
+						{
+							var spawnId = Convert.ToInt32(entry.Key);
+							int SpeciesIdx = Convert.ToInt32(entry.Value["SpeciesIdx"]);
+							MobData MobData = _mobDataManager.Get(SpeciesIdx);
+							int PosX = Convert.ToInt32(entry.Value["PosX"]);
+							int PosY = Convert.ToInt32(entry.Value["PosY"]);
+							int Width = Convert.ToInt32(entry.Value["Width"]);
+							int Height = Convert.ToInt32(entry.Value["Height"]);
+							int SpwnInterval = Convert.ToInt32(entry.Value["SpwnInterval"]);
+							int SpawnDefault = Convert.ToInt32(entry.Value["SpawnDefault"]);
+							string EvtProperty = new(entry.Value["EvtProperty"]);
+							string EvtMobs = new(entry.Value["EvtMobs"]);
+							string EvtInterval = new(entry.Value["EvtInterval"]);
+							int MissionGate = Convert.ToInt32(entry.Value["MissionGate"]);
+							int PerfectDrop = Convert.ToInt32(entry.Value["PerfectDrop"]);
+							int Type = Convert.ToInt32(entry.Value["Type"]);
+							int Min = Convert.ToInt32(entry.Value["Min"]);
+							int Max = Convert.ToInt32(entry.Value["Max"]);
+							int Authority = Convert.ToInt32(entry.Value["Authority"]);
+							int Server_Mob = Convert.ToInt32(entry.Value["Server_Mob"]);
+							int Loot_Delay = Convert.ToInt32(entry.Value["Loot_Delay"]);
+							mobSpawnData.Add(spawnId, new MobSpawnData(SpeciesIdx, MobData, PosX, PosY, Width, Height, SpwnInterval, SpawnDefault,
+								EvtProperty, EvtMobs, EvtInterval,
+								MissionGate, PerfectDrop, Type, Min, Max, Authority, Server_Mob, Loot_Delay));
+						}
 
 						Dictionary<int, NpcData> npcData = new();
 						configStr = "[NpcPos" + Convert.ToString(mapId) + "]";
@@ -93,7 +126,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							}
 						}
 
-						var mapData = new MapData(mapId, terrainInfo, npcData);
+						var mapData = new MapData(mapId, terrainInfo, npcData, mobSpawnData);
 						if (!_maps.TryAdd(mapId, mapData))
 							throw new Exception($"Map {mapId} already exists");
 						return mapData;

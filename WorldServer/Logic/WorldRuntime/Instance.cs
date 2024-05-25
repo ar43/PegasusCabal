@@ -47,11 +47,11 @@ namespace WorldServer.Logic.WorldRuntime
 		private readonly Cell[,] _cells;
 		public readonly MapData MapData;
 		public TileAttributeData? TileAttributeData { get; set; }
-		public UInt128 Id { get;}
+		public UInt64 Id { get;}
 		public Enums.MapId MapId { get; }
 		public InstanceType Type { get;}
 
-		private static UInt128 InstanceIdGenerator = 1000;
+		private static UInt64 InstanceIdGenerator = 1000;
 
 		public static readonly int NUM_CELL_X = 16;
 		public static readonly int NUM_CELL_Y = 16;
