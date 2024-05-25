@@ -32,7 +32,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, _character.Stats.Exp);
 			PacketWriter.WriteUInt32(data, _character.Stats.Axp);
 			PacketWriter.WriteUInt64(data, _character.Inventory.Alz);
-			PacketWriter.WriteUInt16(data, _character.ObjectIndexData.UserId);
+			PacketWriter.WriteUInt16(data, _character.ObjectIndexData.ObjectId);
 			PacketWriter.WriteByte(data, _character.ObjectIndexData.WorldIndex);
 			PacketWriter.WriteByte(data, (Byte)_character.ObjectIndexData.ObjectType);
 			PacketWriter.WriteUInt32(data, _warpType);

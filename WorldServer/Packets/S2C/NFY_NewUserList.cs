@@ -27,7 +27,7 @@ namespace WorldServer.Packets.S2C
 			foreach(Character character in _characters)
 			{
 				PacketWriter.WriteUInt32(data, (UInt32)character.Id);
-				PacketWriter.WriteUInt16(data, character.ObjectIndexData.UserId);
+				PacketWriter.WriteUInt16(data, character.ObjectIndexData.ObjectId);
 				PacketWriter.WriteByte(data, character.ObjectIndexData.WorldIndex);
 				PacketWriter.WriteByte(data, (Byte)character.ObjectIndexData.ObjectType);
 				PacketWriter.WriteUInt32(data, character.Stats.Level);

@@ -51,7 +51,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, ip);
 			PacketWriter.WriteUInt16(data, (UInt16)cfg.ConnectionSettings.Port);
 			PacketWriter.WriteUInt32(data, channelType);
-			PacketWriter.WriteUInt16(data, _character.ObjectIndexData.UserId);
+			PacketWriter.WriteUInt16(data, _character.ObjectIndexData.ObjectId);
 			PacketWriter.WriteByte(data, _character.ObjectIndexData.WorldIndex); //WorldIndex of ObjectIndexData??? todo Is this perhaps native instance support
 			PacketWriter.WriteByte(data, (byte)_character.ObjectIndexData.ObjectType); //ObjectType todo
 

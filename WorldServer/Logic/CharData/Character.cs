@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
+using WorldServer.Logic.SharedData;
 
 namespace WorldServer.Logic.CharData
 {
-	internal class Character
+    internal class Character
 	{
 		public Character(Style style, string name) //used just in connection, not actually fr
 		{

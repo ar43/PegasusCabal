@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.DbSyncData;
-using WorldServer.Logic.WorldRuntime;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime;
 
 namespace WorldServer.Logic.CharData
 {
-	internal class Location
+    internal class Location
 	{
 
 		public int LastMapId { private get; set; }

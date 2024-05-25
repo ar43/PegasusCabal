@@ -4,6 +4,7 @@ using System.Net;
 using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime;
 using WorldServer.Packets.S2C;
 
