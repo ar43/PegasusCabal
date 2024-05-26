@@ -1,16 +1,10 @@
-﻿using LibPegasus.Parsers.Mcl;
-using LibPegasus.Parsers.Scp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LibPegasus.Parsers.Scp;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using WorldServer.Logic.CharData.Items;
 
 namespace WorldServer.Logic.WorldRuntime
 {
-    internal class WorldConfig
+	internal class WorldConfig
 	{
 
 		public WorldConfig()
@@ -30,7 +24,7 @@ namespace WorldServer.Logic.WorldRuntime
 
 		public Dictionary<string, Dictionary<string, string>> GetConfig(string section)
 		{
-			if(_config.TryGetValue(section, out var cfg))
+			if (_config.TryGetValue(section, out var cfg))
 			{
 				return cfg;
 			}
@@ -44,8 +38,8 @@ namespace WorldServer.Logic.WorldRuntime
 				var terrainFile = $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world{mapId}-terrain.scp";
 				var npcFile = $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world{mapId}-npc.scp";
 				var mmapFile = $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_World\\world{mapId}-mmap.scp";
-				ScpParser.Parse(_config, terrainFile );
-				ScpParser.Parse( _config, npcFile );
+				ScpParser.Parse(_config, terrainFile);
+				ScpParser.Parse(_config, npcFile);
 				ScpParser.Parse(_config, mmapFile);
 				if (_config.TryGetValue(section, out var cfg_created))
 				{

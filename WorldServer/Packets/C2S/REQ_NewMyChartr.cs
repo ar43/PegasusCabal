@@ -1,13 +1,8 @@
 ﻿using LibPegasus.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.Delegates;
-using WorldServer.Logic;
-using WorldServer.Enums;
 using LibPegasus.Utils;
+using WorldServer.Enums;
+using WorldServer.Logic;
+using WorldServer.Logic.Delegates;
 
 namespace WorldServer.Packets.C2S
 {

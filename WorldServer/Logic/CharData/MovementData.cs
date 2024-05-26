@@ -1,11 +1,4 @@
 ﻿using LibPegasus.Utils;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WorldServer.Logic.CharData
 {
@@ -29,7 +22,7 @@ namespace WorldServer.Logic.CharData
 
 		public float Distance { get; private set; }
 		public float Base { get; private set; }
-		public float Sin {  get; private set; }
+		public float Sin { get; private set; }
 		public float Cos { get; private set; }
 		public bool IsDeadReckoning { get; private set; }
 		public int LastDeadReckoning;
@@ -78,7 +71,7 @@ namespace WorldServer.Logic.CharData
 			var adx = Math.Abs(dx);
 			var ady = Math.Abs(dy);
 
-			if(adx >= DistanceCache.TABLE_LENGTH)
+			if (adx >= DistanceCache.TABLE_LENGTH)
 			{
 				Serilog.Log.Warning("StartDeadReckoning: adx >= DistanceCache.TABLE_LENGTH");
 				adx = DistanceCache.TABLE_LENGTH - 1;
@@ -146,7 +139,7 @@ namespace WorldServer.Logic.CharData
 			var dxCurrent = X - startX;
 			var dyCurrent = Y - startY;
 
-			if(dxBegin * dxBegin > MAX_SQR_MOVE_DIFF || 
+			if (dxBegin * dxBegin > MAX_SQR_MOVE_DIFF ||
 			   dyBegin * dyBegin > MAX_SQR_MOVE_DIFF ||
 			   dxCurrent * dxCurrent > MAX_SQR_MOVE_DIFF ||
 			   dyCurrent * dxCurrent > MAX_SQR_MOVE_DIFF)
@@ -155,7 +148,7 @@ namespace WorldServer.Logic.CharData
 				return false;
 			}
 
-			if(startX == endX && startY == endY)
+			if (startX == endX && startY == endY)
 			{
 				Serilog.Log.Warning("startX == endX && startY == endY");
 				return false;
@@ -169,7 +162,7 @@ namespace WorldServer.Logic.CharData
 			var cellDx = pntX / 16 - CellX;
 			var cellDy = pntY / 16 - CellY;
 
-			if(cellDx > 1 || cellDy > 1 || cellDx < -1 || cellDy < -1)
+			if (cellDx > 1 || cellDy > 1 || cellDx < -1 || cellDy < -1)
 			{
 				Serilog.Log.Warning("Movement begin: TileDiff problem");
 				return false;
@@ -191,7 +184,7 @@ namespace WorldServer.Logic.CharData
 		{
 			var tickCount = Environment.TickCount;
 
-			if(tickCount > LastDeadReckoning) //dont run this function multiple times per tick
+			if (tickCount > LastDeadReckoning) //dont run this function multiple times per tick
 			{
 				LastDeadReckoning = tickCount;
 			}
@@ -213,11 +206,11 @@ namespace WorldServer.Logic.CharData
 			var waypoint = _waypoints[CurrentWaypoint];
 			var waypoint2 = _waypoints[CurrentWaypoint + 1];
 
-			while(lenRest >= Distance)
+			while (lenRest >= Distance)
 			{
 				Base += Distance;
 
-				if(CurrentWaypoint + 2 >= _waypoints.Count)
+				if (CurrentWaypoint + 2 >= _waypoints.Count)
 				{
 					IsDeadReckoning = false;
 					X = waypoint2.X;
@@ -259,7 +252,7 @@ namespace WorldServer.Logic.CharData
 			adx = Math.Abs(dx);
 			ady = Math.Abs(dy);
 
-			if(adx >= ady)
+			if (adx >= ady)
 			{
 				var pos = (int)(lenRest * Cos);
 
@@ -303,7 +296,7 @@ namespace WorldServer.Logic.CharData
 				Serilog.Log.Warning("Potential speedhack detected");
 				return true;
 			}
-			else if(drAdx + drAxy > 0)
+			else if (drAdx + drAxy > 0)
 			{
 				//Serilog.Log.Warning($"Diff: {drAdx + drAxy}");
 				return false;
@@ -411,8 +404,8 @@ namespace WorldServer.Logic.CharData
 			var ady = Math.Abs(dy);
 
 			int ox, oy, dxBegin, dyBegin;
-			
-			if(adx > ady)
+
+			if (adx > ady)
 			{
 				if (adx == 0)
 					adx = 1;
@@ -438,7 +431,7 @@ namespace WorldServer.Logic.CharData
 				dyBegin = waypoint.Y + oy * dy / ady - y;
 			}
 
-			if(dyBegin * dyBegin > MAX_SQR_MOVE_DIFF || dxBegin * dxBegin > MAX_SQR_MOVE_DIFF)
+			if (dyBegin * dyBegin > MAX_SQR_MOVE_DIFF || dxBegin * dxBegin > MAX_SQR_MOVE_DIFF)
 			{
 				Serilog.Log.Warning($"Movement end: MAX_SQR_MOVE_DIFF problem {dxBegin} {dyBegin}");
 				return false;
@@ -457,7 +450,7 @@ namespace WorldServer.Logic.CharData
 
 		public bool CellMove(UInt16 x, UInt16 y, bool isGm)
 		{
-			if(x >= MAX_SQR_MOVE_DIFF || y >= MAX_SQR_MOVE_DIFF)
+			if (x >= MAX_SQR_MOVE_DIFF || y >= MAX_SQR_MOVE_DIFF)
 			{
 				return false;
 			}
@@ -519,7 +512,7 @@ namespace WorldServer.Logic.CharData
 				return false;
 			}
 
-			if(cellDx < -1 || cellDy < -1 || cellDx > 1 || cellDy > 1)
+			if (cellDx < -1 || cellDy < -1 || cellDx > 1 || cellDy > 1)
 			{
 				return false;
 			}
@@ -541,14 +534,14 @@ namespace WorldServer.Logic.CharData
 			var adx = Math.Abs(dx);
 			var ady = Math.Abs(dy);
 
-			if(adx >= DistanceCache.TABLE_LENGTH || ady >= DistanceCache.TABLE_LENGTH)
+			if (adx >= DistanceCache.TABLE_LENGTH || ady >= DistanceCache.TABLE_LENGTH)
 			{
 				return false;
 			}
 
 			ChangeDeadReckoning();
 
-			X = startX; 
+			X = startX;
 			Y = startY;
 
 			return true;

@@ -1,19 +1,14 @@
 ﻿using Shared.Protos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.Items;
 
 namespace WorldServer.Logic.CharData
 {
-    internal class Inventory
+	internal class Inventory
 	{
 		private Dictionary<UInt16, Item> _items;
 		private bool[] _occupiedSlots;
-		private readonly int INV_SIZE = 64*4;
+		private readonly int INV_SIZE = 64 * 4;
 		public UInt64 Alz { get; private set; }
 		public DBSyncPriority SyncPending { get; private set; }
 
@@ -23,7 +18,7 @@ namespace WorldServer.Logic.CharData
 			SyncPending = DBSyncPriority.NONE;
 			_occupiedSlots = new bool[INV_SIZE];
 
-			if(protobuf != null )
+			if (protobuf != null)
 			{
 				foreach (var inv in protobuf.InventoryData_)
 				{
@@ -45,7 +40,7 @@ namespace WorldServer.Logic.CharData
 		public InventoryData GetProtobuf()
 		{
 			InventoryData data = new InventoryData();
-			foreach(var item in _items)
+			foreach (var item in _items)
 			{
 				var slot = item.Key;
 				data.InventoryData_.Add(slot, item.Value.GetProtobuf());
@@ -55,7 +50,7 @@ namespace WorldServer.Logic.CharData
 
 		public bool ItemMove(int fromSlot, int toSlot, bool sync)
 		{
-			if(fromSlot < 0 || toSlot < 0)
+			if (fromSlot < 0 || toSlot < 0)
 				return false;
 			if (fromSlot >= INV_SIZE || toSlot >= INV_SIZE)
 				return false;
@@ -67,8 +62,8 @@ namespace WorldServer.Logic.CharData
 			_ = RemoveItem((UInt16)fromSlot);
 			if (!AddItem((UInt16)toSlot, item))
 				return false;
-			
-			if(sync)
+
+			if (sync)
 				Sync(DBSyncPriority.NORMAL);
 			return true;
 		}
@@ -88,7 +83,7 @@ namespace WorldServer.Logic.CharData
 			var savedItem = RemoveItem((UInt16)fromSlot2);
 			if (savedItem == null)
 				return false;
-            if (!ItemMove(fromSlot1, toSlot1, false))
+			if (!ItemMove(fromSlot1, toSlot1, false))
 				return false;
 			if (!AddItem((UInt16)toSlot2, savedItem))
 				return false;
@@ -117,7 +112,7 @@ namespace WorldServer.Logic.CharData
 				return false;
 			for (int i = 0; i < itemWidth; i++)
 			{
-				for(int j = 0; j < itemHeight; j++)
+				for (int j = 0; j < itemHeight; j++)
 				{
 					if (_occupiedSlots[PosToSlot(slotX + i, slotY + j)])
 						return false;
@@ -162,7 +157,7 @@ namespace WorldServer.Logic.CharData
 		public byte[] Serialize()
 		{
 			var bytes = new List<byte>();
-			foreach(var item in _items)
+			foreach (var item in _items)
 			{
 				if (item.Value != null && item.Value.Kind != 0)
 				{

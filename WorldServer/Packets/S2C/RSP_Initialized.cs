@@ -1,12 +1,7 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
 
@@ -111,10 +106,10 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, 0); //live style
 			PacketWriter.WriteNull(data, 35); //??
 
-			PacketWriter.WriteUInt16(data, _character.Equipment.Count()); 
+			PacketWriter.WriteUInt16(data, _character.Equipment.Count());
 			PacketWriter.WriteUInt16(data, (UInt16)_character.Inventory.Count()); //inv count
 			PacketWriter.WriteUInt16(data, (UInt16)_character.Skills.Count()); //skill count
-			PacketWriter.WriteUInt16(data, (UInt16)_character.QuickSlotBar.Count()) ; //quickslot count
+			PacketWriter.WriteUInt16(data, (UInt16)_character.QuickSlotBar.Count()); //quickslot count
 			PacketWriter.WriteUInt16(data, 0); //mercenary count
 			PacketWriter.WriteUInt16(data, 0); //??
 			PacketWriter.WriteUInt16(data, 0); //??

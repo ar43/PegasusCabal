@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Packets.S2C;
+﻿using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
 {
@@ -32,7 +27,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(loc.Movement.Begin(fromX, fromY, toX, toY, pntX, pntY, client.isGm()))
+			if (loc.Movement.Begin(fromX, fromY, toX, toY, pntX, pntY, client.isGm()))
 			{
 				if (loc.Instance.CheckTerrainCollision(fromX, fromY))
 				{
@@ -76,19 +71,19 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(loc.Movement.IsMoving == false)
+			if (loc.Movement.IsMoving == false)
 			{
 				client.Disconnect("OnMoveChanged: Wasn't moving", Enums.ConnState.ERROR);
 				return;
 			}
 
-			if(fromX >= 256 || fromY >= 256 || toX >= 256 || toY >= 256 || pntX >= 256 || pntY >= 256)
+			if (fromX >= 256 || fromY >= 256 || toX >= 256 || toY >= 256 || pntX >= 256 || pntY >= 256)
 			{
 				client.Disconnect("OnMoveChanged: Invalid input", Enums.ConnState.ERROR);
 				return;
 			}
 
-			if(loc.Movement.Change(fromX, fromY, toX, toY, pntX, pntY, client.isGm()))
+			if (loc.Movement.Change(fromX, fromY, toX, toY, pntX, pntY, client.isGm()))
 			{
 				if (loc.Instance.CheckTerrainCollision(fromX, fromY))
 				{
@@ -138,7 +133,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(loc.Movement.End(x, y, client.isGm()))
+			if (loc.Movement.End(x, y, client.isGm()))
 			{
 				if (loc.Instance.CheckTerrainCollision(x, y))
 				{
@@ -177,7 +172,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(!loc.Movement.SwitchWaypoint(fromX, fromY, toX, toY))
+			if (!loc.Movement.SwitchWaypoint(fromX, fromY, toX, toY))
 			{
 				client.Disconnect("Movement.SwitchWaypoint: error", Enums.ConnState.ERROR);
 				return;
@@ -191,14 +186,14 @@ namespace WorldServer.Logic.Delegates
 		}
 		internal static void OnTileChange(Client client, UInt16 x, UInt16 y)
 		{
-			if(client.Character == null)
+			if (client.Character == null)
 			{
 				client.Disconnect("OnTileChange null", Enums.ConnState.ERROR);
 				return;
 			}
 			var loc = client.Character.Location;
 
-			if(loc.Instance == null)
+			if (loc.Instance == null)
 			{
 				client.Disconnect("OnTileChange null", Enums.ConnState.ERROR);
 				return;

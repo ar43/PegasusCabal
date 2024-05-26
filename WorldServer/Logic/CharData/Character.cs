@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
+﻿using WorldServer.Enums;
 using WorldServer.Logic.SharedData;
-using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.CharData
 {
-    internal class Character
+	internal class Character
 	{
 		public Character(Style style, string name) //used just in connection, not actually fr
 		{
@@ -46,7 +40,7 @@ namespace WorldServer.Logic.CharData
 			return Style.Verify();
 		}
 
-		public Style Style {  get; set; }
+		public Style Style { get; set; }
 		public string Name { get; set; }
 		public int Id { get; private set; }
 		public NationCode Nation { get; private set; }
@@ -68,11 +62,11 @@ namespace WorldServer.Logic.CharData
 
 		public void Sync(DBSyncPriority prio, bool uninitOnSync = false)
 		{
-			if(SyncPending < prio)
+			if (SyncPending < prio)
 				SyncPending = prio;
-			if(prio == DBSyncPriority.NONE)
+			if (prio == DBSyncPriority.NONE)
 				SyncPending = DBSyncPriority.NONE;
-			if(uninitOnSync)
+			if (uninitOnSync)
 				UninitOnSync = uninitOnSync;
 		}
 

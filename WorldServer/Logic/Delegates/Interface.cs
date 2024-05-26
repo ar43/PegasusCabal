@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Packets.S2C;
+﻿using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
 {

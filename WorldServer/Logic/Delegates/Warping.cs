@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
+﻿using WorldServer.Enums;
 
 namespace WorldServer.Logic.Delegates
 {
@@ -34,7 +29,7 @@ namespace WorldServer.Logic.Delegates
 
 			var character = client.Character;
 			var instance = client.Character.Location.Instance;
-			if(character == null || instance == null)
+			if (character == null || instance == null)
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "character or instance is null");
 				return;
@@ -54,7 +49,7 @@ namespace WorldServer.Logic.Delegates
 				}
 				case (Byte)SpecialWarpIndex.NPCSIDX_GM:
 				{
-					if(client.Character.Nation != NationCode.NATION_GM)
+					if (client.Character.Nation != NationCode.NATION_GM)
 					{
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "tried to gm warp without gm nation");
 						return;
@@ -70,7 +65,7 @@ namespace WorldServer.Logic.Delegates
 				}
 				default:
 				{
-					if(npcId >= 52 && npcId <= 68)
+					if (npcId >= 52 && npcId <= 68)
 					{
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, $"unimplemented custom npcId {npcId}");
 						return;

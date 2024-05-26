@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.CharData;
-
-namespace WorldServer.Logic.WorldRuntime.ShopRuntime
+﻿namespace WorldServer.Logic.WorldRuntime.ShopRuntime
 {
 	internal class ShopEntry
 	{

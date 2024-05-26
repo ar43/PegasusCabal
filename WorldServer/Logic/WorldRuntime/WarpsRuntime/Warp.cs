@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Logic.WorldRuntime.WarpsRuntime
+﻿namespace WorldServer.Logic.WorldRuntime.WarpsRuntime
 {
 	internal class Warp
 	{
@@ -23,7 +17,7 @@ namespace WorldServer.Logic.WorldRuntime.WarpsRuntime
 		}
 
 		public int WarpId { get; private set; }
-		public int WorldIdx {  get; private set; }
+		public int WorldIdx { get; private set; }
 		public int PosXPnt { get; private set; }
 		public int PosYPnt { get; private set; }
 		public int Nation1PosXPnt { get; private set; }

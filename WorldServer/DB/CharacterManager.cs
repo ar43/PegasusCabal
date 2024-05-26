@@ -1,17 +1,8 @@
 ﻿using Google.Protobuf;
 using Npgsql;
 using Shared.Protos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
-using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.CharData.DbSyncData;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WorldServer.DB
 {
@@ -274,7 +265,7 @@ namespace WorldServer.DB
 						}
 						var linksProtobuf = ToProtoObject<QuickSlotData>(dbDataBytes, (int)dataLen);
 						QuickSlotBar cQuickSlotBar = new QuickSlotBar(linksProtobuf);
-						
+
 						var wid = reader.GetInt32(worldId);
 						Character character = new Character(
 							new Style((UInt32)reader.GetInt32(style)),
@@ -293,7 +284,7 @@ namespace WorldServer.DB
 					}
 				}
 			}
-			
+
 			return (null, 0);
 		}
 	}

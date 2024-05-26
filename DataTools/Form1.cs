@@ -350,7 +350,7 @@ namespace DataTools
 			}
 			else
 				average_safe = 0;
-			
+
 			textBox2.Text = $"{average} {average_conv} {average_safe}";
 		}
 	}

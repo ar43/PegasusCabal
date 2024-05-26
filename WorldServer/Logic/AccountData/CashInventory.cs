@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.CharData.Items;
+﻿using WorldServer.Logic.CharData.Items;
 
 namespace WorldServer.Logic.AccountData
 {
-    internal class CashInventory
+	internal class CashInventory
 	{
 		public static readonly int MAX_ITEMS = 128;
 		private List<Item> _items;
@@ -21,7 +16,7 @@ namespace WorldServer.Logic.AccountData
 		{
 			var bytes = new List<byte>();
 			var itemCount = Math.Min(MAX_ITEMS, _items.Count);
-			for(UInt16 i = 0; i < itemCount; i++)
+			for (UInt16 i = 0; i < itemCount; i++)
 			{
 				var item = _items[i];
 				if (item != null)

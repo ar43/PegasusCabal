@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.Enums
+﻿namespace LibPegasus.Enums
 {
 	public enum CharCreateResult
 	{
 		DBERROR = 0x01,
-		DATABRK = 0x02,          
-		NAMEDUP = 0x03,                 
+		DATABRK = 0x02,
+		NAMEDUP = 0x03,
 		BADWORD = 0x04,
 		SUCCESS = 0xA1,
 		FAIL_DELETE_24HOUR = 0xB1,

@@ -1,11 +1,9 @@
 ﻿using LibPegasus.Enums;
-using System.Diagnostics;
 using System.Net;
 using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.SharedData;
-using WorldServer.Logic.WorldRuntime;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
@@ -16,7 +14,7 @@ namespace WorldServer.Logic.Delegates
 		{
 			var reply = await client.SendCharListRequest();
 			var subpassData = await client.GetSubPasswordData();
-			if(subpassData.Item1.Length > 0)
+			if (subpassData.Item1.Length > 0)
 			{
 				reply.IsPinSet = true;
 			}
@@ -24,7 +22,7 @@ namespace WorldServer.Logic.Delegates
 			{
 				reply.IsPinSet = false;
 			}
-			
+
 			var packet = new RSP_GetMyChartr(reply);
 			client.PacketManager.Send(packet);
 		}
@@ -54,7 +52,7 @@ namespace WorldServer.Logic.Delegates
 		{
 			var character = new Character(new Style(battleStyle, rank, face, hairColor, hairStyle, aura, gender, showHelmet), name);
 
-			if(character.Verify())
+			if (character.Verify())
 			{
 				var reply = await client.SendCharCreationRequest(character, slot);
 
@@ -71,8 +69,8 @@ namespace WorldServer.Logic.Delegates
 		internal async static void OnSubpasswordCheckRequest(Client client)
 		{
 			var subpassData = await client.GetSubPasswordData();
-			
-			if(subpassData.Item1 == "")
+
+			if (subpassData.Item1 == "")
 			{
 				var packet = new RSP_SubPasswordCheckRequest(false);
 				client.PacketManager.Send(packet);
@@ -80,7 +78,7 @@ namespace WorldServer.Logic.Delegates
 			else
 			{
 
-				if(subpassData.Item2 == null)
+				if (subpassData.Item2 == null)
 				{
 					var packet = new RSP_SubPasswordCheckRequest(true);
 					client.PacketManager.Send(packet);
@@ -88,7 +86,7 @@ namespace WorldServer.Logic.Delegates
 				else
 				{
 					var result = (DateTime.UtcNow - subpassData.Item2).Value.TotalHours;
-					if(result > 3) //TODO: get a db value of this, not just constant 3
+					if (result > 3) //TODO: get a db value of this, not just constant 3
 					{
 						var packet = new RSP_SubPasswordCheckRequest(true);
 						client.PacketManager.Send(packet);
@@ -101,16 +99,16 @@ namespace WorldServer.Logic.Delegates
 					}
 				}
 			}
-			
+
 		}
 
 		internal async static void OnSubPasswordSet(Client client, String subpass, SubPasswordType subpassType, UInt32 secretQuestion, String secretAnswer, SubPasswordLockType subpassLockType)
 		{
-			if(subpassType == SubPasswordType.LOGIN && subpassLockType == SubPasswordLockType.UNLOCKED)
+			if (subpassType == SubPasswordType.LOGIN && subpassLockType == SubPasswordLockType.UNLOCKED)
 			{
 				var attempt = await client.SetSubPassword(subpass);
 
-				if(attempt == true)
+				if (attempt == true)
 				{
 					var packet = new RSP_SubPasswordSet(1, 0, SubPasswordType.LOGIN, SubPasswordLockType.UNLOCKED);
 					client.PacketManager.Send(packet);
@@ -130,7 +128,7 @@ namespace WorldServer.Logic.Delegates
 		{
 			var subpassData = await client.GetSubPasswordData();
 
-			if(subpassData.Item1 == subpass)
+			if (subpassData.Item1 == subpass)
 			{
 				var packet = new RSP_SubPasswordCheck(1, 0, subpassType, subpassLockType);
 				client.PacketManager.Send(packet);
@@ -146,27 +144,27 @@ namespace WorldServer.Logic.Delegates
 
 		internal static async void OnInitialize(Client client, UInt32 charId)
 		{
-			if(client.Character != null)
+			if (client.Character != null)
 			{
 				client.Disconnect("trying to init while already being init", ConnState.ERROR);
 				return;
 			}
 
-			if(!client.ConnectionInfo.SubPasswordAuthenticated)
+			if (!client.ConnectionInfo.SubPasswordAuthenticated)
 			{
 				client.Disconnect("trying to init without being subpass authenticated", ConnState.ERROR);
 				return;
 			}
 
 			var charToAccId = charId / 8;
-			if(charToAccId != client.ConnectionInfo.AccountId)
+			if (charToAccId != client.ConnectionInfo.AccountId)
 			{
 				client.Disconnect("invalid char id", ConnState.ERROR);
 				return;
 			}
 			var cfg = ServerConfig.Get();
 
-			if(cfg.DatabaseSettings.EnableDbSync)
+			if (cfg.DatabaseSettings.EnableDbSync)
 			{
 				var charSyncStatus = await client.IsCharacterSynced((Int32)charId);
 				if (charSyncStatus.Status != 1)
@@ -175,11 +173,11 @@ namespace WorldServer.Logic.Delegates
 					return;
 				}
 			}
-			
+
 			var character = await client.LoadCharacter(charId);
 			client.Character = character.Item1;
 			var worldId = character.Item2;
-			if(client.Character != null)
+			if (client.Character != null)
 			{
 				var packet = new NFY_ChargeInfo(0, 0, 0); //TODO: premium service
 				client.PacketManager.Send(packet);

@@ -6,7 +6,7 @@ namespace LibPegasus.Utils
 {
 	public static class Utility
 	{
-		
+
 		public static void PrintByteArray(byte[] bytes, int len, string Type)
 		{
 			var sb = new StringBuilder(Type + "(" + len.ToString() + "): \n");

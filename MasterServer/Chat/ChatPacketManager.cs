@@ -1,7 +1,6 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
 using Serilog;
-using System.Reflection.Emit;
 
 namespace MasterServer.Chat
 {

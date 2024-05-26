@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace LibPegasus.Parsers.Mcl
 {
 	public class MclParser
 	{
 		public TileAttributeData AttributeData { get; private set; }
-		public MclParser() 
-		{ 
+		public MclParser()
+		{
 			AttributeData = new TileAttributeData();
 		}
 
@@ -25,7 +21,7 @@ namespace LibPegasus.Parsers.Mcl
 						_ = reader.ReadBytes(0x84);
 
 						var effectCount = reader.ReadUInt32();
-						for(int i = 0; i < effectCount; i++)
+						for (int i = 0; i < effectCount; i++)
 						{
 							var length = reader.ReadUInt16();
 							length += 18 - 2;
@@ -33,7 +29,7 @@ namespace LibPegasus.Parsers.Mcl
 						}
 
 						var textureCount = reader.ReadUInt32();
-						for(int i = 0;i < textureCount; i++)
+						for (int i = 0; i < textureCount; i++)
 						{
 							var size = reader.ReadUInt32();
 							_ = reader.ReadBytes((int)size);
@@ -43,7 +39,7 @@ namespace LibPegasus.Parsers.Mcl
 
 						_ = reader.ReadBytes(257 * 257 * 4);
 
-						for(int i = 0; i < 256*256; i++)
+						for (int i = 0; i < 256 * 256; i++)
 						{
 							AttributeData.SetTileAttribute(i, reader.ReadUInt32());
 						}
@@ -55,7 +51,7 @@ namespace LibPegasus.Parsers.Mcl
 				throw new FileNotFoundException(path);
 			}
 		}
-			
+
 	}
 
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
+﻿using WorldServer.Enums;
 
 namespace WorldServer.Logic.CharData.DbSyncData
 {
@@ -20,14 +15,14 @@ namespace WorldServer.Logic.CharData.DbSyncData
 		}
 
 		public DbSyncEquipment? DbSyncEquipment { get; set; }
-		public DbSyncInventory? DbSyncInventory { get; set;}
-		public DbSyncLocation? DbSyncLocation { get; set;}
-		public DbSyncQuickSlotBar? DbSyncQuickSlotBar { get; set;}
+		public DbSyncInventory? DbSyncInventory { get; set; }
+		public DbSyncLocation? DbSyncLocation { get; set; }
+		public DbSyncQuickSlotBar? DbSyncQuickSlotBar { get; set; }
 		public DbSyncSkills? DbSyncSkills { get; set; }
-		public DbSyncStats? DbSyncStats { get; set;}
-		public DbSyncStatus? DbSyncStatus { get; set;}
+		public DbSyncStats? DbSyncStats { get; set; }
+		public DbSyncStatus? DbSyncStatus { get; set; }
 		public DateTime Timestamp { get; private set; }
-		public DBSyncPriority Priority {  get; private set; }
+		public DBSyncPriority Priority { get; private set; }
 		public int CharId { get; private set; }
 		public bool Final { get; private set; }
 

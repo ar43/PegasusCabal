@@ -1,7 +1,6 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
 using WorldServer.Enums;
-using WorldServer.Logic.CharData;
 using WorldServer.Logic.WorldRuntime.ShopRuntime;
 
 namespace WorldServer.Packets.S2C
@@ -20,7 +19,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt16(data, (UInt16)_pool.PoolId);
 			PacketWriter.WriteUInt16(data, (UInt16)count);
 
-			foreach(var item in _pool.Items)
+			foreach (var item in _pool.Items)
 			{
 				var price = item.Value.AlzPrice == 0 ? item.Value.CashPrice : item.Value.AlzPrice;
 				PacketWriter.WriteUInt16(data, (UInt16)item.Key);

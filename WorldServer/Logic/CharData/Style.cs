@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Logic.CharData
+﻿namespace WorldServer.Logic.CharData
 {
 	internal class Style
 	{
-		public byte BattleStyle {  get; private set; }
+		public byte BattleStyle { get; private set; }
 		public byte Rank { get; private set; }
 		public byte Face { get; private set; }
 		public byte HairColor { get; private set; }

@@ -21,7 +21,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteNull(data, 13);
 			PacketWriter.WriteUInt32(data, _reply.LastCharId);
 			PacketWriter.WriteUInt32(data, _reply.CharacterOrder);
-			foreach(var character in _reply.Characters)
+			foreach (var character in _reply.Characters)
 			{
 				PacketWriter.WriteUInt32(data, character.CharacterId);
 				PacketWriter.WriteUInt64(data, (UInt64)character.CreationDate);
@@ -33,12 +33,12 @@ namespace WorldServer.Packets.S2C
 				PacketWriter.WriteByte(data, (byte)character.WorldId);
 				PacketWriter.WriteUInt16(data, (UInt16)character.X);
 				PacketWriter.WriteUInt16(data, (UInt16)character.Y);
-				foreach(var eqSlot in character.Equipment)
+				foreach (var eqSlot in character.Equipment)
 				{
 					PacketWriter.WriteUInt32(data, eqSlot);
 				}
 				PacketWriter.WriteNull(data, 88);
-				PacketWriter.WriteByte(data, (Byte)(character.Name.Length+1));
+				PacketWriter.WriteByte(data, (Byte)(character.Name.Length + 1));
 				PacketWriter.WriteArray(data, Encoding.ASCII.GetBytes(character.Name), character.Name.Length);
 				PacketWriter.WriteNull(data, 1);
 			}

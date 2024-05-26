@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
+﻿using WorldServer.Enums;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
@@ -12,7 +7,7 @@ namespace WorldServer.Logic.Delegates
 	{
 		internal static void OnItemMove(Client client, Int32 fromType, Int32 fromSlot, Int32 toType, Int32 toSlot)
 		{
-			if(client.Character == null)
+			if (client.Character == null)
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "null Character");
 				return;
@@ -31,10 +26,10 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(fromMoveType == ItemMoveType.INVENTORY && toMoveType == ItemMoveType.INVENTORY)
+			if (fromMoveType == ItemMoveType.INVENTORY && toMoveType == ItemMoveType.INVENTORY)
 			{
 				var success = client.Character.Inventory.ItemMove(fromSlot, toSlot, true);
-                if(success)
+				if (success)
 				{
 					var rsp = new RSP_ItemMove(1);
 					client.PacketManager.Send(rsp);
@@ -44,12 +39,12 @@ namespace WorldServer.Logic.Delegates
 					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed inv move");
 					return;
 				}
-            }
+			}
 			else
 			{
 				throw new NotImplementedException();
 			}
-			
+
 		}
 
 		internal static void OnItemSwap(Client client, Int32 fromType1, Int32 fromSlot1, Int32 toType1, Int32 toSlot1, Int32 fromType2, Int32 fromSlot2, Int32 toType2, Int32 toSlot2)

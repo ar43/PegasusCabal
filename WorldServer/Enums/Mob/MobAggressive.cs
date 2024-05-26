@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Enums.Mob
+﻿namespace WorldServer.Enums.Mob
 {
-    internal enum MobAggressive
-    {
+	internal enum MobAggressive
+	{
 		UNAGGRESVE = 0,
 		AGGRESSIVE = 1,
 		NATIONAGGRESVE = 2,

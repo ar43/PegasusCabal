@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.Utils
+﻿namespace LibPegasus.Utils
 {
 	public class DistanceCache
 	{
@@ -18,9 +12,9 @@ namespace LibPegasus.Utils
 
 		public DistanceCache()
 		{
-			for(int i = 0; i < TABLE_LENGTH; i++)
+			for (int i = 0; i < TABLE_LENGTH; i++)
 			{
-				for(int j = 0; j < TABLE_LENGTH; j++)
+				for (int j = 0; j < TABLE_LENGTH; j++)
 				{
 					_distanceTable[j, i] = (float)Math.Sqrt((float)j * (float)j + (float)i * (float)i);
 				}

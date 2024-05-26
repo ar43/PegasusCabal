@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Packets.S2C;
+﻿using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
 {
@@ -11,13 +6,13 @@ namespace WorldServer.Logic.Delegates
 	{
 		internal static void OnBackToCharLobby(Client client)
 		{
-			if(client.Character == null)
+			if (client.Character == null)
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "null Character");
 				return;
 			}
 
-			if(client.ConnectionInfo.RequestedBackToCharLobby == true )
+			if (client.ConnectionInfo.RequestedBackToCharLobby == true)
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "already requested back to lobby");
 				return;
@@ -37,7 +32,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(option == 2 && client.ConnectionInfo.RequestedBackToCharLobby)
+			if (option == 2 && client.ConnectionInfo.RequestedBackToCharLobby)
 			{
 				client.ConnectionInfo.RequestedBackToCharLobby = false;
 				client.Character.Location.LastMapId = (Int32)client.Character.Location.Instance.MapId;

@@ -1,10 +1,4 @@
 ﻿using LibPegasus.Enums;
-using Npgsql.TypeMapping;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibPegasus.Parsers.Mcl
 {
@@ -16,7 +10,7 @@ namespace LibPegasus.Parsers.Mcl
 
 		public UInt32 GetTileAttribute(int x, int y)
 		{
-			return _attrData[x*256 + y];
+			return _attrData[x * 256 + y];
 		}
 
 		public bool HasTileAttribute(int x, int y, TileAttribute mask)

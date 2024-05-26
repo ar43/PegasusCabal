@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
+﻿namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 {
 	internal class NpcWarpData
 	{
@@ -17,7 +11,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 			TargetId = targetId;
 		}
 
-		public int SetIdx {  get; private set; }
+		public int SetIdx { get; private set; }
 		public int TargetId { get; private set; }
 		public int Level { get; private set; }
 		public int Fee { get; private set; }

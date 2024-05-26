@@ -1,16 +1,10 @@
-﻿using LibPegasus.JSON;
-using Shared.Protos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Shared.Protos;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.Items;
 
 namespace WorldServer.Logic.CharData
 {
-    internal class Equipment
+	internal class Equipment
 	{
 		public DBSyncPriority SyncPending { get; private set; }
 		private Item[] _list;
@@ -20,7 +14,7 @@ namespace WorldServer.Logic.CharData
 			SyncPending = DBSyncPriority.NONE;
 			_list = new Item[(Int32)EquipmentIndex.NUM_EQUIPMENT];
 
-			if(protobuf != null)
+			if (protobuf != null)
 			{
 				foreach (var eq in protobuf.EquipmentData_)
 				{
@@ -28,7 +22,7 @@ namespace WorldServer.Logic.CharData
 					_list[(Int32)eq.Key] = item;
 				}
 			}
-			
+
 		}
 		public void Sync(DBSyncPriority prio)
 		{
@@ -42,7 +36,7 @@ namespace WorldServer.Logic.CharData
 		{
 			EquipmentData data = new EquipmentData();
 
-			for(uint i = 0; i < _list.Length; i++)
+			for (uint i = 0; i < _list.Length; i++)
 			{
 				var item = _list[i];
 				if (item == null || item.Kind == 0)
@@ -56,10 +50,10 @@ namespace WorldServer.Logic.CharData
 		public byte[] Serialize()
 		{
 			var bytes = new List<byte>();
-			for(int i = 0; i < _list.Length; i++)
+			for (int i = 0; i < _list.Length; i++)
 			{
 				var item = _list[i];
-				if(item != null && item.Kind != 0)
+				if (item != null && item.Kind != 0)
 				{
 					bytes.AddRange(BitConverter.GetBytes(item.Kind));
 					bytes.AddRange(BitConverter.GetBytes(item.Serial));

@@ -1,9 +1,4 @@
 ﻿using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WorldServer.DB
 {
@@ -30,7 +25,7 @@ namespace WorldServer.DB
 					while (await reader.ReadAsync())
 					{
 						subpass = reader.GetString(0);
-						if(!reader.IsDBNull(1))
+						if (!reader.IsDBNull(1))
 						{
 							dateTime = reader.GetDateTime(1);
 						}
@@ -42,7 +37,7 @@ namespace WorldServer.DB
 				}
 			}
 
-			return (subpass,dateTime);
+			return (subpass, dateTime);
 		}
 
 		public async Task<bool> SetSubpass(int accountId, string subpass)

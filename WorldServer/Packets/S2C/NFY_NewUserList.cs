@@ -1,10 +1,6 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
 
@@ -24,7 +20,7 @@ namespace WorldServer.Packets.S2C
 		{
 			PacketWriter.WriteByte(data, (Byte)_characters.Count);
 			PacketWriter.WriteByte(data, (Byte)_newUserType);
-			foreach(Character character in _characters)
+			foreach (Character character in _characters)
 			{
 				PacketWriter.WriteUInt32(data, (UInt32)character.Id);
 				PacketWriter.WriteUInt16(data, character.ObjectIndexData.ObjectId);
@@ -36,7 +32,7 @@ namespace WorldServer.Packets.S2C
 				PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.Y);
 
 				//dest
-				if(character.Location.Movement.IsMoving)
+				if (character.Location.Movement.IsMoving)
 				{
 					PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.EndX); //TODO: perhaps PntX is meant here. need to verify
 					PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.EndY);
@@ -46,7 +42,7 @@ namespace WorldServer.Packets.S2C
 					PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.X);
 					PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.Y);
 				}
-				
+
 				PacketWriter.WriteByte(data, 0); //unknown
 				PacketWriter.WriteInt32(data, 0); //unknown
 				PacketWriter.WriteInt16(data, 0); //unknown

@@ -1,7 +1,6 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
 using WorldServer.Enums;
-using WorldServer.Logic.CharData;
 
 namespace WorldServer.Packets.S2C
 {

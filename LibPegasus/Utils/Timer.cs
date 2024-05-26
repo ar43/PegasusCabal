@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.Utils
+﻿namespace LibPegasus.Utils
 {
 	public class Timer
 	{
@@ -30,7 +24,7 @@ namespace LibPegasus.Utils
 
 			if (time.Ticks - _startTime.Ticks >= TimeSpan.FromMilliseconds(_interval).Ticks)
 			{
-				if(_autoRestart)
+				if (_autoRestart)
 				{
 					_startTime = DateTime.UtcNow;
 				}

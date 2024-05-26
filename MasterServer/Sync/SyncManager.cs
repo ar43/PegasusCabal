@@ -1,6 +1,4 @@
 ﻿using LibPegasus.Enums;
-using LibPegasus.JSON;
-using Microsoft.AspNetCore.Components.Web;
 using System.Collections.Concurrent;
 
 namespace MasterServer.Sync
@@ -17,10 +15,10 @@ namespace MasterServer.Sync
 		private bool[] AddNew(int id)
 		{
 			bool[] data = new bool[(Int32)SyncFlags.NUM_FLAGS];
-			for(int i = 0; i < data.Length; i++)
+			for (int i = 0; i < data.Length; i++)
 				data[i] = true;
-			var success =_charSync.TryAdd(id, data);
-			if(!success)
+			var success = _charSync.TryAdd(id, data);
+			if (!success)
 			{
 				throw new Exception("hmm?");
 			}
@@ -29,7 +27,7 @@ namespace MasterServer.Sync
 
 		private bool[] GetStatus(int id)
 		{
-			if(_charSync.TryGetValue(id, out var result))
+			if (_charSync.TryGetValue(id, out var result))
 			{
 				return result;
 			}
@@ -42,7 +40,7 @@ namespace MasterServer.Sync
 		public bool IsSynced(int id)
 		{
 			var charSync = GetStatus(id);
-			foreach(var charSyncEntry in charSync)
+			foreach (var charSyncEntry in charSync)
 			{
 				if (charSyncEntry == false)
 					return false;
@@ -59,11 +57,11 @@ namespace MasterServer.Sync
 			{
 				result[(Int32)flag] = true;
 			}
-            else
-            {
+			else
+			{
 				throw new Exception("Id not in the dictionary");
-            }
-        }
+			}
+		}
 
 
 	}

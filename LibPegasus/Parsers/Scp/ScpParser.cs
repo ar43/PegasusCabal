@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace LibPegasus.Parsers.Scp
 {
@@ -14,7 +8,7 @@ namespace LibPegasus.Parsers.Scp
 		{
 			var regex = new Regex("world[0-9]+-[a-z]+\\.scp", RegexOptions.IgnoreCase);
 			bool isMatch = regex.IsMatch(input);
-			if(isMatch)
+			if (isMatch)
 			{
 				fileName = regex.Match(input).Value;
 			}
@@ -38,7 +32,7 @@ namespace LibPegasus.Parsers.Scp
 				Dictionary<string, Dictionary<string, string>>? sectDict = null;
 				foreach (var line in File.ReadLines(path))
 				{
-					if(!String.IsNullOrWhiteSpace(line))
+					if (!String.IsNullOrWhiteSpace(line))
 					{
 						if (line.StartsWith('@'))
 						{
@@ -47,15 +41,15 @@ namespace LibPegasus.Parsers.Scp
 						}
 						else if (line.StartsWith('['))
 						{
-							if(sectDict != null && section != null)
+							if (sectDict != null && section != null)
 							{
 								if (config.ContainsKey(section[0]))
 									throw new Exception("Already contains key");
 								config[section[0]] = sectDict;
 							}
-								
+
 							section = line.Split(null);
-							if(fileMapData)
+							if (fileMapData)
 							{
 								section[0] = section[0].Replace("]", "");
 								section[0] = section[0] + Regex.Match(fileName, @"\d+").Value + "]";
@@ -67,7 +61,7 @@ namespace LibPegasus.Parsers.Scp
 							Dictionary<string, string> dict = new();
 							string? key = null;
 							int i = 0;
-							if(section == null)
+							if (section == null)
 							{
 								throw new NullReferenceException();
 							}

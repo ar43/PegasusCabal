@@ -1,16 +1,9 @@
 ﻿using Grpc.Net.Client;
 using LibPegasus.Enums;
-using LibPegasus.Utils;
 using Shared.Protos;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.DbSyncData;
-using WorldServer.Logic.ClientData;
 
 namespace WorldServer.DB.Sync
 {
@@ -26,7 +19,7 @@ namespace WorldServer.DB.Sync
 		public SyncManager(GrpcChannel masterRpcChannel, DatabaseManager databaseManager)
 		{
 			_requestQueue = new ConcurrentQueue<DbSyncRequest>[(Int32)DBSyncPriority.NUM_PRIORITIES];
-			for(int i = 0; i < _requestQueue.Length; i++)
+			for (int i = 0; i < _requestQueue.Length; i++)
 			{
 				_requestQueue[i] = new();
 			}
@@ -45,11 +38,11 @@ namespace WorldServer.DB.Sync
 
 		private void Run()
 		{
-			while(_running || _requestQueue[(Int32)DBSyncPriority.HIGH].Count > 0)
+			while (_running || _requestQueue[(Int32)DBSyncPriority.HIGH].Count > 0)
 			{
 				DbSyncRequest? request;
 				_ = _requestQueue[(Int32)DBSyncPriority.HIGH].TryDequeue(out request);
-				if(request == null)
+				if (request == null)
 				{
 					_ = _requestQueue[(Int32)DBSyncPriority.NORMAL].TryDequeue(out request);
 				}
@@ -72,9 +65,9 @@ namespace WorldServer.DB.Sync
 					_syncTimestamps.TryAdd(charId, oldTimestamps);
 				}
 
-				if(request.DbSyncEquipment != null)
+				if (request.DbSyncEquipment != null)
 				{
-					if(oldTimestamps.Equipment.Ticks < newTimestamps.Ticks)
+					if (oldTimestamps.Equipment.Ticks < newTimestamps.Ticks)
 					{
 						oldTimestamps.Equipment = newTimestamps;
 						_databaseManager.CharacterManager.SyncEquipment(charId, request.DbSyncEquipment.EquipmentData).ExecuteDbSync(isFinal, _masterRpcChannel, SyncFlags.EQUIPMENT, charId);
@@ -149,13 +142,13 @@ namespace WorldServer.DB.Sync
 			try
 			{
 				var result = await task;
-				if(isFinal)
+				if (isFinal)
 				{
 					if (result == 1)
 					{
 						var client = new CharacterMaster.CharacterMasterClient(grpcChannel);
 						var serverId = ServerConfig.Get().GeneralSettings.ServerId;
-						var reply = await client.SetCharacterSyncStatusAsync(new SetCharacterSyncStatusRequest { CharId = (UInt32)charId, ServerId = (UInt32)serverId, SyncFlags = (UInt32)flag  });
+						var reply = await client.SetCharacterSyncStatusAsync(new SetCharacterSyncStatusRequest { CharId = (UInt32)charId, ServerId = (UInt32)serverId, SyncFlags = (UInt32)flag });
 						if (reply.Status != 1)
 							throw new Exception("Problem in syncing");
 						Serilog.Log.Information($"{flag} synced for char id {charId}");

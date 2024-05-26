@@ -1,10 +1,4 @@
-﻿using Google.Protobuf;
-using Shared.Protos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Shared.Protos;
 using WorldServer.Enums;
 
 namespace WorldServer.Logic.CharData
@@ -19,7 +13,7 @@ namespace WorldServer.Logic.CharData
 			_links = new Dictionary<UInt16, SkillLink>();
 			SyncPending = DBSyncPriority.NONE;
 
-			if(protobuf != null)
+			if (protobuf != null)
 			{
 				foreach (var link in protobuf.QuickSlotData_)
 				{
@@ -39,7 +33,7 @@ namespace WorldServer.Logic.CharData
 		public QuickSlotData GetProtobuf()
 		{
 			QuickSlotData data = new QuickSlotData();
-			foreach(var linkKeyPar in _links)
+			foreach (var linkKeyPar in _links)
 			{
 				var slot = linkKeyPar.Key;
 				var link = linkKeyPar.Value;

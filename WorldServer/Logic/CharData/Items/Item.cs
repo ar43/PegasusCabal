@@ -1,35 +1,29 @@
 ﻿using Shared.Protos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData.Items
 {
-    internal class Item
-    {
-        public Item(UInt32 kind, UInt32 option, UInt32 serial, UInt32 duration)
-        {
+	internal class Item
+	{
+		public Item(UInt32 kind, UInt32 option, UInt32 serial, UInt32 duration)
+		{
 			if (ItemConfig == null)
 				throw new Exception("item configs not yet loaded");
-            Kind = kind;
-            Option = option;
-            Serial = serial;
-            Duration = duration;
+			Kind = kind;
+			Option = option;
+			Serial = serial;
+			Duration = duration;
 			_itemInfo = ItemConfig[GetId()];
-        }
+		}
 
-        public UInt32 Kind { get; private set; }
+		public UInt32 Kind { get; private set; }
 
-        public UInt32 Option { get; private set; }
-        public UInt32 Serial { get; private set; }
-        public UInt32 Duration { get; private set; } //change to period
+		public UInt32 Option { get; private set; }
+		public UInt32 Serial { get; private set; }
+		public UInt32 Duration { get; private set; } //change to period
 
-        private static Dictionary<UInt32, ItemInfo>? ItemConfig;
+		private static Dictionary<UInt32, ItemInfo>? ItemConfig;
 		private ItemInfo _itemInfo;
 
 		public int GetWidth()
@@ -42,27 +36,27 @@ namespace WorldServer.Logic.CharData.Items
 			return _itemInfo.Height;
 		}
 
-        public void SetKind(UInt32 kind)
-        {
-            Kind = kind;
-        }
+		public void SetKind(UInt32 kind)
+		{
+			Kind = kind;
+		}
 
-        public void SetOption(UInt32 option)
-        {
-            Option = option;
-        }
+		public void SetOption(UInt32 option)
+		{
+			Option = option;
+		}
 
-        public uint GetId()
-        {
-            return Kind & (1 << 12) - 1;
-        }
+		public uint GetId()
+		{
+			return Kind & (1 << 12) - 1;
+		}
 
-        public ItemData GetProtobuf()
-        {
-            ItemData data = new ItemData { Kind = Kind, Option = Option, Serial = Serial, Duration = Duration };
+		public ItemData GetProtobuf()
+		{
+			ItemData data = new ItemData { Kind = Kind, Option = Option, Serial = Serial, Duration = Duration };
 
-            return data;
-        }
+			return data;
+		}
 
 		public static void LoadConfigs(WorldConfig worldConfig)
 		{
@@ -71,7 +65,7 @@ namespace WorldServer.Logic.CharData.Items
 
 			var cfg = worldConfig.GetConfig("[Item]");
 
-			foreach(var item in cfg)
+			foreach (var item in cfg)
 			{
 				var itemId = Convert.ToUInt32(item.Key);
 				if (itemId == 0)
@@ -152,9 +146,9 @@ namespace WorldServer.Logic.CharData.Items
 
 			}
 
-			
+
 		}
 
 
-    }
+	}
 }

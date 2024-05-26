@@ -1,6 +1,5 @@
 ﻿using Grpc.Core;
 using LibPegasus.JSON;
-using MasterServer.Channel;
 using MasterServer.DB;
 using MasterServer.Sync;
 using Shared.Protos;

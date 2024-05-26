@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.CharData;
-
-namespace WorldServer.Logic.WorldRuntime.ShopRuntime
+﻿namespace WorldServer.Logic.WorldRuntime.ShopRuntime
 {
 	internal class ShopPoolManager
 	{
@@ -25,29 +18,29 @@ namespace WorldServer.Logic.WorldRuntime.ShopRuntime
 			}
 
 			var items = worldConfig.GetConfig("[Shop]");
-			foreach ( var item in items )
+			foreach (var item in items)
 			{
 				var poolId = Convert.ToInt32(item.Value["Pool_ID"]);
 				var pool = GetPool(poolId);
 
 				var slotId = Convert.ToInt32(item.Value["SlotID"]);
-				var	itemKind = Convert.ToInt32(item.Value["ItemKind"]);
+				var itemKind = Convert.ToInt32(item.Value["ItemKind"]);
 				var itemOpt = Convert.ToInt32(item.Value["ItemOpt"]);
-				var	durationIdx = Convert.ToInt32(item.Value["DurationIdx"]);
+				var durationIdx = Convert.ToInt32(item.Value["DurationIdx"]);
 				var minLevel = Convert.ToInt32(item.Value["MinLevel"]);
-				var	maxLevel = Convert.ToInt32(item.Value["MaxLevel"]);
-				var	reputation = Convert.ToInt32(item.Value["Reputation"]);
+				var maxLevel = Convert.ToInt32(item.Value["MaxLevel"]);
+				var reputation = Convert.ToInt32(item.Value["Reputation"]);
 				var onlyPremium = Convert.ToInt32(item.Value["OnlyPremium"]);
 				var onlyWin = Convert.ToInt32(item.Value["OnlyWin"]);
-				var	alzPrice = Convert.ToInt32(item.Value["AlzPrice"]);
-				var	wExpPrice = Convert.ToInt32(item.Value["WExpPrice"]);
-				var	dPPrice = Convert.ToInt32(item.Value["DPPrice"]);
+				var alzPrice = Convert.ToInt32(item.Value["AlzPrice"]);
+				var wExpPrice = Convert.ToInt32(item.Value["WExpPrice"]);
+				var dPPrice = Convert.ToInt32(item.Value["DPPrice"]);
 				var cashPrice = Convert.ToInt32(item.Value["CashPrice"]);
-				var	renew = Convert.ToInt32(item.Value["Renew"]);
-				var	characterBuyLimit = Convert.ToInt32(item.Value["ChracterBuyLimit"]);
-				var	sellLimit = Convert.ToInt32(item.Value["SellLimit"]);
-				var	marker = Convert.ToInt32(item.Value["Marker"]);
-				var	maxReputation = Convert.ToInt32(item.Value["MaxReputation"]);
+				var renew = Convert.ToInt32(item.Value["Renew"]);
+				var characterBuyLimit = Convert.ToInt32(item.Value["ChracterBuyLimit"]);
+				var sellLimit = Convert.ToInt32(item.Value["SellLimit"]);
+				var marker = Convert.ToInt32(item.Value["Marker"]);
+				var maxReputation = Convert.ToInt32(item.Value["MaxReputation"]);
 
 				pool.AddItem(slotId, new(itemKind, itemOpt, durationIdx, minLevel, maxLevel, reputation, onlyPremium, onlyWin, alzPrice, wExpPrice, dPPrice, cashPrice, renew, characterBuyLimit, sellLimit, marker, maxReputation));
 			}
@@ -55,7 +48,7 @@ namespace WorldServer.Logic.WorldRuntime.ShopRuntime
 
 		public ShopPool GetPool(int poolId)
 		{
-			if(!_poolCollection.TryGetValue(poolId, out var pool))
+			if (!_poolCollection.TryGetValue(poolId, out var pool))
 			{
 				throw new Exception("undefined pool");
 			}

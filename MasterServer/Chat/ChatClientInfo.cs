@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace MasterServer.Chat
+﻿namespace MasterServer.Chat
 {
 	internal class ChatClientInfo
 	{

@@ -1,9 +1,4 @@
 ﻿using Shared.Protos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 
 namespace WorldServer.Logic.CharData
@@ -38,7 +33,7 @@ namespace WorldServer.Logic.CharData
 		public SkillData GetProtobuf()
 		{
 			SkillData skillData = new SkillData();
-			foreach(var skillKeyPair in _learnedSkills)
+			foreach (var skillKeyPair in _learnedSkills)
 			{
 				var skill = skillKeyPair.Value;
 				var slot = skillKeyPair.Key;

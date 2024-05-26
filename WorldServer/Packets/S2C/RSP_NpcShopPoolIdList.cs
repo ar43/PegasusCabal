@@ -1,7 +1,6 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
 using WorldServer.Enums;
-using WorldServer.Logic.CharData;
 using WorldServer.Logic.WorldRuntime.ShopRuntime;
 
 namespace WorldServer.Packets.S2C
@@ -18,7 +17,7 @@ namespace WorldServer.Packets.S2C
 		{
 			Int16 count = (Int16)_shopPoolManager.Count();
 			PacketWriter.WriteInt16(data, count);
-			for(int i = 1; i <= count; i++)
+			for (int i = 1; i <= count; i++)
 			{
 				var shop = _shopPoolManager.GetPool(i);
 				PacketWriter.WriteByte(data, (Byte)shop.WorldId);

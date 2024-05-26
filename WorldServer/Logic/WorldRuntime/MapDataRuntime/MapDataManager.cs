@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.WorldRuntime.MobDataRuntime;
+﻿using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 
 namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 {
@@ -16,7 +11,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 		public MapDataManager(WorldConfig config, MobDataManager mobDataManager)
 		{
 			_maps = new();
-			_config = config;	
+			_config = config;
 			_mobDataManager = mobDataManager;
 		}
 
@@ -30,10 +25,10 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 			{
 				var configStr = "[Terrain" + Convert.ToString(mapId) + "]";
 				var subConfig = _config.GetConfig(configStr);
-				if(subConfig != null)
+				if (subConfig != null)
 				{
 					var terrainData = subConfig["0"];
-					if(terrainData != null)
+					if (terrainData != null)
 					{
 						var terrainX = Convert.ToInt32(terrainData["TerrainX"]);
 						var terrainY = Convert.ToInt32(terrainData["TerrainY"]);
@@ -50,7 +45,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 						Dictionary<int, MobSpawnData> mobSpawnData = new();
 						configStr = "[MMap" + Convert.ToString(mapId) + "]";
 						subConfig = _config.GetConfig(configStr);
-						foreach(var entry in subConfig)
+						foreach (var entry in subConfig)
 						{
 							var spawnId = Convert.ToInt32(entry.Key);
 							int SpeciesIdx = Convert.ToInt32(entry.Value["SpeciesIdx"]);
@@ -80,7 +75,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 						Dictionary<int, NpcData> npcData = new();
 						configStr = "[NpcPos" + Convert.ToString(mapId) + "]";
 						subConfig = _config.GetConfig(configStr);
-						foreach(var npcCfg in subConfig.Values)
+						foreach (var npcCfg in subConfig.Values)
 						{
 							var flags = Convert.ToInt32(npcCfg["Flags"]);
 							var index = Convert.ToInt32(npcCfg["Index"]);
@@ -103,12 +98,12 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							var level = Convert.ToInt32(warpCfg["LV"]);
 							var fee = Convert.ToInt32(warpCfg["Fee"]);
 							var type = Convert.ToInt32(warpCfg["Type"]);
-							if(!npcData[npcId].NpcWarpData.TryAdd(setId, new(setId, level, fee, type, targetId)))
+							if (!npcData[npcId].NpcWarpData.TryAdd(setId, new(setId, level, fee, type, targetId)))
 								throw new Exception("Npc warp already exists");
 						}
 
 						var npcPoolData = _config.GetConfig("[NPC]");
-						foreach(var npcPool in npcPoolData.Values)
+						foreach (var npcPool in npcPoolData.Values)
 						{
 							var worldId = Convert.ToInt32(npcPool["World_ID"]);
 							if (worldId != mapId)

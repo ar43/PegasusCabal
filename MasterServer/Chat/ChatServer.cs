@@ -1,11 +1,7 @@
-﻿using Grpc.Net.Client;
-using LibPegasus.Crypt;
-using LibPegasus.Enums;
+﻿using LibPegasus.Crypt;
 using LibPegasus.JSON;
 using MasterServer.DB;
-using Npgsql;
 using Serilog;
-using Shared.Protos;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
@@ -124,7 +120,7 @@ namespace MasterServer.Chat
 
 		private void RunTest()
 		{
-			
+
 		}
 
 		public void Run()

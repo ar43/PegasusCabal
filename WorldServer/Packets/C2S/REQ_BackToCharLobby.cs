@@ -1,7 +1,6 @@
 ﻿using LibPegasus.Packets;
 using WorldServer.Enums;
 using WorldServer.Logic;
-using WorldServer.Logic.CharData;
 using WorldServer.Logic.Delegates;
 
 namespace WorldServer.Packets.C2S

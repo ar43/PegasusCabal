@@ -3,9 +3,6 @@ using LibPegasus.Enums;
 using LibPegasus.JSON;
 using Npgsql;
 using Shared.Protos;
-using System;
-using System.Runtime.Serialization.Json;
-using static Shared.Protos.SkillData.Types;
 
 namespace MasterServer.DB
 {
@@ -43,9 +40,9 @@ namespace MasterServer.DB
 		private static InventoryData JsonToProtobuf(Dictionary<uint, InventoryDataJSONItem> invData)
 		{
 			var invSerial = new InventoryData();
-			foreach(var item in invData)
+			foreach (var item in invData)
 			{
-				invSerial.InventoryData_.Add(item.Key, new ItemData { Kind = item.Value.Kind, Option = item.Value.Option, Duration = 0, Serial = 0});
+				invSerial.InventoryData_.Add(item.Key, new ItemData { Kind = item.Value.Kind, Option = item.Value.Option, Duration = 0, Serial = 0 });
 			}
 			return invSerial;
 		}
@@ -74,7 +71,7 @@ namespace MasterServer.DB
 			var invSerial = new QuickSlotData();
 			foreach (var item in invData)
 			{
-				invSerial.QuickSlotData_.Add(item.Key, new QuickSlotData.Types.QuickSlotDataItem { Id = item.Value.Id});
+				invSerial.QuickSlotData_.Add(item.Key, new QuickSlotData.Types.QuickSlotDataItem { Id = item.Value.Id });
 			}
 			return invSerial;
 		}
@@ -97,9 +94,9 @@ namespace MasterServer.DB
 		public async Task<GetMyCharactersReply> GetMyCharacters(GetMyCharactersRequest request)
 		{
 			using var conn = await _dataSource.OpenConnectionAsync();
-			
+
 			GetMyCharactersReply reply = new GetMyCharactersReply();
-			
+
 			await using (var cmd = new NpgsqlCommand("SELECT * FROM main.characters WHERE account_id=@p AND server_id=@g", conn))
 			{
 				cmd.Parameters.AddWithValue("p", (int)request.AccountId);
@@ -123,7 +120,7 @@ namespace MasterServer.DB
 
 						var t = reader.GetBytes(equipment, 0, eqDataBytes, 0, eqDataBytes.Length);
 
-						if(t == eqDataBytes.Length)
+						if (t == eqDataBytes.Length)
 						{
 							throw new Exception("increase eqDataBytes buffer");
 						}
@@ -131,7 +128,7 @@ namespace MasterServer.DB
 						var eqData = ToProtoObject<EquipmentData>(eqDataBytes, (int)t);
 
 						UInt32[] equipmentData = new uint[20];
-						for(int i = 0; i < 20; i++)
+						for (int i = 0; i < 20; i++)
 						{
 							if (eqData != null && eqData.EquipmentData_.TryGetValue((uint)i, out var data))
 							{
@@ -175,7 +172,7 @@ namespace MasterServer.DB
 			var time = DateTime.UtcNow;
 			int defaultNation = 0;
 
-			if((createCharacterRequest.Style & 7) != charInitData.ClassType)
+			if ((createCharacterRequest.Style & 7) != charInitData.ClassType)
 			{
 				return (0, CharCreateResult.DATABRK);
 			}
@@ -217,9 +214,9 @@ namespace MasterServer.DB
 				cmd.Parameters.AddWithValue("c33", charInitData.MP);
 				cmd.Parameters.AddWithValue("c34", defaultNation);
 				var output = await cmd.ExecuteScalarAsync();
-				if(output != null)
+				if (output != null)
 				{
-					return ((int)output,CharCreateResult.SUCCESS);
+					return ((int)output, CharCreateResult.SUCCESS);
 				}
 				else
 				{

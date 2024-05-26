@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
+﻿namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 {
 	internal class MobManager
 	{
@@ -28,7 +22,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 		public void AddAllMobs()
 		{
-			foreach(var mSpawn in _instance.MapData.MobSpawnData.Values)
+			foreach (var mSpawn in _instance.MapData.MobSpawnData.Values)
 			{
 				var mobId = GetNextMobId();
 				Mob mob = new Mob(mSpawn.MobData, mSpawn, _instance, mobId);

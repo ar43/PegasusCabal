@@ -74,7 +74,7 @@ namespace WorldServer
 			_world = new World();
 			_syncManager = new SyncManager(_masterRpcChannel, _databaseManager);
 		}
-		
+
 		void SendHeartbeat()
 		{
 			Log.Information("Starting to send heartbeats...");
@@ -140,7 +140,7 @@ namespace WorldServer
 						_awaitingClients.Enqueue(new Client(tcpClient, _xorKeyTable, _masterRpcChannel, _databaseManager, _world));
 					}
 				}
-				catch(SocketException e)
+				catch (SocketException e)
 				{
 					Log.Information($"Listener is closed due to SocketException {e.Message}, exiting AcceptNewConnections()");
 					return;

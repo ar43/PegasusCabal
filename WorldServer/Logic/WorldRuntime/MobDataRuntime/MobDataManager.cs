@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
-using WorldServer.Enums.Mob;
-using WorldServer.Logic.WorldRuntime.ShopRuntime;
+﻿using WorldServer.Enums.Mob;
 
 namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 {

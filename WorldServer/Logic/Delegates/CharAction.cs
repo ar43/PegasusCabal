@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.CharData;
+﻿using WorldServer.Logic.CharData;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
@@ -12,7 +7,7 @@ namespace WorldServer.Logic.Delegates
 	{
 		internal static void OnChangeStyle(Client client, Style newStyle, LiveStyle newLiveStyle, BuffFlag newBuffFlag, ActionFlag newActionFlag)
 		{
-			if(client.Character == null)
+			if (client.Character == null)
 			{
 				client.Disconnect("character not yet loaded", Enums.ConnState.ERROR);
 				return;

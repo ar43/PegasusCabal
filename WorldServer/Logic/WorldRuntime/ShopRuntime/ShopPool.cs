@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Logic.WorldRuntime.ShopRuntime
+﻿namespace WorldServer.Logic.WorldRuntime.ShopRuntime
 {
-    internal class ShopPool
-    {
+	internal class ShopPool
+	{
 		public Dictionary<int, ShopEntry> Items { get; private set; }
 		public int PoolId { get; private set; }
 		public int Pool2Id { get; private set; }

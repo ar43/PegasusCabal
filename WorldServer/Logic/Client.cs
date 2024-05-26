@@ -1,12 +1,10 @@
 ﻿using Grpc.Net.Client;
 using LibPegasus.Crypt;
 using LibPegasus.Packets;
-using LibPegasus.Utils;
 using Serilog;
 using Shared.Protos;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection.PortableExecutable;
 using WorldServer.DB;
 using WorldServer.DB.Sync;
 using WorldServer.Enums;
@@ -20,7 +18,7 @@ using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic
 {
-    internal class Client
+	internal class Client
 	{
 		public TcpClient TcpClient { private set; get; }
 
@@ -78,7 +76,7 @@ namespace WorldServer.Logic
 			}
 
 			var stream = TcpClient.GetStream();
-			
+
 			if (stream != null && stream.CanRead && stream.DataAvailable)
 			{
 				Byte[] bytes = new Byte[1024];
@@ -148,7 +146,7 @@ namespace WorldServer.Logic
 						}
 					}
 				}
-				else if(length == 0)
+				else if (length == 0)
 				{
 					throw new NotImplementedException();
 				}
@@ -234,7 +232,7 @@ namespace WorldServer.Logic
 				}
 			}
 
-			if(TimerHeartbeat != null && TimerHeartbeat.Tick())
+			if (TimerHeartbeat != null && TimerHeartbeat.Tick())
 			{
 				if (Character != null)
 				{
@@ -248,7 +246,7 @@ namespace WorldServer.Logic
 				}
 			}
 
-			if(TimerHeartbeatTimeout != null && TimerHeartbeatTimeout.Tick())
+			if (TimerHeartbeatTimeout != null && TimerHeartbeatTimeout.Tick())
 			{
 				if (Character != null)
 				{
@@ -260,7 +258,7 @@ namespace WorldServer.Logic
 				}
 			}
 
-			if(Character != null && Character.Location.Instance != null)
+			if (Character != null && Character.Location.Instance != null)
 			{
 				UpdateInWorld();
 			}
@@ -270,7 +268,7 @@ namespace WorldServer.Logic
 
 		private void UpdateInWorld()
 		{
-			if(Character.Location.Movement.IsDeadReckoning)
+			if (Character.Location.Movement.IsDeadReckoning)
 			{
 				var oldX = Character.Location.Movement.X;
 				var oldY = Character.Location.Movement.Y;
@@ -278,13 +276,13 @@ namespace WorldServer.Logic
 				var newX = Character.Location.Movement.X;
 				var newY = Character.Location.Movement.Y;
 
-				if(oldX != newX || oldY != newY)
+				if (oldX != newX || oldY != newY)
 				{
-					if(Character.Location.Instance.CheckTerrainCollision((UInt16)newX, (UInt16)newY))
+					if (Character.Location.Instance.CheckTerrainCollision((UInt16)newX, (UInt16)newY))
 					{
 						Character.Location.Movement.IllegalMovementCounter++;
 					}
-					if(Character.Location.Movement.IllegalMovementCounter >= 1)
+					if (Character.Location.Movement.IllegalMovementCounter >= 1)
 					{
 						Disconnect("IllegalMovementCounter >= 1", ConnState.ERROR);
 						return;
@@ -306,7 +304,7 @@ namespace WorldServer.Logic
 			Log.Warning($"called Disconnect on client id {ConnectionInfo.UserId} with reason: {reason}");
 			ConnectionInfo.ConnState = newState;
 			Character?.Sync(DBSyncPriority.HIGH);
-			
+
 			//todo - send session timeout
 
 		}
@@ -330,7 +328,7 @@ namespace WorldServer.Logic
 		{
 			var client = new ChatMaster.ChatMasterClient(_masterRpcChannel);
 			bool isLocalhost = Ip == "127.0.0.1";
-			var reply = await client.GetChatServerInfoAsync(new GetChatServerInfoRequest { IsLocalhost = isLocalhost});
+			var reply = await client.GetChatServerInfoAsync(new GetChatServerInfoRequest { IsLocalhost = isLocalhost });
 			return reply;
 		}
 
@@ -383,7 +381,7 @@ namespace WorldServer.Logic
 			var cfg = ServerConfig.Get();
 			if (Character != null && cfg.DatabaseSettings.EnableDbSync)
 			{
-				if(Character.SyncPending > DBSyncPriority.NONE || TimerDbSync != null && TimerDbSync.Tick())
+				if (Character.SyncPending > DBSyncPriority.NONE || TimerDbSync != null && TimerDbSync.Tick())
 				{
 					DBSyncPriority globalPrio = Character.SyncPending;
 					DBSyncPriority highestPrio = DBSyncPriority.NONE;
@@ -397,9 +395,9 @@ namespace WorldServer.Logic
 					DbSyncStats? dbSyncStats = null;
 					DbSyncStatus? dbSyncStatus = null;
 
-					if(Character.Inventory.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					if (Character.Inventory.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
 					{
-						if(Character.Inventory.SyncPending > highestPrio)
+						if (Character.Inventory.SyncPending > highestPrio)
 							highestPrio = Character.Inventory.SyncPending;
 						dbSyncInventory = new(Character.Inventory.GetProtobuf(), Character.Inventory.Alz);
 					}
@@ -440,9 +438,9 @@ namespace WorldServer.Logic
 						dbSyncStatus = Character.Status.GetDB();
 					}
 
-					if(highestPrio > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					if (highestPrio > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
 					{
-						if(globalPrio > DBSyncPriority.NONE)
+						if (globalPrio > DBSyncPriority.NONE)
 							highestPrio = globalPrio;
 						DbSyncRequest dbSyncRequest = new(highestPrio, Character.Id, isFinal);
 						dbSyncRequest.DbSyncInventory = dbSyncInventory;
@@ -464,17 +462,17 @@ namespace WorldServer.Logic
 
 		public bool isGm()
 		{
-            if (Character == null)
-            {
+			if (Character == null)
+			{
 				return false;
-            }
+			}
 
-			if(Character.Nation != NationCode.NATION_GM)
+			if (Character.Nation != NationCode.NATION_GM)
 			{
 				return false;
 			}
 
 			return true;
-        }
+		}
 	}
 }

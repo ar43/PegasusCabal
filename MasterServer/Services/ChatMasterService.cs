@@ -1,17 +1,13 @@
 ﻿using Grpc.Core;
-using LibPegasus.Utils;
-using MasterServer.Channel;
 using MasterServer.Chat;
-using MasterServer.DB;
 using Shared.Protos;
-using System.Net;
 
 namespace MasterServer.Services
 {
 	public class ChatMasterService : ChatMaster.ChatMasterBase
 	{
 		private readonly ChatServer _chatServer;
-		public ChatMasterService(ChatServer chatServer) 
+		public ChatMasterService(ChatServer chatServer)
 		{
 			_chatServer = chatServer;
 		}
@@ -20,15 +16,15 @@ namespace MasterServer.Services
 		{
 			var isLocalhost = request.IsLocalhost;
 			string ip;
-			if(isLocalhost)
+			if (isLocalhost)
 			{
 				ip = "127.0.0.1";
 			}
-            else
-            {
+			else
+			{
 				ip = _chatServer.Ip.ToString();
 			}
-            return Task.FromResult(new GetChatServerInfoReply
+			return Task.FromResult(new GetChatServerInfoReply
 			{
 				Ip = ip,
 				Port = _chatServer.Port,

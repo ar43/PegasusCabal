@@ -1,5 +1,4 @@
-﻿using Grpc.Net.Client;
-using LibPegasus.Crypt;
+﻿using LibPegasus.Crypt;
 using LibPegasus.Packets;
 using LibPegasus.Utils;
 using Serilog;

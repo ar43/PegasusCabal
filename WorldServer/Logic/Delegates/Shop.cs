@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Packets.S2C;
+﻿using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
 {
@@ -11,7 +6,7 @@ namespace WorldServer.Logic.Delegates
 	{
 		internal static void OnAllPoolRequest(Client client)
 		{
-			if(client.Character == null)
+			if (client.Character == null)
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "null Character");
 				return;
@@ -27,7 +22,7 @@ namespace WorldServer.Logic.Delegates
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "null Character");
 				return;
 			}
-			
+
 			var rsp = new RSP_NpcShopPool(client.World.ShopPoolManager.GetPool(poolId));
 			client.PacketManager.Send(rsp);
 		}

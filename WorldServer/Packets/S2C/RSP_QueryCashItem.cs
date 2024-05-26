@@ -18,7 +18,7 @@ namespace WorldServer.Packets.S2C
 		public override void WritePayload(Deque<byte> data)
 		{
 			PacketWriter.WriteInt32(data, _count);
-			if(_count > 0)
+			if (_count > 0)
 			{
 				PacketWriter.WriteArray(data, _serializedItemData);
 			}
