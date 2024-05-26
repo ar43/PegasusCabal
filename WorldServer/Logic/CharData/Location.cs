@@ -21,7 +21,7 @@ namespace WorldServer.Logic.CharData
 
 		public Location(UInt16 x, UInt16 y)
 		{
-			Movement = new MovementData(false, x, y, 4.5f);
+			Movement = new MovementData(x, y, 4.5f);
 			SyncPending = DBSyncPriority.NONE;
 		}
 

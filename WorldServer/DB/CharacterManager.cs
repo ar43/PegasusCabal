@@ -41,7 +41,7 @@ namespace WorldServer.DB
 
 		public async Task<int> SyncEquipment(int charId, EquipmentData equipmentData)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET eq_data = @a WHERE char_id = @b", conn))
 			{
@@ -61,7 +61,7 @@ namespace WorldServer.DB
 
 		public async Task<int> SyncInventory(int charId, InventoryData inventoryData)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET inv_data = @a WHERE char_id = @b", conn))
 			{
@@ -81,7 +81,7 @@ namespace WorldServer.DB
 
 		public async Task<int> SyncSkills(int charId, SkillData skillData)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET skill_data = @a WHERE char_id = @b", conn))
 			{
@@ -101,7 +101,7 @@ namespace WorldServer.DB
 
 		public async Task<int> SyncLinks(int charId, QuickSlotData linksData)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET quickslot_data = @a WHERE char_id = @b", conn))
 			{
@@ -121,7 +121,7 @@ namespace WorldServer.DB
 
 		public async Task<int> SyncLocation(int charId, DbSyncLocation locationData)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET x = @b, y = @c, world_id = @d  WHERE char_id = @a", conn))
 			{
@@ -143,7 +143,7 @@ namespace WorldServer.DB
 
 		public async Task<int> SyncStats(int charId, DbSyncStats statsData)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET level = @b, exp = @c, str = @d, dex = @e, int = @int, pnt = @pnt, rank = @rank  WHERE char_id = @a", conn))
 			{
@@ -170,7 +170,7 @@ namespace WorldServer.DB
 
 		public async Task<int> SyncStatus(int charId, DbSyncStatus statusData)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET hp = @hp, mp = @mp, sp = @sp, max_hp = @max_hp, max_mp = @max_mp, max_sp = @max_sp WHERE char_id = @a", conn))
 			{
@@ -196,7 +196,7 @@ namespace WorldServer.DB
 
 		public async Task<(Character?, int)> GetCharacter(UInt32 charId)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("SELECT * FROM main.characters WHERE char_id=@p", conn))
 			{
@@ -232,6 +232,7 @@ namespace WorldServer.DB
 					var invData = reader.GetOrdinal("inv_data");
 					var skillData = reader.GetOrdinal("skill_data");
 					var quickslotData = reader.GetOrdinal("quickslot_data");
+					var nationData = reader.GetOrdinal("nation");
 
 					if (await reader.ReadAsync())
 					{
@@ -285,7 +286,8 @@ namespace WorldServer.DB
 							new Location((UInt16)reader.GetInt32(x), (UInt16)reader.GetInt32(y)),
 							new Stats((UInt32)reader.GetInt32(level), (UInt32)reader.GetInt32(exp), (UInt32)reader.GetInt32(str), (UInt32)reader.GetInt32(dex), (UInt32)reader.GetInt32(INT), (UInt32)reader.GetInt32(pnt), (UInt32)reader.GetInt32(rank)),
 							new Status((UInt32)reader.GetInt32(hp), (UInt32)reader.GetInt32(maxHp), (UInt32)reader.GetInt32(mp), (UInt32)reader.GetInt32(maxMp), (UInt32)reader.GetInt32(sp), (UInt32)reader.GetInt32(maxSp)),
-							reader.GetInt32(idLabel)
+							reader.GetInt32(idLabel),
+							reader.GetInt32(nationData)
 						);
 						return (character, wid);
 					}

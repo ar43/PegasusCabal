@@ -32,7 +32,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(loc.Movement.Begin(fromX, fromY, toX, toY, pntX, pntY))
+			if(loc.Movement.Begin(fromX, fromY, toX, toY, pntX, pntY, client.isGm()))
 			{
 				if (loc.Instance.CheckTerrainCollision(fromX, fromY))
 				{
@@ -88,7 +88,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(loc.Movement.Change(fromX, fromY, toX,toY,pntX,pntY))
+			if(loc.Movement.Change(fromX, fromY, toX, toY, pntX, pntY, client.isGm()))
 			{
 				if (loc.Instance.CheckTerrainCollision(fromX, fromY))
 				{
@@ -138,7 +138,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(loc.Movement.End(x, y))
+			if(loc.Movement.End(x, y, client.isGm()))
 			{
 				if (loc.Instance.CheckTerrainCollision(x, y))
 				{
@@ -210,7 +210,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if (loc.Movement.CellMove(x, y))
+			if (loc.Movement.CellMove(x, y, client.isGm()))
 			{
 				loc.Instance.MoveClient(client, (UInt16)(x / 16), (UInt16)(y / 16), Enums.NewUserType.NEWMOVE);
 				loc.Movement.UpdateCellPos();

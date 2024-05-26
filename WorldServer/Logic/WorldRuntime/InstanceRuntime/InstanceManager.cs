@@ -49,7 +49,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
                 var cellX = newX / 16;
                 var cellY = newY / 16;
 
-                var list = newInstance.CalculateValidCellSpots((UInt16)cellX, (UInt16)cellY);
+                var list = newInstance.CalculateValidCellSpots((UInt16)cellX, (UInt16)cellY, true);
 
                 var position = list[_random.Next(list.Count)];
                 newX = position.Item1;
@@ -86,7 +86,19 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
             return true;
         }
 
-        public bool WarpClientByNpcId(Client client, int npcId)
+		public bool WarpClientAbsolute(Client client, int x, int y)
+		{
+			var instance = client.Character.Location.Instance;
+
+			if (instance == null)
+				return false;
+
+			//TODO: Nation checking
+			WarpClient(client, instance, 8, x, y);
+			return true;
+		}
+
+		public bool WarpClientByNpcId(Client client, int npcId)
         {
             var instance = client.Character.Location.Instance;
 

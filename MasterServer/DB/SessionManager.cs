@@ -13,7 +13,7 @@ namespace MasterServer.DB
 		}
 		public async Task<SessionResult> Create(UInt32 authKey, UInt16 userId, Byte channelId, Byte serverId, UInt32 accountId)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 			var result = SessionResult.OK;
 			await using (var cmd = new NpgsqlCommand("DELETE FROM main.sessions WHERE account_id=@p RETURNING *", conn))
 			{

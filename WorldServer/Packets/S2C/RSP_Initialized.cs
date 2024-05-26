@@ -103,7 +103,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, ip); //agent ip
 			PacketWriter.WriteUInt16(data, 27096); //agent port
 
-			PacketWriter.WriteByte(data, 0); //nation
+			PacketWriter.WriteByte(data, (Byte)_character.Nation); //nation
 			PacketWriter.WriteUInt32(data, 0); //???
 			PacketWriter.WriteUInt32(data, 7); //warps
 			PacketWriter.WriteUInt32(data, 7); //maps

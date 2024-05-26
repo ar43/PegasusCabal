@@ -18,7 +18,7 @@ namespace WorldServer.DB
 
 		public async Task<(string, DateTime?)> GetSubPasswordData(int accountId)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 			string subpass = "";
 			DateTime? dateTime = null;
 
@@ -47,7 +47,7 @@ namespace WorldServer.DB
 
 		public async Task<bool> SetSubpass(int accountId, string subpass)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("INSERT INTO main.subpass VALUES (@a, @b)", conn))
 			{
@@ -67,7 +67,7 @@ namespace WorldServer.DB
 
 		public async Task<bool> SetSubPasswordVerificationDate(int accountId, DateTime date)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("UPDATE main.subpass SET last_verification = @a WHERE account_id = @b", conn))
 			{

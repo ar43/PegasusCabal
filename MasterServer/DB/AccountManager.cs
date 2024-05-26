@@ -15,7 +15,7 @@ namespace MasterServer.DB
 		}
 		private async Task<bool> AccountExists(string username)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("SELECT EXISTS(SELECT 1 FROM main.accounts WHERE username=@p)", conn))
 			{
@@ -37,7 +37,7 @@ namespace MasterServer.DB
 		}
 		private async Task<(string hash, uint accountId)> AccountVerify(string username, string password)
 		{
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("SELECT password, id FROM main.accounts WHERE username=@p", conn))
 			{
@@ -67,7 +67,7 @@ namespace MasterServer.DB
 				return passwordHash;
 			});
 
-			var conn = await _dataSource.OpenConnectionAsync();
+			using var conn = await _dataSource.OpenConnectionAsync();
 
 			await using (var cmd = new NpgsqlCommand("INSERT INTO main.accounts VALUES (DEFAULT, @u, @p)", conn))
 			{

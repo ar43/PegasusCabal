@@ -38,9 +38,9 @@ namespace WorldServer.Logic.CharData
 
 		public float MoveSpeed { get; private set; }
 
-		public MovementData(Boolean isMoving, UInt16 startX, UInt16 startY, float moveSpeed)
+		public MovementData(UInt16 startX, UInt16 startY, float moveSpeed)
 		{
-			IsMoving = isMoving;
+			IsMoving = false;
 			StartX = startX;
 			StartY = startY;
 			EndX = startX;
@@ -136,8 +136,11 @@ namespace WorldServer.Logic.CharData
 			LastDeadReckoning = 0;
 		}
 
-		public bool Begin(UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY, UInt16 pntX, UInt16 pntY)
+		public bool Begin(UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY, UInt16 pntX, UInt16 pntY, bool isGm)
 		{
+			if (SpeedHackCheck(startX, startY, isGm))
+				return false;
+
 			var dxBegin = StartX - startX;
 			var dyBegin = StartY - startY;
 			var dxCurrent = X - startX;
@@ -288,8 +291,31 @@ namespace WorldServer.Logic.CharData
 			}
 		}
 
-		public bool Change(UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY, UInt16 pntX, UInt16 pntY)
+		private bool SpeedHackCheck(UInt16 x, UInt16 y, bool isGm)
 		{
+			if (isGm)
+				return false;
+			int tolerance = 2;
+			int drAdx = Math.Abs(x - X);
+			int drAxy = Math.Abs(y - Y);
+			if (drAdx + drAxy > tolerance)
+			{
+				Serilog.Log.Warning("Potential speedhack detected");
+				return true;
+			}
+			else if(drAdx + drAxy > 0)
+			{
+				//Serilog.Log.Warning($"Diff: {drAdx + drAxy}");
+				return false;
+			}
+			return false;
+		}
+
+		public bool Change(UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY, UInt16 pntX, UInt16 pntY, bool isGm)
+		{
+			if (SpeedHackCheck(startX, startY, isGm))
+				return false;
+
 			var waypoint = _waypoints[0];
 			var waypoint2 = _waypoints[1];
 
@@ -370,8 +396,11 @@ namespace WorldServer.Logic.CharData
 			EndY = y;
 		}
 
-		public bool End(UInt16 x, UInt16 y)
+		public bool End(UInt16 x, UInt16 y, bool isGm)
 		{
+			if (SpeedHackCheck(x, y, isGm))
+				return false;
+
 			var waypoint = _waypoints[0];
 			var waypoint2 = _waypoints[1];
 
@@ -426,12 +455,15 @@ namespace WorldServer.Logic.CharData
 			return true;
 		}
 
-		public bool CellMove(UInt16 x, UInt16 y)
+		public bool CellMove(UInt16 x, UInt16 y, bool isGm)
 		{
 			if(x >= MAX_SQR_MOVE_DIFF || y >= MAX_SQR_MOVE_DIFF)
 			{
 				return false;
 			}
+
+			if (SpeedHackCheck(x, y, isGm))
+				return false;
 
 			var waypoint = _waypoints[0];
 			var waypoint2 = _waypoints[1];

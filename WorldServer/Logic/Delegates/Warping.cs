@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Enums;
 
 namespace WorldServer.Logic.Delegates
 {
@@ -39,14 +40,30 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			switch(npcId)
+			switch (npcId)
 			{
-				case 62:
+				case (Byte)SpecialWarpIndex.NPCSIDX_RETN:
 				{
 					//todo: inventory code
-					if(!client.World.InstanceManager.WarpClientReturn(client))
+					if (!client.World.InstanceManager.WarpClientReturn(client))
 					{
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error while warping (return)");
+						return;
+					}
+					break;
+				}
+				case (Byte)SpecialWarpIndex.NPCSIDX_GM:
+				{
+					if(client.Character.Nation != NationCode.NATION_GM)
+					{
+						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "tried to gm warp without gm nation");
+						return;
+					}
+					var targetY = worldType & 0xFF;
+					var targetX = (worldType >> 8) & 0xFF;
+					if (!client.World.InstanceManager.WarpClientAbsolute(client, (Int32)targetX, (Int32)targetY))
+					{
+						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "gm warp error");
 						return;
 					}
 					break;

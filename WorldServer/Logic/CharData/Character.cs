@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.SharedData;
+using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.CharData
 {
@@ -21,7 +22,7 @@ namespace WorldServer.Logic.CharData
 			Id = 0;
 		}
 
-		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, Skills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id)
+		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, Skills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id, int nation)
 		{
 			Equipment = equipment;
 			Inventory = inventory;
@@ -36,6 +37,7 @@ namespace WorldServer.Logic.CharData
 			BuffFlag = new BuffFlag(0);
 			ActionFlag = new ActionFlag(0);
 			Id = id;
+			Nation = (NationCode)nation;
 		}
 
 		public bool Verify()
@@ -47,6 +49,7 @@ namespace WorldServer.Logic.CharData
 		public Style Style {  get; set; }
 		public string Name { get; set; }
 		public int Id { get; private set; }
+		public NationCode Nation { get; private set; }
 		public ObjectIndexData? ObjectIndexData { get; set; }
 		public Equipment? Equipment { get; set; }
 		public Inventory? Inventory { get; set; }

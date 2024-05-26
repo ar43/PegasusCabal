@@ -21,7 +21,7 @@ namespace WorldServer.Packets.C2S
 		{
 			byte npcId;
 			UInt16 slot;
-			UInt32 worldType; //??? this is prolly warpId
+			UInt32 worldType; //???
 			UInt32 target, u0, u1;
 
 			try

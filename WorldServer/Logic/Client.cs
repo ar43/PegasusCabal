@@ -460,8 +460,21 @@ namespace WorldServer.Logic
 					}
 				}
 			}
-
-			//throw new NotImplementedException();
 		}
+
+		public bool isGm()
+		{
+            if (Character == null)
+            {
+				return false;
+            }
+
+			if(Character.Nation != NationCode.NATION_GM)
+			{
+				return false;
+			}
+
+			return true;
+        }
 	}
 }

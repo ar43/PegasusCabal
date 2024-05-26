@@ -68,7 +68,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			_cells[cellX, cellY].LocalMobs.Add(mob);
 		}
 
-        public List<(int, int)> CalculateValidCellSpots(UInt16 cellX, UInt16 cellY)
+        public List<(int, int)> CalculateValidCellSpots(UInt16 cellX, UInt16 cellY, bool mustBeTown)
         {
             List<(int, int)> values = new List<(int, int)>();
             var baseX = cellX * 16;
@@ -80,7 +80,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
                 {
                     if (!CheckTerrainCollision((UInt16)(baseX + i), (UInt16)(baseY + j)))
                     {
-                        values.Add((baseX + i, baseY + j));
+						if(!mustBeTown || CheckTileTown((UInt16)(baseX + i), (UInt16)(baseY + j)))
+							values.Add((baseX + i, baseY + j));
                     }
                 }
             }
