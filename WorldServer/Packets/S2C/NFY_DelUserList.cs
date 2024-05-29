@@ -7,9 +7,9 @@ namespace WorldServer.Packets.S2C
 	internal class NFY_DelUserList : PacketS2C
 	{
 		Int32 _charId;
-		DelUserType _delUserType;
+		DelObjectType _delUserType;
 
-		public NFY_DelUserList(Int32 charId, DelUserType delUserType) : base((UInt16)Opcode.NFY_DELUSERLIST)
+		public NFY_DelUserList(Int32 charId, DelObjectType delUserType) : base((UInt16)Opcode.NFY_DELUSERLIST)
 		{
 			_charId = charId;
 			_delUserType = delUserType;

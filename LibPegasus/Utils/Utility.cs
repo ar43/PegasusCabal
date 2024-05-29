@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LibPegasus.Utils

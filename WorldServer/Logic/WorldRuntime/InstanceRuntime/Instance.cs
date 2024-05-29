@@ -2,12 +2,13 @@
 using LibPegasus.Parsers.Mcl;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 {
-	internal class Instance
+    internal class Instance
 	{
 		public Instance(UInt16 mapId, InstanceType type, MapData mapData)
 		{
@@ -56,9 +57,24 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			_cells[cellX, cellY].LocalClients.Add(client);
 		}
 
-		public void AddMobToCell(Mob mob, UInt16 cellX, UInt16 cellY)
+		public void AddMobToCell(Mob mob, UInt16 cellX, UInt16 cellY, bool notifyAround)
 		{
 			_cells[cellX, cellY].LocalMobs.Add(mob);
+			if (notifyAround)
+			{
+				//possibly optimize this... no need to broadcast to empty instance for example
+				BroadcastNearby(mob, new NFY_NewMobsList(new List<Mob> { mob }));
+			}
+		}
+
+		public void RemoveMobFromCell(Mob mob, bool notifyAround, DelObjectType type)
+		{
+			_cells[mob.Movement.CellX, mob.Movement.CellY].LocalMobs.Add(mob);
+			if (notifyAround)
+			{
+				//possibly optimize this... no need to broadcast to empty instance for example
+				BroadcastNearby(mob, new NFY_DelMobsList(mob.ObjectIndexData, type));
+			}
 		}
 
 		public List<(int, int)> CalculateValidCellSpots(UInt16 cellX, UInt16 cellY, bool mustBeTown)
@@ -81,7 +97,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			return values;
 		}
 
-		public void RemoveClient(Client client, DelUserType reason)
+		public void RemoveClient(Client client, DelObjectType reason)
 		{
 			var packet_del = new NFY_DelUserList(client.Character.Id, reason);
 			BroadcastNearby(client, packet_del, false);
@@ -97,16 +113,58 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		}
 		public bool CheckTerrainCollision(UInt16 x, UInt16 y)
 		{
+			if (x > 255 || y > 255)
+				return true;
 			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.WALL);
 		}
 		public bool CheckTileTown(UInt16 x, UInt16 y)
 		{
+			if (x > 255 || y > 255)
+				return false;
 			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.TOWN);
 		}
-		public void MoveClient(Client client, UInt16 newCellX, UInt16 newCellY, NewUserType cellMoveType)
+		public void MoveMob(Mob mob, UInt16 newCellX, UInt16 newCellY)
+		{
+			var cellX = mob.Movement.CellX; //old cell pos x
+			var cellY = mob.Movement.CellY; //old cell pos y
+
+			if (Math.Abs(cellX - newCellX) > 1 || Math.Abs(cellY - newCellY) > 1)
+				throw new Exception("incorrent MoveMob");
+
+			var currentCell = _cells[cellX, cellY];
+			var newCell = _cells[newCellX, newCellY];
+
+			//TODO verify difference between current and new Cell
+
+			var currentNeighbours = GetNeighbours((Int16)cellX, (Int16)cellY);
+			var newNeightbours = GetNeighbours((Int16)newCellX, (Int16)newCellY);
+
+			var relevantCells = newNeightbours.Except(currentNeighbours).ToList();
+
+			foreach (var cellPos in relevantCells)
+			{
+				foreach (var c in _cells[cellPos.Item1, cellPos.Item2].LocalClients)
+				{
+					if (c.Character == null)
+						throw new Exception("Character should not be null here");
+
+					var packetNewUser = new NFY_NewMobsList(new List<Mob>() { mob });
+					c.PacketManager.Send(packetNewUser);
+				}
+			}
+
+			currentCell.LocalMobs.Remove(mob);
+			newCell.LocalMobs.Add(mob);
+
+			mob.Movement.UpdateCellPos();
+		}
+		public void MoveClient(Client client, UInt16 newCellX, UInt16 newCellY, AddObjectType cellMoveType)
 		{
 			var cellX = client.Character.Location.Movement.CellX; //old cell pos x
 			var cellY = client.Character.Location.Movement.CellY; //old cell pos y
+
+			if (Math.Abs(cellX - newCellX) > 1 || Math.Abs(cellY - newCellY) > 1)
+				throw new Exception("incorrent MoveClient");
 
 			var currentCell = _cells[cellX, cellY];
 			var newCell = _cells[newCellX, newCellY];
@@ -150,7 +208,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 			if (newChars.Count > 0)
 			{
-				var packetOtherPlayers = new NFY_NewUserList(newChars, NewUserType.OTHERPLAYERS);
+				var packetOtherPlayers = new NFY_NewUserList(newChars, AddObjectType.OTHERPLAYERS);
 				client.PacketManager.Send(packetOtherPlayers);
 			}
 
@@ -205,6 +263,24 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				}
 			}
 		}
+		public void BroadcastNearby(Mob mob, PacketS2C packet)
+		{
+			var cellX = mob.Movement.CellX;
+			var cellY = mob.Movement.CellY;
+
+			foreach (var cellPos in GetNeighbours((Int16)cellX, (Int16)cellY))
+			{
+				foreach (var c in _cells[cellPos.Item1, cellPos.Item2].LocalClients)
+				{
+					if (c == null)
+						throw new NullReferenceException("null client");
+					if (c.Character == null)
+						throw new NullReferenceException("null client");
+
+					c.PacketManager.Send(packet);
+				}
+			}
+		}
 		public List<Character> GetNearbyCharacters(Client client)
 		{
 			List<Character> characters = new List<Character>();
@@ -250,7 +326,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			return mobs;
 		}
 
-
-
+		internal void Update()
+		{
+			MobManager.UpdateAll();
+		}
 	}
 }

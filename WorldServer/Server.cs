@@ -245,6 +245,7 @@ namespace WorldServer
 			{
 				AddNewClients();
 				ProcessClients();
+				UpdateWorld();
 				RemoveClients();
 				ProcessSessionChanges();
 				Thread.Sleep(1);
@@ -253,6 +254,11 @@ namespace WorldServer
 			Quit();
 			Task.WaitAll();
 			Thread.Sleep(1000);
+		}
+
+		private void UpdateWorld()
+		{
+			_world.Update();
 		}
 
 		private void RemoveClients()
@@ -264,7 +270,7 @@ namespace WorldServer
 					_clients[i].TcpClient.Close();
 					FreeUserIndex(_clients[i].ConnectionInfo.UserId);
 					if (_clients[i].Character != null && _clients[i].Character.Location.Instance != null)
-						_clients[i].Character.Location.Instance.RemoveClient(_clients[i], Enums.DelUserType.LOGOUT);
+						_clients[i].Character.Location.Instance.RemoveClient(_clients[i], Enums.DelObjectType.LOGOUT);
 					_clients.RemoveAt(i);
 				}
 			}

@@ -1,8 +1,8 @@
-﻿using WorldServer.Logic.WorldRuntime.InstanceRuntime;
+﻿using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 
 namespace WorldServer.Logic.WorldRuntime
 {
-	internal class Cell
+    internal class Cell
 	{
 		public Cell()
 		{

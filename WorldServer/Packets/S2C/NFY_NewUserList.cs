@@ -9,8 +9,8 @@ namespace WorldServer.Packets.S2C
 	internal class NFY_NewUserList : PacketS2C
 	{
 		List<Character> _characters;
-		NewUserType _newUserType;
-		public NFY_NewUserList(List<Character> characters, NewUserType newUserType) : base((UInt16)Opcode.NFY_NEWUSERLIST)
+		AddObjectType _newUserType;
+		public NFY_NewUserList(List<Character> characters, AddObjectType newUserType) : base((UInt16)Opcode.NFY_NEWUSERLIST)
 		{
 			_characters = characters;
 			_newUserType = newUserType;

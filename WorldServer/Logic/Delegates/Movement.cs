@@ -207,7 +207,7 @@ namespace WorldServer.Logic.Delegates
 
 			if (loc.Movement.CellMove(x, y, client.isGm()))
 			{
-				loc.Instance.MoveClient(client, (UInt16)(x / 16), (UInt16)(y / 16), Enums.NewUserType.NEWMOVE);
+				loc.Instance.MoveClient(client, (UInt16)(x / 16), (UInt16)(y / 16), Enums.AddObjectType.NEWMOVE);
 				loc.Movement.UpdateCellPos();
 
 				//if(loc.Instance.CheckTerrainCollision(x, y))

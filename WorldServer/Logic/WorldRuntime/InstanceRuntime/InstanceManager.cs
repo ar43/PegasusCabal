@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Parsers.Mcl;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Logic.WorldRuntime.WarpsRuntime;
 using WorldServer.Packets.S2C;
@@ -50,7 +51,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			}
 
 			var oldInstance = client.Character.Location.Instance;
-			oldInstance.RemoveClient(client, DelUserType.WARP);
+			oldInstance.RemoveClient(client, DelObjectType.WARP);
 
 			client.Character.Location.Movement.SetPosition(newX, newY);
 			client.Character.Location.Movement.UpdateCellPos();
@@ -60,7 +61,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			var response = new RSP_WarpCommand(client.Character, warpType, (UInt32)newInstance.MapId, 0);
 			client.PacketManager.Send(response);
 
-			AddClient(client, newInstance.Id, NewUserType.NEWWARP);
+			AddClient(client, newInstance.Id, AddObjectType.NEWWARP);
 		}
 
 		public bool WarpClientReturn(Client client)
@@ -151,7 +152,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			}
 		}
 
-		public void AddClient(Client client, UInt64 instanceId, NewUserType type)
+		public void AddClient(Client client, UInt64 instanceId, AddObjectType type)
 		{
 			_instances[instanceId].AddNewClient(client, (UInt16)client.Character.Location.Movement.CellX, (UInt16)client.Character.Location.Movement.CellY);
 			if (client.Character.Location.Instance != null)
@@ -161,7 +162,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			var otherCharacters = client.Character.Location.Instance.GetNearbyCharacters(client);
 			if (otherCharacters.Count > 0)
 			{
-				var packetNewListOtherPlayers = new NFY_NewUserList(otherCharacters, NewUserType.OTHERPLAYERS);
+				var packetNewListOtherPlayers = new NFY_NewUserList(otherCharacters, AddObjectType.OTHERPLAYERS);
 				client.PacketManager.Send(packetNewListOtherPlayers);
 			}
 
@@ -174,6 +175,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 			var packet_new_list_this = new NFY_NewUserList(new List<Character>() { client.Character }, type);
 			client.BroadcastNearby(packet_new_list_this, true);
+		}
+
+		internal void Update()
+		{
+			foreach(var instance in _instances.Values)
+			{
+				if (instance == null)
+					continue;
+				instance.Update();
+			}
 		}
 	}
 }

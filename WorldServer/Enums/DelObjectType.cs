@@ -1,6 +1,6 @@
 ﻿namespace WorldServer.Enums
 {
-	internal enum DelUserType
+	internal enum DelObjectType
 	{
 		DEAD = 16,
 		WARP,

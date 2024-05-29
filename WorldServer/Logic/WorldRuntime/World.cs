@@ -25,5 +25,10 @@ namespace WorldServer.Logic.WorldRuntime
 			_mapDataManager = new MapDataManager(_worldConfig, _mobDataManager);
 			InstanceManager = new InstanceManager(_worldConfig, _warpManager, _mapDataManager);
 		}
+
+		internal void Update()
+		{
+			InstanceManager.Update();
+		}
 	}
 }

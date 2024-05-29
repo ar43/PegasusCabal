@@ -36,7 +36,7 @@ namespace WorldServer.Logic.Delegates
 			{
 				client.ConnectionInfo.RequestedBackToCharLobby = false;
 				client.Character.Location.LastMapId = (Int32)client.Character.Location.Instance.MapId;
-				client.Character.Location.Instance.RemoveClient(client, Enums.DelUserType.LOGOUT);
+				client.Character.Location.Instance.RemoveClient(client, Enums.DelObjectType.LOGOUT);
 				client.Character.Sync(Enums.DBSyncPriority.HIGH, true);
 			}
 			else

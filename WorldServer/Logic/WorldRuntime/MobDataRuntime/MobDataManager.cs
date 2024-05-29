@@ -1,4 +1,5 @@
-﻿using WorldServer.Enums.Mob;
+﻿using System.Globalization;
+using WorldServer.Enums.Mob;
 
 namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 {
@@ -13,8 +14,8 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 			foreach (var entry in tmobData)
 			{
 				int Id = Convert.ToInt32(entry.Key);
-				float MoveSpeed = Convert.ToSingle(entry.Value["MoveSpeed"]);
-				float ChasSpeed = Convert.ToSingle(entry.Value["ChasSpeed"]);
+				float MoveSpeed = Convert.ToSingle(entry.Value["MoveSpeed"], CultureInfo.InvariantCulture);
+				float ChasSpeed = Convert.ToSingle(entry.Value["ChasSpeed"], CultureInfo.InvariantCulture);
 				int Property = Convert.ToInt32(entry.Value["Property"]);
 				if (!Enum.TryParse(entry.Value["AttkPattern"].Substring(1), out MobPattern AttkPattern))
 					AttkPattern = MobPattern.PATERN_NULL;
@@ -55,7 +56,7 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 				int Stance2 = Convert.ToInt32(entry.Value["Stance2"]);
 				int Boss = Convert.ToInt32(entry.Value["Boss"]);
 				int AtkSignal = Convert.ToInt32(entry.Value["AtkSignal"]);
-				float Radius = Convert.ToSingle("0" + entry.Value["Radius"]);
+				float Radius = Convert.ToSingle("0" + entry.Value["Radius"], CultureInfo.InvariantCulture);
 				int Canatk = Convert.ToInt32(entry.Value["canatk"]);
 				_mobData.Add(Id, new MobData(Id, MoveSpeed, ChasSpeed, Property, AttkPattern, Aggressive, Cooperate, Escape, Attack, Scale, FindCount, FindInterval,
 					MoveInterval, ChasInterval, AlertRange, Limt0Range, Limt1Range, LEV, EXP, HP, Defense, AttacksR, DefenseR, HPRechagR, Interval1, PhyAttMin1, PhyAttMax1

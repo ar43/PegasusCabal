@@ -1,6 +1,6 @@
 ﻿namespace WorldServer.Enums
 {
-	internal enum NewUserType
+	internal enum AddObjectType
 	{
 		OTHERPLAYERS = 0,
 		NEWINIT = 48,
