@@ -22,12 +22,14 @@
 
         public void AddAllMobs()
         {
-            foreach (var mSpawn in _instance.MapData.MobSpawnData.Values)
+			var rng = new Random();
+			DateTime time = DateTime.UtcNow;
+			foreach (var mSpawn in _instance.MapData.MobSpawnData.Values)
             {
                 var mobId = GetNextMobId();
-                Mob mob = new Mob(mSpawn.MobData, mSpawn, _instance, mobId);
+                Mob mob = new Mob(mSpawn.MobData, mSpawn, _instance, mobId, rng);
                 _mobs.Add(mobId, mob);
-                mob.Spawn();
+                mob.Spawn(time);
             }
         }
 

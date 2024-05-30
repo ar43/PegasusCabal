@@ -1,6 +1,8 @@
 ﻿using LibPegasus.Utils;
 using Serilog;
+using System.Diagnostics;
 using System.Security.Cryptography;
+using WorldServer.Enums.Mob;
 using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
@@ -27,11 +29,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		private UInt16 _spawnPosY;
 		private UInt16 _chasePosX;
 		private UInt16 _chasePosY;
-		private DateTime _lastMovementGen;
+		private Random _rng;
+		private MobPhase _phase;
 
 		private readonly int SPAWN_DELAY = 2000;
 
-        public Mob(MobData data, MobSpawnData spawnData, Instance instance, UInt16 id)
+        public Mob(MobData data, MobSpawnData spawnData, Instance instance, UInt16 id, Random rng)
         {
             _data = data;
             _spawnData = spawnData;
@@ -41,7 +44,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			Movement = new(0, 0, _data.MoveSpeed);
 			ResetFindCounter();
 			_nextUpdateTime = DateTime.MinValue;
-			_lastMovementGen = DateTime.MinValue;
+			_rng = rng;
+			_phase = MobPhase.INVALID;
 		}
 
 		private void SetNextUpdateTime(DateTime currentTime, int ms)
@@ -52,10 +56,39 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 		private void ResetFindCounter()
 		{
-			_findCounter = _data.FindCount - 1;
+			_findCounter = _data.FindCount;
 		}
 
-        public int GetMaxHP()
+		private void SetPhaseFind(DateTime currentTime, bool first = false)
+		{
+			_phase = MobPhase.FIND;
+			ResetFindCounter();
+			if(first)
+			{
+				SetNextUpdateTime(currentTime, _data.FindInterval + SPAWN_DELAY);
+			}
+			else
+			{
+				SetNextUpdateTime(currentTime, _data.FindInterval);
+			}
+		}
+
+		private void SetPhaseMove(DateTime currentTime)
+		{
+			_phase = MobPhase.MOVE;
+
+			SetNextUpdateTime(currentTime, _data.MoveInterval);
+		}
+
+		private void NextFindPhase(DateTime currentTime)
+		{
+			Debug.Assert(_phase == MobPhase.FIND);
+
+			SetNextUpdateTime(currentTime, _data.FindInterval);
+			_findCounter--;
+		}
+
+		public int GetMaxHP()
         {
             return _data.HP;
         }
@@ -85,14 +118,14 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
         }
 
 
-        public void Spawn()
+        public void Spawn(DateTime currentTime)
         {
             if (_spawnSpots == null)
                 _spawnSpots = CalculateValidSpawnSpots((UInt16)_spawnData.PosX, (UInt16)_spawnData.PosY, _spawnData.Width, _spawnData.Height);
             if (_spawnSpots.Count <= 0)
                 throw new Exception("No valid spawn spots");
 
-            var position = _spawnSpots[RandomNumberGenerator.GetInt32(_spawnSpots.Count)];
+            var position = _spawnSpots[_rng.Next(_spawnSpots.Count)];
             var newX = position.Item1;
             var newY = position.Item2;
 
@@ -108,10 +141,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			_chasePosY = (UInt16)newY;
             _instance.AddMobToCell(this, (UInt16)Movement.CellX, (UInt16)Movement.CellY, true);
 
-			ResetFindCounter();
-			SetNextUpdateTime(DateTime.UtcNow, _data.FindInterval + SPAWN_DELAY);
+			SetPhaseFind(currentTime, true);
 
-			Level = (Byte)(_data.LEV + RandomNumberGenerator.GetInt32(3));
+			Level = (Byte)(_data.LEV + _rng.Next(3));
             HP = GetMaxHP();
 			IsSpawned = true;
 		}
@@ -120,8 +152,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		{
 			var startX = Movement.X;
 			var startY = Movement.Y;
-			var endX = RandomNumberGenerator.GetInt32(8) + _chasePosX - 4;
-			var endY = RandomNumberGenerator.GetInt32(8) + _chasePosY - 4;
+			var endX = _rng.Next(8) + _chasePosX - 4;
+			var endY = _rng.Next(8) + _chasePosY - 4;
 			var pntX = endX;
 			var pntY = endY;
 
@@ -141,13 +173,6 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			{
 				var packet = new NFY_MobsMoveBgn(ObjectIndexData, (UInt32)Movement.StartTime, (UInt16)startX, (UInt16)startY, (UInt16)endX, (UInt16)endY);
 				_instance.BroadcastNearby(this, packet);
-				/*
-				if(_lastMovementGen != DateTime.MinValue)
-				{
-					Serilog.Log.Debug($"Diff: {(DateTime.UtcNow - _lastMovementGen).TotalMilliseconds}");
-				}
-				_lastMovementGen = DateTime.UtcNow;
-				*/
 			}
 			else
 			{
@@ -182,25 +207,34 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			return (iDx >= iDy) ? iDx : iDy;
 		}
 
-		public void Update(DateTime currentTime)
-        {
-			if (currentTime < _nextUpdateTime)
-				return;
+		private void Find(DateTime currentTime)
+		{
+			Debug.Assert(_phase == MobPhase.FIND);
 
-			if (!IsSpawned)
-				return;
-
-			if(Movement.IsMoving)
+			if (_findCounter <= 1)
 			{
-				if(Movement.IsDeadReckoning)
+				SetPhaseMove(currentTime);
+				return;
+			}
+
+			NextFindPhase(currentTime);
+		}
+
+		private void Move(DateTime currentTime)
+		{
+			Debug.Assert(_phase == MobPhase.MOVE);
+
+			if (Movement.IsMoving)
+			{
+				if (Movement.IsDeadReckoning)
 				{
 					var oldX = Movement.X;
 					var oldY = Movement.Y;
 					Movement.DeadReckoning();
 
-					if(IsTooFarFromSpawn())
+					if (IsTooFarFromSpawn())
 					{
-						Spawn();
+						Spawn(currentTime);
 						return;
 					}
 
@@ -208,58 +242,72 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 					var newCellY = Movement.Y / 16;
 					if (Movement.CellX != newCellX || Movement.CellY != newCellY)
 					{
-						//change tiles
+						//change cell
 						_instance.MoveMob(this, (UInt16)newCellX, (UInt16)newCellY);
 					}
-					if(Movement.IsDeadReckoning)
+					if (Movement.IsDeadReckoning)
 					{
-						SetNextUpdateTime(currentTime, _data.MoveInterval);
+						SetPhaseMove(currentTime);
 						return;
 					}
 				}
 
-				if(!Movement.IsDeadReckoning)
+				if (!Movement.IsDeadReckoning)
 				{
 					//Serilog.Log.Debug($"no longer dead reckoning {Movement.X} {Movement.Y} {Movement.EndX} {Movement.EndY}");
-					if(Movement.End((UInt16)Movement.X, (UInt16)Movement.Y))
+					if (Movement.End((UInt16)Movement.X, (UInt16)Movement.Y))
 					{
 						var packet = new NFY_MobsMoveEnd(ObjectIndexData, (UInt16)Movement.EndX, (UInt16)Movement.EndY);
 						_instance.BroadcastNearby(this, packet);
-						ResetFindCounter();
-						SetNextUpdateTime(currentTime, _data.FindInterval);
+						SetPhaseFind(currentTime);
+						return;
 					}
 					else
 					{
 						throw new Exception("idk");
 					}
-					return;
 				}
 				SetNextUpdateTime(currentTime, _data.MoveInterval);
 				return;
 			}
-
-			if(_findCounter > 0)
+			else
 			{
-				_findCounter--;
-				SetNextUpdateTime(currentTime, _data.FindInterval);
-				return;
-			}
-
-			if(!Movement.IsMoving)
-			{
-				if(!GenerateMovement())
+				if (!GenerateMovement())
 				{
-					ResetFindCounter();
-					SetNextUpdateTime(currentTime, _data.FindInterval);
+					SetPhaseFind(currentTime);
 					return;
 				}
 
-				SetNextUpdateTime(currentTime, _data.MoveInterval);
+				SetPhaseMove(currentTime);
 				return;
 			}
+		}
+		
+		public void Update(DateTime currentTime)
+		{
+			if (currentTime < _nextUpdateTime)
+				return;
 
-			throw new NotImplementedException();
-            
-        }
+			if (!IsSpawned)
+				return;
+
+			switch(_phase)
+			{
+				case MobPhase.FIND:
+				{
+					Find(currentTime);
+					break;
+				}
+				case MobPhase.MOVE:
+				{
+					Move(currentTime);
+					break;
+				}
+				default:
+				{
+					throw new Exception("Invalid phase");
+				}
+			}
+		}
     }
 }
