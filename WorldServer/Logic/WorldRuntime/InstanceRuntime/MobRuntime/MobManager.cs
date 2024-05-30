@@ -35,6 +35,9 @@
 
 		public void UpdateAll()
 		{
+			if (_instance.NumClients == 0)
+				return;
+
 			DateTime time = DateTime.UtcNow;
 			foreach(var mob in _mobs.Values)
 			{

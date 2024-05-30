@@ -16,6 +16,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			_cells = new Cell[NUM_CELL_X, NUM_CELL_Y];
 			MapData = mapData;
 			Type = type;
+			NumClients = 0;
 
 			for (int i = 0; i < _cells.GetLength(0); i++)
 			{
@@ -52,8 +53,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		public static readonly int NUM_CELL_X = 16;
 		public static readonly int NUM_CELL_Y = 16;
 
+		public int NumClients { get; private set; }
+
 		public void AddNewClient(Client client, UInt16 cellX, UInt16 cellY)
 		{
+			NumClients++;
 			_cells[cellX, cellY].LocalClients.Add(client);
 		}
 
@@ -107,9 +111,14 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				if (cell.LocalClients.Remove(client))
 				{
 					client.Character.Location.Instance = null;
+					NumClients--;
+					if (NumClients < 0)
+						throw new Exception("negative NumClients");
 					return;
 				}
 			}
+
+			throw new Exception("not expected");
 		}
 		public bool CheckTerrainCollision(UInt16 x, UInt16 y)
 		{
