@@ -48,6 +48,24 @@ namespace WorldServer.Logic.CharData
 			return data;
 		}
 
+		public bool UseItem(int fromSlot, bool sync = true)
+		{
+			if (fromSlot < 0 || fromSlot >= INV_SIZE)
+				return false;
+			if (!_items.TryGetValue((UInt16)fromSlot, out var item))
+				return false;
+			if(item.TryUse())
+			{
+				if(sync)
+					Sync(DBSyncPriority.NORMAL);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		public bool ItemMove(int fromSlot, int toSlot, bool sync)
 		{
 			if (fromSlot < 0 || toSlot < 0)

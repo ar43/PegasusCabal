@@ -39,7 +39,11 @@ namespace WorldServer.Logic.Delegates
 			{
 				case (Byte)SpecialWarpIndex.NPCSIDX_RETN:
 				{
-					//todo: inventory code
+					if(!client.Character.Inventory.UseItem(slot))
+					{
+						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error while warping (return) - error on item usage");
+						return;
+					}
 					if (!client.World.InstanceManager.WarpClientReturn(client))
 					{
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error while warping (return)");

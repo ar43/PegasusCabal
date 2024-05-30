@@ -36,6 +36,26 @@ namespace WorldServer.Logic.CharData.Items
 			return _itemInfo.Height;
 		}
 
+		public bool TryUse()
+		{
+			switch(_itemInfo.TypeId)
+			{
+				case ItemType.IDT_WSCL:
+				{
+					if (Option == 0)
+						return false;
+					Option--;
+					break;
+				}
+				default:
+				{
+					Serilog.Log.Error($"Item.TryUse: Unimplemented type {_itemInfo.TypeId}");
+					return false;
+				}
+			}
+			return true;
+		}
+
 		public void SetKind(UInt32 kind)
 		{
 			Kind = kind;
