@@ -2,11 +2,12 @@
 using WorldServer.Enums;
 using WorldServer.Logic;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.Delegates;
 
 namespace WorldServer.Packets.C2S
 {
-	internal class REQ_ChangeStyle : PacketC2S<Client>
+    internal class REQ_ChangeStyle : PacketC2S<Client>
 	{
 		public REQ_ChangeStyle(Queue<byte> data) : base((UInt16)Opcode.CSC_CHANGESTYLE, data)
 		{

@@ -1,9 +1,11 @@
 ﻿using WorldServer.Enums;
+using WorldServer.Logic.CharData.Skills;
+using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.SharedData;
 
 namespace WorldServer.Logic.CharData
 {
-	internal class Character
+    internal class Character
 	{
 		public Character(Style style, string name) //used just in connection, not actually fr
 		{
@@ -16,7 +18,7 @@ namespace WorldServer.Logic.CharData
 			Id = 0;
 		}
 
-		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, Skills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id, int nation)
+		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, LearnedSkills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id, int nation)
 		{
 			Equipment = equipment;
 			Inventory = inventory;
@@ -47,7 +49,7 @@ namespace WorldServer.Logic.CharData
 		public ObjectIndexData? ObjectIndexData { get; set; }
 		public Equipment? Equipment { get; set; }
 		public Inventory? Inventory { get; set; }
-		public Skills? Skills { get; set; }
+		public LearnedSkills? Skills { get; set; }
 		public QuickSlotBar? QuickSlotBar { get; set; }
 		public Location Location { get; private set; }
 		public Stats? Stats { get; set; }

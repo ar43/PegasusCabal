@@ -1,9 +1,10 @@
 ﻿using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.Styles;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
 {
-	internal static class CharAction
+    internal static class CharAction
 	{
 		internal static void OnChangeStyle(Client client, Style newStyle, LiveStyle newLiveStyle, BuffFlag newBuffFlag, ActionFlag newActionFlag)
 		{

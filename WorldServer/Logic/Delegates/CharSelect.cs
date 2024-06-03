@@ -3,6 +3,7 @@ using System.Net;
 using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.SharedData;
 using WorldServer.Packets.S2C;
 

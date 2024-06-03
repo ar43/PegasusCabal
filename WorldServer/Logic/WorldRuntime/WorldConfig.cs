@@ -1,10 +1,12 @@
 ﻿using LibPegasus.Parsers.Scp;
 using System.Text.RegularExpressions;
 using WorldServer.Logic.CharData.Items;
+using WorldServer.Logic.CharData.Skills;
+using WorldServer.Logic.CharData.Styles;
 
 namespace WorldServer.Logic.WorldRuntime
 {
-	internal class WorldConfig
+    internal class WorldConfig
 	{
 
 		public WorldConfig()
@@ -16,8 +18,12 @@ namespace WorldServer.Logic.WorldRuntime
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\NPCShop.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Item.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Mobs.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Skill.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Rank.scp");
 
 			Item.LoadConfigs(this);
+			Skill.LoadConfigs(this);
+			Style.LoadConfigs(this);
 		}
 
 		private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _config;

@@ -282,8 +282,8 @@ namespace WorldServer
 			{
 				client.ReceiveData();
 				client.Update();
-				client.DbSync(_syncManager);
 				client.SendData();
+				client.DbSync(_syncManager);
 			}
 		}
 

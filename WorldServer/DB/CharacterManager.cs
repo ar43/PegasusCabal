@@ -3,10 +3,12 @@ using Npgsql;
 using Shared.Protos;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.CharData.DbSyncData;
+using WorldServer.Logic.CharData.Skills;
+using WorldServer.Logic.CharData.Styles;
 
 namespace WorldServer.DB
 {
-	internal class CharacterManager
+    internal class CharacterManager
 	{
 		private NpgsqlDataSource _dataSource;
 
@@ -255,7 +257,7 @@ namespace WorldServer.DB
 							throw new Exception("increase dbDataBytes buffer");
 						}
 						var skillsProtobuf = ToProtoObject<SkillData>(dbDataBytes, (int)dataLen);
-						Skills cSkills = new Skills(skillsProtobuf);
+						LearnedSkills cSkills = new LearnedSkills(skillsProtobuf);
 
 						Array.Clear(dbDataBytes);
 						dataLen = reader.GetBytes(quickslotData, 0, dbDataBytes, 0, dbDataBytes.Length);
