@@ -36,8 +36,8 @@ namespace WorldServer.Logic.CharData.Styles
 		public StyleCoef DefensCoef { get; private set; }
 		public StyleCoef AttckRCoef { get; private set; }
 		public StyleCoef DefenRCoef { get; private set; }
-		public StatCoef StatMaxAtt { get; private set; }
-		public StatCoef StatMagAtt { get; private set; }
+		public StatCoef StatMaxAtt { get; private set; } //Attack
+		public StatCoef StatMagAtt { get; private set; } //MagicAttack
 		public StatCoef StatDefens {  get; private set; }
 		public StatCoef StatAttckR { get; private set; }
 		public StatCoef StatDefenR { get; private set; }

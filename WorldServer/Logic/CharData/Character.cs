@@ -1,4 +1,5 @@
 ﻿using WorldServer.Enums;
+using WorldServer.Logic.CharData.Battle;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.SharedData;
@@ -82,6 +83,31 @@ namespace WorldServer.Logic.CharData
 			Stats.Sync(DBSyncPriority.NONE);
 			Skills.Sync(DBSyncPriority.NONE);
 			QuickSlotBar.Sync(DBSyncPriority.NONE);
+		}
+
+		public BattleStats CalculateBattleStats()
+		{
+			var equStats = Equipment.GetStats();
+
+			int attack = 0;
+			attack += equStats.Attack; //attack from equipment
+			Serilog.Log.Debug($"attack1: {attack}");
+			attack += Stats.CalculateValueFromCoef(Style.BattleStyle.StatMaxAtt); //attack from stats
+			Serilog.Log.Debug($"attack2: {attack}");
+			attack += Style.CalculateValueFromCoef(Style.BattleStyle.AttackCoef); //attack from battle style level
+			Serilog.Log.Debug($"attack3: {attack}");
+
+			int magicAttack = 0;
+			magicAttack += equStats.MagicAttack;
+			magicAttack += Stats.CalculateValueFromCoef(Style.BattleStyle.StatMagAtt);
+			magicAttack += Style.CalculateValueFromCoef(Style.BattleStyle.MagAttCoef);
+
+			int swordSkillAmp = equStats.SwordSkillAmp;
+			int magicSkillAmp = equStats.MagicSkillAmp;
+
+			Serilog.Log.Debug($"CalculateBattleStats: {attack} {magicAttack}");
+
+			return new BattleStats(attack, magicAttack, swordSkillAmp, magicSkillAmp);
 		}
 
 	}

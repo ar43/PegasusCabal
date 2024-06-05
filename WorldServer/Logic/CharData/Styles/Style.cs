@@ -17,6 +17,7 @@ namespace WorldServer.Logic.CharData.Styles
 
 		public BattleStyle BattleStyle { get; private set; }
         private static Dictionary<int, BattleStyle>? _battleStyleData;
+		public int MasteryLevel { get; private set; } //TODO
 
         public Style(Byte battleStyle, Byte rank, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet)
         {
@@ -49,6 +50,7 @@ namespace WorldServer.Logic.CharData.Styles
             ShowHelmet = (Byte)(serial >> 27 & 0b1);
 
 			BattleStyle = _battleStyleData[BattleStyleNum];
+			MasteryLevel = 1; //todo
 		}
 
         public UInt32 Serialize()
@@ -76,6 +78,11 @@ namespace WorldServer.Logic.CharData.Styles
         {
             ShowHelmet = newVal;
         }
+
+		public int CalculateValueFromCoef(StyleCoef coef)
+		{
+			return coef.A * MasteryLevel + coef.B;
+		}
 
 		public static void LoadConfigs(WorldConfig worldConfig)
 		{

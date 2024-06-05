@@ -1,5 +1,6 @@
 ﻿using Shared.Protos;
 using WorldServer.Enums;
+using WorldServer.Logic.CharData.Battle;
 using WorldServer.Logic.CharData.Items;
 
 namespace WorldServer.Logic.CharData
@@ -45,6 +46,34 @@ namespace WorldServer.Logic.CharData
 			}
 
 			return data;
+		}
+
+		public EquStats GetStats()
+		{
+			EquStats stats = new EquStats();
+			for(int i = 0; i < _list.Length; i++)
+			{
+				var item = _list[i];
+				if(item != null && item.Kind != 0)
+				{
+					switch((EquipmentIndex)i)
+					{
+						case EquipmentIndex.RIGHTHAND:
+						case EquipmentIndex.LEFTHAND:
+						{
+							stats.Attack += item.GetAttack();
+							stats.MagicAttack += item.GetMagicAttack();
+							break;
+						}
+						default:
+						{
+							//TODO
+							break;
+						}
+					}
+				}
+			}
+			return stats;
 		}
 
 		public byte[] Serialize()

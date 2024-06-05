@@ -20,6 +20,18 @@
             return _mobIdGenerator;
         }
 
+		public Mob GetMob(int id)
+		{
+			if(_mobs.TryGetValue(id, out Mob? mob))
+			{
+				return mob;
+			}
+			else
+			{
+				throw new Exception("Can't find mob");
+			}
+		}
+
         public void AddAllMobs()
         {
 			var rng = new Random();

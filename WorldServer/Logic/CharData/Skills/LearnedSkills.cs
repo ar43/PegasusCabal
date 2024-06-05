@@ -30,6 +30,19 @@ namespace WorldServer.Logic.CharData.Skills
                 SyncPending = DBSyncPriority.NONE;
         }
 
+		public bool HasSkill(UInt16 skillSlot, UInt16 skillId)
+		{
+			if(_learnedSkills.ContainsKey(skillSlot))
+				return _learnedSkills[skillSlot].Id == skillId;
+			else
+				return false;
+		}
+
+		public Skill Get(int slot)
+		{
+			return _learnedSkills[(UInt16)slot];
+		}
+
         public SkillData GetProtobuf()
         {
             SkillData skillData = new SkillData();

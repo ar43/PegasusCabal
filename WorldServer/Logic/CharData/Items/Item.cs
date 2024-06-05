@@ -36,6 +36,16 @@ namespace WorldServer.Logic.CharData.Items
 			return _itemInfo.Height;
 		}
 
+		public int GetAttack()
+		{
+			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
+		}
+
+		public int GetMagicAttack()
+		{
+			return _itemInfo.Defense_LEVLmt_MagAttVal;
+		}
+
 		public bool TryUse()
 		{
 			switch(_itemInfo.TypeId)

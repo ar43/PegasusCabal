@@ -4,7 +4,9 @@ using WorldServer.Enums;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
+using WorldServer.Packets.C2S.PacketSpecificData;
 using WorldServer.Packets.S2C;
+using WorldServer.Packets.S2C.PacketSpecificData;
 
 namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 {
@@ -339,5 +341,65 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		{
 			MobManager.UpdateAll();
 		}
+
+		internal bool OnUserSkillAttacksMob(Client attacker, List<MobTarget> defenders, int x, int y, int skillSlot)
+		{
+            if (defenders.Count == 0)
+            {
+				Serilog.Log.Error("empty defenders");
+				return false;
+            }
+            var defenderInfo = defenders[0]; //TODO
+
+			Mob defender;
+			try
+			{
+				defender = MobManager.GetMob(defenderInfo.Id.ObjectId);
+			}
+			catch
+			{
+				Serilog.Log.Error("cant find defender");
+				return false;
+			}
+
+            if (defender == null)
+            {
+				Serilog.Log.Error("defender is null");
+				return false;
+            }
+
+			//todo, position check
+
+			var skill = attacker.Character.Skills.Get(skillSlot);
+			if (skill == null)
+				return false;
+
+			var battleStats = attacker.Character.CalculateBattleStats();
+			var skillAttack = skill.CalculateAttack(battleStats.Attack, battleStats.SwordSkillAmp, battleStats.MagicAttack, battleStats.MagicSkillAmp);
+
+			Serilog.Log.Debug($"calculated skillAttack: {skillAttack}");
+
+			var result = defender.TakeNormalDamage(attacker.Character, skill, skillAttack);
+
+			var dmgResult = new MobDamageResult(defender.ObjectIndexData);
+			dmgResult.HasBFX = 1;
+			dmgResult.DamageReceived = (UInt16)result;
+			dmgResult.AttackResult = AttackResult.SR_NORMALAK;
+			dmgResult.Type = defenderInfo.Type;
+			dmgResult.HPLeft = (UInt32)defender.HP;
+
+			var mobDmgReport = new List<MobDamageResult>{ dmgResult};
+
+
+			var rsp = new RSP_SkillToMobs(mobDmgReport, skill.Id, (UInt16)attacker.Character.Status.Hp, (UInt16)attacker.Character.Status.Mp,
+				(UInt16)attacker.Character.Status.Sp, attacker.Character.Stats.Exp, skill.GetSkillExp(), 0, 0, 0);
+
+			attacker.PacketManager.Send(rsp);
+
+			var nfy = new NFY_SkillToMobs(skill.Id, 0, attacker.Character.Id, (UInt16)x, (UInt16)y, defender.ObjectIndexData, 0, 0, (UInt32)defender.HP, 0, 0, 0, 0, 0);
+
+			BroadcastNearby(defender, nfy);
+			return true;
+        }
 	}
 }

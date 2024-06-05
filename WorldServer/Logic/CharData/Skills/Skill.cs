@@ -22,6 +22,53 @@ namespace WorldServer.Logic.CharData.Skills
         private static SkillInfo? SkillConfig = null;
         private readonly SkillInfoMain _skillInfoMain;
 
+		public uint GetSkillExp()
+		{
+			return (UInt32)_skillInfoMain.SkillExp1;
+		}
+
+		public bool IsSwordSkill()
+		{
+			return _skillInfoMain.Type == Enums.SkillType.ST_SWRDSKIL;
+		}
+
+		public bool IsMagicSkill()
+		{
+			return _skillInfoMain.Type == Enums.SkillType.ST_MAGCSKIL;
+		}
+
+		private int DeltaSwordAmp()
+		{
+            if (IsSwordSkill())
+            {
+				return (int)(Level / 10) + (int)(Level / 13) + (int)(Level / 16) + (int)(Level / 19);
+			}
+			else
+			{
+				return 0;
+			}
+        }
+
+		private int DeltaMagicAmp()
+		{
+			if (IsMagicSkill())
+			{
+				return (int)(Level / 10) + (int)(Level / 13) + (int)(Level / 16) + (int)(Level / 19);
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		public int CalculateAttack(int attack, int swordAmp, int magicAttack, int magicAmp)
+		{
+			return (((5 * 2 * _skillInfoMain.AttackCoef.CoefA + 5 * DeltaSwordAmp() + swordAmp) * attack) +
+					 ((5 * 2 * _skillInfoMain.AttackCoef.CoefB + 5 * DeltaMagicAmp() + magicAmp) * magicAttack) +
+					 (5 * 2 * _skillInfoMain.AttackCoef.CoefC * Level) +
+					 (5 * 2 * _skillInfoMain.AttackCoef.CoefD)) / (5 * 20);
+		}
+
         public static void LoadConfigs(WorldConfig worldConfig)
         {
             if (SkillConfig != null) throw new Exception("item configs already loaded");

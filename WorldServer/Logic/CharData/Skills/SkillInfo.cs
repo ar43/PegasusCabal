@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 
 namespace WorldServer.Logic.CharData.Skills
@@ -31,7 +32,7 @@ namespace WorldServer.Logic.CharData.Skills
 			Multi = multi;
 			Target = target;
 			Max_Target = max_Target;
-			Type = type;
+			Type = (SkillType)type;
 			Group = group;
 			Dur = dur;
 			BFX_Dur = bFX_Dur;
@@ -69,7 +70,7 @@ namespace WorldServer.Logic.CharData.Skills
 		public int Multi { get; private set; }
 		public int Target { get; private set; }
 		public int Max_Target { get; private set; }
-		public int Type { get; private set; }
+		public SkillType Type { get; private set; }
 		public int Group { get; private set; }
 		public int[]? Dur { get; private set; }
 		public int BFX_Dur { get; private set; }

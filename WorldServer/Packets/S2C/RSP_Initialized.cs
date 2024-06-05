@@ -48,7 +48,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, channelType);
 			PacketWriter.WriteUInt16(data, _character.ObjectIndexData.ObjectId);
 			PacketWriter.WriteByte(data, _character.ObjectIndexData.WorldIndex); //WorldIndex of ObjectIndexData??? todo Is this perhaps native instance support
-			PacketWriter.WriteByte(data, (byte)_character.ObjectIndexData.ObjectType); //ObjectType todo
+			PacketWriter.WriteByte(data, (byte)_character.ObjectIndexData.ObjectType);
 
 			PacketWriter.WriteUInt32(data, _worldId);
 			PacketWriter.WriteUInt32(data, 0); //todo dungeon
@@ -60,9 +60,9 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, _character.Stats.Level);
 			PacketWriter.WriteUInt32(data, 0); //unknown
 
-			PacketWriter.WriteUInt32(data, _character.Stats.Str);
-			PacketWriter.WriteUInt32(data, _character.Stats.Dex);
-			PacketWriter.WriteUInt32(data, _character.Stats.Int);
+			PacketWriter.WriteUInt32(data, (UInt32)_character.Stats.Str);
+			PacketWriter.WriteUInt32(data, (UInt32)_character.Stats.Dex);
+			PacketWriter.WriteUInt32(data, (UInt32)_character.Stats.Int);
 			PacketWriter.WriteUInt32(data, _character.Stats.Pnt);
 			PacketWriter.WriteByte(data, 1); //todo magic rank
 			PacketWriter.WriteByte(data, 1); //todo sword rank

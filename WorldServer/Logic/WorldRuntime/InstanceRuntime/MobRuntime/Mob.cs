@@ -3,6 +3,8 @@ using Serilog;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using WorldServer.Enums.Mob;
+using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
@@ -92,6 +94,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
         {
             return _data.HP;
         }
+
+		public int GetDefense()
+		{
+			return _data.Defense;
+		}
 
         public UInt16 GetSpecies()
         {
@@ -281,6 +288,64 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				SetPhaseMove(currentTime);
 				return;
 			}
+		}
+
+		public int TakeNormalDamage(Character attacker, Skill skill, int attack)
+		{
+			int iLvDiffOrg = (Int32)(attacker.Stats.Level - Level);
+			int defence = GetDefense();
+			int iDamage = attack - defence;
+			if (iDamage <= 0)
+				iDamage = 0;
+			iDamage += iLvDiffOrg;
+			if (iDamage <= 0)
+				iDamage = 0;
+			if (skill.IsSwordSkill())
+			{
+				int iDamageMin = iDamage * attacker.Style.BattleStyle.MinDmgRate / 100;
+				iDamage = _rng.Next(iDamage - iDamageMin) + iDamageMin;
+			}
+
+
+			//TODO
+			/*
+			if (pSkillData->_sgGroup == SK_GROUP004)
+			{
+				iDamage = (iDamage == 0) ? 0 : (int)(iDamage * pAttacker->fHitMultiDmg);
+			}
+			else
+			{
+				iDamage = (iDamage == 0) ? 0 : iDamage + pAttacker->iDemageP;
+			}
+			*/
+
+			int modified = (Int32)(attacker.Stats.Level / 10);
+			if (iDamage < modified)
+			{
+				iDamage = modified;
+			}
+			if (iDamage <= 0)
+				iDamage = 0;
+
+			// Combo Damage
+			/*
+			if (iCombSkill)
+			{
+				switch (iTiming)
+				{
+					case CBST_GOOD0:
+						iDamage = iDamage * 110 / 100;
+						break;
+					case CBST_EXCEL:
+						iDamage = iDamage * 120 / 100;
+						break;
+					default:
+						break;
+				}
+			}
+			*/
+
+			return iDamage;
 		}
 		
 		public void Update(DateTime currentTime)

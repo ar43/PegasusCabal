@@ -70,6 +70,7 @@ namespace WorldServer.Packets
 				Opcode.CSC_NPCSHOPPOOL => new REQ_NpcShopPool(data),
 				Opcode.CSC_ITEMMOVE => new REQ_ItemMove(data),
 				Opcode.CSC_ITEMSWAP => new REQ_ItemSwap(data),
+				Opcode.CSC_SKILLTOMOBS => new REQ_SkillToMobs(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}
