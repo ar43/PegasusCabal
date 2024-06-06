@@ -8,7 +8,7 @@ namespace WorldServer.Logic.CharData
 {
 	internal class Stats
 	{
-		public Stats(UInt32 level, UInt32 exp, int str, int dex, int @int, UInt32 pnt, UInt32 rank)
+		public Stats(Int32 level, UInt32 exp, int str, int dex, int @int, UInt32 pnt, UInt32 rank)
 		{
 			Level = level;
 			Exp = exp;
@@ -22,7 +22,7 @@ namespace WorldServer.Logic.CharData
 		}
 
 		public DBSyncPriority SyncPending { get; private set; }
-		public UInt32 Level { get; private set; }
+		public Int32 Level { get; private set; }
 		public UInt32 Exp { get; private set; }
 		public UInt32 Axp { get; private set; }
 		public int Str { get; private set; }
@@ -31,7 +31,8 @@ namespace WorldServer.Logic.CharData
 		public UInt32 Pnt { get; private set; }
 		public UInt32 Rank { get; private set; }
 
-		public readonly int BaseCR = 5;
+		public const int BASE_CR = 5;
+		public const int BASE_CD = 120;
 		public const int MAX_CRITICAL_RATE = 50;
 		public void Sync(DBSyncPriority prio)
 		{

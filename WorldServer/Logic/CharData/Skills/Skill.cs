@@ -80,6 +80,11 @@ namespace WorldServer.Logic.CharData.Skills
 			return _skillInfoMain.CriticalRateCoef.CoefA * Level + _skillInfoMain.CriticalRateCoef.CoefB;
 		}
 
+		private int GetBaseCriticalDamage()
+		{
+			return _skillInfoMain.CriticalMultiCoef.CoefA * Level + _skillInfoMain.CriticalMultiCoef.CoefB;
+		}
+
 		private int GetBasCriticaleDamage()
 		{
 			return _skillInfoMain.CriticalMultiCoef.CoefA * Level + _skillInfoMain.CriticalMultiCoef.CoefB;
@@ -171,5 +176,24 @@ namespace WorldServer.Logic.CharData.Skills
 
         }
 
-    }
+		internal int CalculateCritDamage(Int32 criticalDamage)
+		{
+			switch (_skillInfoMain.Group)
+			{
+				case Enums.SkillGroup.SK_GROUP001:
+				case Enums.SkillGroup.SK_GROUP002:
+				case Enums.SkillGroup.SK_GROUP003:
+				case Enums.SkillGroup.SK_GROUP004:
+				case Enums.SkillGroup.SK_GROUP014:
+				{
+					criticalDamage += GetBaseCriticalDamage();
+					return criticalDamage;
+				}
+				default:
+				{
+					return criticalDamage;
+				}
+			}
+		}
+	}
 }

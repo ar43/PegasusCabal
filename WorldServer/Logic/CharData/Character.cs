@@ -110,17 +110,20 @@ namespace WorldServer.Logic.CharData
 			int maxCriticalRate = Stats.MAX_CRITICAL_RATE;
 
 			int criticalRate = 0;
-			criticalRate += Stats.BaseCR;
+			criticalRate += Stats.BASE_CR;
 			criticalRate += equStats.CriticalRate;
 			criticalRate = Math.Min(criticalRate, maxCriticalRate);
 
+			int criticalDamage = 0;
+			criticalDamage += Stats.BASE_CD;
+			criticalDamage += equStats.CriticalDamage;
 
 			int swordSkillAmp = equStats.SwordSkillAmp;
 			int magicSkillAmp = equStats.MagicSkillAmp;
 
-			Serilog.Log.Debug($"CalculateBattleStats: attack: {attack} magic attack: {magicAttack} attack rate: {attackRate} critical rate: {criticalRate}");
+			Serilog.Log.Debug($"CalculateBattleStats: attack: {attack} magic attack: {magicAttack} attack rate: {attackRate} critical rate: {criticalRate} crit dmg: {criticalDamage}");
 
-			return new BattleStats(attack, magicAttack, swordSkillAmp, magicSkillAmp, attackRate, criticalRate, maxCriticalRate);
+			return new BattleStats(attack, magicAttack, swordSkillAmp, magicSkillAmp, attackRate, criticalRate, maxCriticalRate, criticalDamage);
 		}
 
 	}

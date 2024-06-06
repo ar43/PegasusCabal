@@ -71,7 +71,16 @@ namespace WorldServer.Logic.CharData
 						case EquipmentIndex.RING3:
 						case EquipmentIndex.RING4:
 						{
-							stats.CriticalRate += item.GetCR();
+							//TEMP
+							//TODO: PROPER OPTION READING SYSTEM UNIVERSAL
+							if(item.GetOpt1() == 8)
+							{
+								stats.CriticalDamage += item.GetOpt1Val();
+							}
+							else if (item.GetOpt1() == 9)
+							{
+								stats.CriticalRate += item.GetOpt1Val();
+							}
 							break;
 						}
 						default:

@@ -386,5 +386,42 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				}
 			}
 		}
-    }
+
+		internal Int32 CalculateCriticalDamage(Character attacker, Skill skill, Int32 attack, Int32 criticalDamage)
+		{
+			int iLvDiffOrg = (Int32)(attacker.Stats.Level - Level);
+			int defence = GetDefense();
+			int iDamage = attack - defence;
+			if (iDamage <= 0)
+				iDamage = 1;
+			iDamage += iLvDiffOrg;
+			if (iDamage <= 0)
+				iDamage = 1;
+			iDamage = iDamage * criticalDamage / 100;
+
+			//TODO
+			/*
+			if (pSkillData->_sgGroup == SK_GROUP004)
+			{
+				iDamage = (iDamage == 0) ? 0 : (int)(iDamage * pAttacker->fHitMultiDmg);
+			}
+			else
+			{
+				iDamage = (iDamage == 0) ? 0 : iDamage + pAttacker->iDemageP;
+			}
+			*/
+
+			int modified = (Int32)(attacker.Stats.Level / 10) + (Int32)(attacker.Stats.Level / 20);
+			if (iDamage < modified)
+			{
+				iDamage = modified;
+			}
+			if (iDamage <= 0)
+				iDamage = 5;
+
+			//some war stuff missing
+
+			return Math.Min(iDamage, HP);
+		}
+	}
 }

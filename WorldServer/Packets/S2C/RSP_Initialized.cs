@@ -57,7 +57,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt64(data, _character.Stats.Exp);
 			PacketWriter.WriteUInt64(data, _character.Inventory.Alz);
 			PacketWriter.WriteUInt64(data, 0); //todo warxp
-			PacketWriter.WriteUInt32(data, _character.Stats.Level);
+			PacketWriter.WriteUInt32(data, (UInt32)_character.Stats.Level);
 			PacketWriter.WriteUInt32(data, 0); //unknown
 
 			PacketWriter.WriteUInt32(data, (UInt32)_character.Stats.Str);

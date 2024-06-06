@@ -26,7 +26,7 @@ namespace WorldServer.Packets.S2C
 				PacketWriter.WriteUInt16(data, character.ObjectIndexData.ObjectId);
 				PacketWriter.WriteByte(data, character.ObjectIndexData.WorldIndex);
 				PacketWriter.WriteByte(data, (Byte)character.ObjectIndexData.ObjectType);
-				PacketWriter.WriteUInt32(data, character.Stats.Level);
+				PacketWriter.WriteUInt32(data, (UInt32)character.Stats.Level);
 				PacketWriter.WriteUInt32(data, (UInt32)(character.Location.Movement.MoveSpeed * 100)); //TODO: verify this cast...
 				PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.X);
 				PacketWriter.WriteUInt16(data, (UInt16)character.Location.Movement.Y);

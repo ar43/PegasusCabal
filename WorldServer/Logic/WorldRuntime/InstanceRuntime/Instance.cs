@@ -348,12 +348,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		internal bool OnUserSkillAttacksMob(Client attacker, List<MobTarget> defenders, int x, int y, int skillSlot)
 		{
 			bool combo = false;
-            if (defenders.Count == 0)
-            {
+			if (defenders.Count == 0)
+			{
 				Serilog.Log.Error("empty defenders");
 				return false;
-            }
-            var defenderInfo = defenders[0]; //TODO
+			}
+			var defenderInfo = defenders[0]; //TODO
 
 			Mob defender;
 			try
@@ -366,11 +366,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				return false;
 			}
 
-            if (defender == null)
-            {
+			if (defender == null)
+			{
 				Serilog.Log.Error("defender is null");
 				return false;
-            }
+			}
 
 			//todo, position check
 
@@ -380,51 +380,58 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 			int roll = _random.Next(100);
 
-			
-
 			var battleStats = attacker.Character.CalculateBattleStats();
 
 			var skillAttackRate = skill.CalculateAttackRate(battleStats.AttackRate);
 			var skillAttack = skill.CalculateAttack(battleStats.Attack, battleStats.SwordSkillAmp, battleStats.MagicAttack, battleStats.MagicSkillAmp);
 			var skillCriticalRate = skill.CalculateCritRate(battleStats.CriticalRate, battleStats.MaxCriticalRate);
+			var skillCriticalDamage = skill.CalculateCritDamage(battleStats.CriticalDamage);
 
 			var lvlDiffOrg = (int)(attacker.Character.Stats.Level - defender.Level);
-
-			skillAttackRate = (Int32)(skillAttackRate + 16 * lvlDiffOrg / 10);
-			if(skillAttackRate < 0)
-				skillAttackRate = 0;
-
-			var defenderDefenseRate = defender.GetDefenseRate();
-			int hitRate = 0;
-
-			if(skillAttackRate + defenderDefenseRate == 0)
-			{
-				hitRate = 0;
-			}
-			else
-			{
-				hitRate = BattleFormula.GetHR(skillAttackRate, defenderDefenseRate);
-			}
-
-			hitRate = BattleFormula.AdjustHR(hitRate, 30, 95 - defender.GetEvasion());
-			hitRate = (100 - skillCriticalRate) * hitRate / 100 + skillCriticalRate;
-			Serilog.Log.Debug($"calculated skillAttack: {skillAttack} hitRate: {hitRate} roll: {roll} final CR: {skillCriticalRate}");
 
 			int damage = 0;
 			AttackResult attackResult;
 
-
-			if (combo || roll < hitRate)
+			if (roll < skillCriticalRate)
 			{
-				damage = defender.CalculateNormalDamage(attacker.Character, skill, skillAttack);
-				attackResult = AttackResult.SR_NORMALAK;
+				Serilog.Log.Debug($"CRIT calculated skillAttack: {skillAttack} roll: {roll} final CR: {skillCriticalRate} finalCD: {skillCriticalDamage}");
+				damage = defender.CalculateCriticalDamage(attacker.Character, skill, skillAttack, skillCriticalDamage);
+				attackResult = AttackResult.SR_CRITICAL;
 			}
 			else
 			{
-				attackResult = AttackResult.SR_MISSINGS;
+				skillAttackRate = (Int32)(skillAttackRate + 16 * lvlDiffOrg / 10);
+				if(skillAttackRate < 0)
+					skillAttackRate = 0;
+
+				var defenderDefenseRate = defender.GetDefenseRate();
+				int hitRate = 0;
+
+				if(skillAttackRate + defenderDefenseRate == 0)
+				{
+					hitRate = 0;
+				}
+				else
+				{
+					hitRate = BattleFormula.GetHR(skillAttackRate, defenderDefenseRate);
+				}
+
+				hitRate = BattleFormula.AdjustHR(hitRate, 30, 95 - defender.GetEvasion());
+				hitRate = (100 - skillCriticalRate) * hitRate / 100 + skillCriticalRate;
+				Serilog.Log.Debug($"calculated skillAttack: {skillAttack} hitRate: {hitRate} roll: {roll} final CR: {skillCriticalRate}");
+
+				if (combo || roll < hitRate)
+				{
+					damage = defender.CalculateNormalDamage(attacker.Character, skill, skillAttack);
+					attackResult = AttackResult.SR_NORMALAK;
+				}
+				else
+				{
+					attackResult = AttackResult.SR_MISSINGS;
+				}
 			}
 
-			if(attackResult != AttackResult.SR_MISSINGS)
+			if (attackResult != AttackResult.SR_MISSINGS)
 			{
 				if (damage < 1)
 					damage = 1;

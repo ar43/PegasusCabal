@@ -188,9 +188,13 @@ namespace WorldServer.Logic.CharData.Items
 			return _itemInfo.AttckRate_Opt1;
 		}
 
-		internal Int32 GetCR()
+		internal Int32 GetOpt1()
 		{
-			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_RING);
+			return _itemInfo.AttckRate_Opt1;
+		}
+
+		internal Int32 GetOpt1Val()
+		{
 			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
 		}
 	}

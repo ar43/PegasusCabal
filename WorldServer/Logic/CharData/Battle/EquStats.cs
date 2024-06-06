@@ -15,6 +15,7 @@ namespace WorldServer.Logic.CharData.Battle
 		public int MagicSkillAmp = 0;
 		public int AttackRate = 0;
 		public int CriticalRate = 0;
+		public int CriticalDamage = 0;
 
 		public EquStats()
 		{
