@@ -34,6 +34,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		private Random _rng;
 		private MobPhase _phase;
 
+		private int evasion = 0;
+
 		private readonly int SPAWN_DELAY = 2000;
 
         public Mob(MobData data, MobSpawnData spawnData, Instance instance, UInt16 id, Random rng)
@@ -290,7 +292,17 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			}
 		}
 
-		public int TakeNormalDamage(Character attacker, Skill skill, int attack)
+		public int GetDefenseRate()
+		{
+			return _data.DefenseR;
+		}
+
+		public int GetEvasion()
+		{
+			return evasion;
+		}
+
+		public int CalculateNormalDamage(Character attacker, Skill skill, int attack)
 		{
 			int iLvDiffOrg = (Int32)(attacker.Stats.Level - Level);
 			int defence = GetDefense();
@@ -345,7 +357,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			}
 			*/
 
-			return iDamage;
+			return Math.Min(iDamage, HP);
 		}
 		
 		public void Update(DateTime currentTime)

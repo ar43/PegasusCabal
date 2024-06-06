@@ -1,4 +1,5 @@
 ﻿using Shared.Protos;
+using System.Diagnostics;
 using WorldServer.Enums;
 using WorldServer.Logic.WorldRuntime;
 
@@ -38,11 +39,13 @@ namespace WorldServer.Logic.CharData.Items
 
 		public int GetAttack()
 		{
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND);
 			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
 		}
 
 		public int GetMagicAttack()
 		{
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND);
 			return _itemInfo.Defense_LEVLmt_MagAttVal;
 		}
 
@@ -179,6 +182,16 @@ namespace WorldServer.Logic.CharData.Items
 
 		}
 
+		internal Int32 GetAttackRate()
+		{
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND);
+			return _itemInfo.AttckRate_Opt1;
+		}
 
+		internal Int32 GetCR()
+		{
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_RING);
+			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
+		}
 	}
 }

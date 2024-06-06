@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Utils;
+using System.ComponentModel;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.WorldRuntime;
@@ -61,12 +62,48 @@ namespace WorldServer.Logic.CharData.Skills
 			}
 		}
 
+		public int CalculateAttackRate(int attackRate)
+		{
+			return attackRate + (_skillInfoMain.ARatingCoef.CoefA * Level + _skillInfoMain.ARatingCoef.CoefB); 
+		}
+
 		public int CalculateAttack(int attack, int swordAmp, int magicAttack, int magicAmp)
 		{
 			return (((5 * 2 * _skillInfoMain.AttackCoef.CoefA + 5 * DeltaSwordAmp() + swordAmp) * attack) +
 					 ((5 * 2 * _skillInfoMain.AttackCoef.CoefB + 5 * DeltaMagicAmp() + magicAmp) * magicAttack) +
 					 (5 * 2 * _skillInfoMain.AttackCoef.CoefC * Level) +
 					 (5 * 2 * _skillInfoMain.AttackCoef.CoefD)) / (5 * 20);
+		}
+
+		private int GetBaseCriticalRate()
+		{
+			return _skillInfoMain.CriticalRateCoef.CoefA * Level + _skillInfoMain.CriticalRateCoef.CoefB;
+		}
+
+		private int GetBasCriticaleDamage()
+		{
+			return _skillInfoMain.CriticalMultiCoef.CoefA * Level + _skillInfoMain.CriticalMultiCoef.CoefB;
+		}
+
+		public int CalculateCritRate(int criticalRate, int maxCriticalRate)
+		{
+			switch(_skillInfoMain.Group)
+			{
+				case Enums.SkillGroup.SK_GROUP001:
+				case Enums.SkillGroup.SK_GROUP002:
+				case Enums.SkillGroup.SK_GROUP003:
+				case Enums.SkillGroup.SK_GROUP004:
+				case Enums.SkillGroup.SK_GROUP014:
+				{
+					criticalRate += GetBaseCriticalRate();
+					criticalRate = Math.Min(criticalRate, maxCriticalRate);
+					return criticalRate;
+				}
+				default:
+				{
+					return criticalRate;
+				}
+			}
 		}
 
         public static void LoadConfigs(WorldConfig worldConfig)

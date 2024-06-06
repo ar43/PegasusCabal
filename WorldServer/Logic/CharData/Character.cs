@@ -102,12 +102,25 @@ namespace WorldServer.Logic.CharData
 			magicAttack += Stats.CalculateValueFromCoef(Style.BattleStyle.StatMagAtt);
 			magicAttack += Style.CalculateValueFromCoef(Style.BattleStyle.MagAttCoef);
 
+			int attackRate = 0;
+			attackRate += equStats.AttackRate;
+			attackRate += Stats.CalculateValueFromCoef(Style.BattleStyle.StatAttckR);
+			attackRate += Style.CalculateValueFromCoef(Style.BattleStyle.AttckRCoef);
+
+			int maxCriticalRate = Stats.MAX_CRITICAL_RATE;
+
+			int criticalRate = 0;
+			criticalRate += Stats.BaseCR;
+			criticalRate += equStats.CriticalRate;
+			criticalRate = Math.Min(criticalRate, maxCriticalRate);
+
+
 			int swordSkillAmp = equStats.SwordSkillAmp;
 			int magicSkillAmp = equStats.MagicSkillAmp;
 
-			Serilog.Log.Debug($"CalculateBattleStats: {attack} {magicAttack}");
+			Serilog.Log.Debug($"CalculateBattleStats: attack: {attack} magic attack: {magicAttack} attack rate: {attackRate} critical rate: {criticalRate}");
 
-			return new BattleStats(attack, magicAttack, swordSkillAmp, magicSkillAmp);
+			return new BattleStats(attack, magicAttack, swordSkillAmp, magicSkillAmp, attackRate, criticalRate, maxCriticalRate);
 		}
 
 	}

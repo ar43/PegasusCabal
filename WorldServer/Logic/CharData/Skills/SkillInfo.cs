@@ -33,7 +33,7 @@ namespace WorldServer.Logic.CharData.Skills
 			Target = target;
 			Max_Target = max_Target;
 			Type = (SkillType)type;
-			Group = group;
+			Group = (SkillGroup)group;
 			Dur = dur;
 			BFX_Dur = bFX_Dur;
 			Value_Ref = value_Ref;
@@ -52,9 +52,9 @@ namespace WorldServer.Logic.CharData.Skills
 			HitFrame = hitFrame;
 			Move_Method = move_Method;
 			AttackCoef = attackCoef;
-			ARatingCoef = aRatingCoef;
-			CriticalRateCoef = criticalRateCoef;
-			CriticalMultiCoef = criticalMultiCoef;
+			ARatingCoef = new SkillCoef(aRatingCoef);
+			CriticalRateCoef = new SkillCoef(criticalRateCoef);
+			CriticalMultiCoef = new SkillCoef(criticalMultiCoef);
 			MpCoef = mpCoef;
 			MPWasteBModeCoef = mPWasteBModeCoef;
 			SPWasteVal = sPWasteVal;
@@ -71,7 +71,7 @@ namespace WorldServer.Logic.CharData.Skills
 		public int Target { get; private set; }
 		public int Max_Target { get; private set; }
 		public SkillType Type { get; private set; }
-		public int Group { get; private set; }
+		public SkillGroup Group { get; private set; }
 		public int[]? Dur { get; private set; }
 		public int BFX_Dur { get; private set; }
 		public int Value_Ref { get; private set; }
@@ -90,9 +90,9 @@ namespace WorldServer.Logic.CharData.Skills
 		public int HitFrame { get; private set; }
 		public int Move_Method { get; private set; }
 		public SkillCoef? AttackCoef { get; private set; }
-		public int[]? ARatingCoef { get; private set; }
-		public int[]? CriticalRateCoef { get; private set; }
-		public int[]? CriticalMultiCoef { get; private set; }
+		public SkillCoef? ARatingCoef { get; private set; }
+		public SkillCoef? CriticalRateCoef { get; private set; }
+		public SkillCoef? CriticalMultiCoef { get; private set; }
 		public int[]? MpCoef { get; private set; }
 		public int[]? MPWasteBModeCoef { get; private set; }
 		public int SPWasteVal { get; private set; }

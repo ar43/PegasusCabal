@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyModel.Resolution;
+using System;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.DbSyncData;
 using WorldServer.Logic.CharData.Styles.Coefs;
@@ -29,6 +30,9 @@ namespace WorldServer.Logic.CharData
 		public int Int { get; private set; }
 		public UInt32 Pnt { get; private set; }
 		public UInt32 Rank { get; private set; }
+
+		public readonly int BaseCR = 5;
+		public const int MAX_CRITICAL_RATE = 50;
 		public void Sync(DBSyncPriority prio)
 		{
 			if (SyncPending < prio)

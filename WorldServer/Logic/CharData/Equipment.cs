@@ -63,6 +63,15 @@ namespace WorldServer.Logic.CharData
 						{
 							stats.Attack += item.GetAttack();
 							stats.MagicAttack += item.GetMagicAttack();
+							stats.AttackRate += item.GetAttackRate();
+							break;
+						}
+						case EquipmentIndex.RING1:
+						case EquipmentIndex.RING2:
+						case EquipmentIndex.RING3:
+						case EquipmentIndex.RING4:
+						{
+							stats.CriticalRate += item.GetCR();
 							break;
 						}
 						default:
