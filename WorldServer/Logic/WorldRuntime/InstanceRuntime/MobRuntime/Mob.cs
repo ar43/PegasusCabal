@@ -23,6 +23,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
         public byte Level { get; private set; }
         public byte Nation { get; private set; }
         public bool IsSpawned { get; private set; } = false;
+		public bool IsDead { get; private set; } = false;
         public bool IsChasing { get; private set; } = false;
         private List<(int, int)>? _spawnSpots = null;
 		private DateTime _nextUpdateTime;
@@ -148,13 +149,14 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			_spawnPosY = (UInt16)newY;
 			_chasePosX = (UInt16)newX;
 			_chasePosY = (UInt16)newY;
-            _instance.AddMobToCell(this, (UInt16)Movement.CellX, (UInt16)Movement.CellY, true);
-
+			IsSpawned = true;
+			IsDead = false;
 			SetPhaseFind(currentTime, true);
 
 			Level = (Byte)(_data.LEV + _rng.Next(3));
             HP = GetMaxHP();
-			IsSpawned = true;
+
+			_instance.AddMobToCell(this, (UInt16)Movement.CellX, (UInt16)Movement.CellY, true);
 		}
 
 		private bool GenerateMovement()
@@ -365,8 +367,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			if (currentTime < _nextUpdateTime)
 				return;
 
-			if (!IsSpawned)
+			if(!IsSpawned && IsDead)
+			{
+				Serilog.Log.Debug($"Spawning mob {ObjectIndexData.ObjectId}");
+				Spawn(currentTime);
 				return;
+			}
+			else if (!IsSpawned)
+			{
+				throw new Exception("Not supposed to happen");
+			}
 
 			switch(_phase)
 			{
@@ -422,6 +432,22 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			//some war stuff missing
 
 			return Math.Min(iDamage, HP);
+		}
+
+		internal void TakeDamage(Int32 damage)
+		{
+			HP -= damage;
+		}
+
+		internal void DeathCheck()
+		{
+			if(HP <= 0)
+			{
+				IsSpawned = false;
+				IsDead = true;
+				_instance.RemoveMobFromCell(this, false);
+				SetNextUpdateTime(DateTime.UtcNow, _spawnData.SpwnInterval);
+			}
 		}
 	}
 }

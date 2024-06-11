@@ -76,9 +76,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			}
 		}
 
-		public void RemoveMobFromCell(Mob mob, bool notifyAround, DelObjectType type)
+		public void RemoveMobFromCell(Mob mob, bool notifyAround, DelObjectType type = DelObjectType.WARP)
 		{
-			_cells[mob.Movement.CellX, mob.Movement.CellY].LocalMobs.Add(mob);
+			_cells[mob.Movement.CellX, mob.Movement.CellY].LocalMobs.Remove(mob);
 			if (notifyAround)
 			{
 				//possibly optimize this... no need to broadcast to empty instance for example
@@ -372,9 +372,28 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				return false;
 			}
 
-			//todo, position check
+			if(defender.IsDead)
+			{
+				Serilog.Log.Warning("defender is dead");
+				return false;
+			}
 
-			var skill = attacker.Character.Skills.Get(skillSlot);
+			if(attacker.Character.Location.Movement.IsMoving)
+			{
+				Serilog.Log.Warning("attacker is moving");
+				return false;
+			}
+
+			if(CheckTileTown((UInt16)attacker.Character.Location.Movement.X, (UInt16)attacker.Character.Location.Movement.Y))
+			{
+				Serilog.Log.Warning("attacker is in town");
+				return false;
+			}
+
+			//todo, cooldown check 
+            //todo, position check
+
+            var skill = attacker.Character.Skills.Get(skillSlot);
 			if (skill == null)
 				return false;
 
@@ -448,6 +467,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			}
 
 			//TODO: defender.TakeDamage
+			defender.TakeDamage(damage);
 
 			var dmgResult = new MobDamageResult(defender.ObjectIndexData);
 			dmgResult.HasBFX = 1;
@@ -467,6 +487,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			var nfy = new NFY_SkillToMobs(skill.Id, 0, attacker.Character.Id, (UInt16)x, (UInt16)y, defender.ObjectIndexData, 0, 0, (UInt32)defender.HP, 0, 0, 0, 0, 0);
 
 			BroadcastNearby(defender, nfy);
+			defender.DeathCheck();
 			return true;
         }
 	}

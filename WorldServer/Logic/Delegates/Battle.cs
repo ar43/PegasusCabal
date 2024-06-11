@@ -31,7 +31,8 @@ namespace WorldServer.Logic.Delegates
 			}
 			else
 			{
-				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error in OnUserSkillAttacksMob");
+				//client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error in OnUserSkillAttacksMob");
+				Serilog.Log.Warning("Error in OnUserSkillAttacksMob");
 				return;
 			}
 		}
