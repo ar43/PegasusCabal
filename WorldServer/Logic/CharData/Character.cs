@@ -91,11 +91,11 @@ namespace WorldServer.Logic.CharData
 
 			int attack = 0;
 			attack += equStats.Attack; //attack from equipment
-			Serilog.Log.Debug($"attack1: {attack}");
+			//Serilog.Log.Debug($"attack1: {attack}");
 			attack += Stats.CalculateValueFromCoef(Style.BattleStyle.StatMaxAtt); //attack from stats
-			Serilog.Log.Debug($"attack2: {attack}");
+			//Serilog.Log.Debug($"attack2: {attack}");
 			attack += Style.CalculateValueFromCoef(Style.BattleStyle.AttackCoef); //attack from battle style level
-			Serilog.Log.Debug($"attack3: {attack}");
+			//Serilog.Log.Debug($"attack3: {attack}");
 
 			int magicAttack = 0;
 			magicAttack += equStats.MagicAttack;

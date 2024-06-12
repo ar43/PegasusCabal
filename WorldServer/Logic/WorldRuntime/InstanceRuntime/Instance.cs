@@ -353,12 +353,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				Serilog.Log.Error("empty defenders");
 				return false;
 			}
-			var defenderInfo = defenders[0]; //TODO
+			var defenderTargetInfo = defenders[0]; //TODO
 
-			Mob defender;
+			Mob defenderTarget;
 			try
 			{
-				defender = MobManager.GetMob(defenderInfo.Id.ObjectId);
+				defenderTarget = MobManager.GetMob(defenderTargetInfo.Id.ObjectId);
 			}
 			catch
 			{
@@ -366,13 +366,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				return false;
 			}
 
-			if (defender == null)
+			if (defenderTarget == null)
 			{
 				Serilog.Log.Error("defender is null");
 				return false;
 			}
 
-			if(defender.IsDead)
+			if(defenderTarget.IsDead)
 			{
 				Serilog.Log.Warning("defender is dead");
 				return false;
@@ -390,6 +390,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				return false;
 			}
 
+			if(defenders.Count > 255)
+			{
+				//hard cap, but there should be an even lower cap, TODO, also kick the client
+				Serilog.Log.Warning("abnormal mob list");
+				return false;
+			}
+
 			//todo, cooldown check 
             //todo, position check
 
@@ -397,97 +404,99 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			if (skill == null)
 				return false;
 
-			int roll = _random.Next(100);
-
 			var battleStats = attacker.Character.CalculateBattleStats();
-
 			var skillAttackRate = skill.CalculateAttackRate(battleStats.AttackRate);
 			var skillAttack = skill.CalculateAttack(battleStats.Attack, battleStats.SwordSkillAmp, battleStats.MagicAttack, battleStats.MagicSkillAmp);
 			var skillCriticalRate = skill.CalculateCritRate(battleStats.CriticalRate, battleStats.MaxCriticalRate);
 			var skillCriticalDamage = skill.CalculateCritDamage(battleStats.CriticalDamage);
+			var mobDmgReport = new List<MobDamageResult>();
 
-			var lvlDiffOrg = (int)(attacker.Character.Stats.Level - defender.Level);
-
-			int damage = 0;
-			AttackResult attackResult;
-
-			if (roll < skillCriticalRate)
+			foreach (var defenderInfo in defenders)
 			{
-				Serilog.Log.Debug($"CRIT calculated skillAttack: {skillAttack} roll: {roll} final CR: {skillCriticalRate} finalCD: {skillCriticalDamage}");
-				damage = defender.CalculateCriticalDamage(attacker.Character, skill, skillAttack, skillCriticalDamage);
-				attackResult = AttackResult.SR_CRITICAL;
-			}
-			else
-			{
-				skillAttackRate = (Int32)(skillAttackRate + 16 * lvlDiffOrg / 10);
-				if(skillAttackRate < 0)
-					skillAttackRate = 0;
+				var defender = MobManager.GetMob(defenderInfo.Id.ObjectId);
+				var lvlDiffOrg = (int)(attacker.Character.Stats.Level - defender.Level);
+				int roll = _random.Next(100);
 
-				var defenderDefenseRate = defender.GetDefenseRate();
-				int hitRate = 0;
+				int damage = 0;
+				AttackResult attackResult;
 
-				if(skillAttackRate + defenderDefenseRate == 0)
+				//TODO: check if defender is in range of defenderTarget / attacker
+
+				if (roll < skillCriticalRate)
 				{
-					hitRate = 0;
+					Serilog.Log.Debug($"CRIT calculated skillAttack: {skillAttack} roll: {roll} final CR: {skillCriticalRate} finalCD: {skillCriticalDamage}");
+					damage = defender.CalculateCriticalDamage(attacker.Character, skill, skillAttack, skillCriticalDamage);
+					attackResult = AttackResult.SR_CRITICAL;
 				}
 				else
 				{
-					hitRate = BattleFormula.GetHR(skillAttackRate, defenderDefenseRate);
+					skillAttackRate = (Int32)(skillAttackRate + 16 * lvlDiffOrg / 10);
+					if (skillAttackRate < 0)
+						skillAttackRate = 0;
+
+					var defenderDefenseRate = defender.GetDefenseRate();
+					int hitRate = 0;
+
+					if (skillAttackRate + defenderDefenseRate == 0)
+					{
+						hitRate = 0;
+					}
+					else
+					{
+						hitRate = BattleFormula.GetHR(skillAttackRate, defenderDefenseRate);
+					}
+
+					hitRate = BattleFormula.AdjustHR(hitRate, 30, 95 - defender.GetEvasion());
+					hitRate = (100 - skillCriticalRate) * hitRate / 100 + skillCriticalRate;
+					Serilog.Log.Debug($"calculated skillAttack: {skillAttack} hitRate: {hitRate} roll: {roll} final CR: {skillCriticalRate}");
+
+					if (combo || roll < hitRate)
+					{
+						damage = defender.CalculateNormalDamage(attacker.Character, skill, skillAttack);
+						attackResult = AttackResult.SR_NORMALAK;
+					}
+					else
+					{
+						attackResult = AttackResult.SR_MISSINGS;
+					}
 				}
 
-				hitRate = BattleFormula.AdjustHR(hitRate, 30, 95 - defender.GetEvasion());
-				hitRate = (100 - skillCriticalRate) * hitRate / 100 + skillCriticalRate;
-				Serilog.Log.Debug($"calculated skillAttack: {skillAttack} hitRate: {hitRate} roll: {roll} final CR: {skillCriticalRate}");
-
-				if (combo || roll < hitRate)
+				if (attackResult != AttackResult.SR_MISSINGS)
 				{
-					damage = defender.CalculateNormalDamage(attacker.Character, skill, skillAttack);
-					attackResult = AttackResult.SR_NORMALAK;
+					if (damage < 1)
+						damage = 1;
 				}
-				else
+
+				if (damage > 0)
 				{
-					attackResult = AttackResult.SR_MISSINGS;
+					//TODO: absorb
 				}
+
+				if (attackResult != AttackResult.SR_MISSINGS)
+				{
+					//TODO: exp
+				}
+
+				defender.TakeDamage(damage);
+
+				var dmgResult = new MobDamageResult(defender.ObjectIndexData);
+				dmgResult.HasBFX = 1;
+				dmgResult.DamageReceived = (UInt16)damage;
+				dmgResult.AttackResult = attackResult;
+				dmgResult.Type = defenderInfo.Type; //what is this TODO
+				dmgResult.HPLeft = (UInt32)defender.HP;
+				mobDmgReport.Add(dmgResult);
+
+				defender.DeathCheck();
 			}
-
-			if (attackResult != AttackResult.SR_MISSINGS)
-			{
-				if (damage < 1)
-					damage = 1;
-			}
-
-			if(damage > 0)
-			{
-				//TODO: absorb
-			}
-
-			if (attackResult != AttackResult.SR_MISSINGS)
-			{
-				//TODO: exp
-			}
-
-			//TODO: defender.TakeDamage
-			defender.TakeDamage(damage);
-
-			var dmgResult = new MobDamageResult(defender.ObjectIndexData);
-			dmgResult.HasBFX = 1;
-			dmgResult.DamageReceived = (UInt16)damage;
-			dmgResult.AttackResult = attackResult;
-			dmgResult.Type = defenderInfo.Type;
-			dmgResult.HPLeft = (UInt32)defender.HP;
-
-			var mobDmgReport = new List<MobDamageResult>{ dmgResult};
-
 
 			var rsp = new RSP_SkillToMobs(mobDmgReport, skill.Id, (UInt16)attacker.Character.Status.Hp, (UInt16)attacker.Character.Status.Mp,
 				(UInt16)attacker.Character.Status.Sp, attacker.Character.Stats.Exp, skill.GetSkillExp(), 0, 0, 0);
-
 			attacker.PacketManager.Send(rsp);
 
-			var nfy = new NFY_SkillToMobs(skill.Id, 0, attacker.Character.Id, (UInt16)x, (UInt16)y, defender.ObjectIndexData, 0, 0, (UInt32)defender.HP, 0, 0, 0, 0, 0);
+			var nfy = new NFY_SkillToMobs(mobDmgReport, skill.Id, attacker.Character.Id, (UInt16)x, (UInt16)y);
+			BroadcastNearby(attacker, nfy, false);
 
-			BroadcastNearby(defender, nfy);
-			defender.DeathCheck();
 			return true;
         }
 	}

@@ -1,5 +1,6 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
+using System.Diagnostics;
 using WorldServer.Enums;
 using WorldServer.Packets.S2C.PacketSpecificData;
 
@@ -20,6 +21,7 @@ namespace WorldServer.Packets.S2C
 
 		public RSP_SkillToMobs(List<MobDamageResult> mobs, UInt16 skillId, UInt16 hp, UInt16 mp, UInt16 sp, UInt64 newXP, UInt32 skillXP, UInt16 axp, UInt16 u1, UInt16 mp2) : base((UInt16)Opcode.CSC_SKILLTOMOBS)
 		{
+			Debug.Assert(mobs.Count > 0);
 			_mobs = mobs;
 			_skillId = skillId;
 			_hp = hp;
@@ -43,7 +45,11 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt16(data, _axp);
 			PacketWriter.WriteUInt16(data, u1);//?? TODO maybe also axp
 			PacketWriter.WriteUInt16(data, _mp2); //??
-			PacketWriter.WriteNull(data, 28); //??
+			PacketWriter.WriteNull(data, 24); //??
+			PacketWriter.WriteByte(data, 255); //??
+			PacketWriter.WriteByte(data, 255); //??
+			PacketWriter.WriteByte(data, 255); //??
+			PacketWriter.WriteByte(data, 255); //??
 			PacketWriter.WriteByte(data, (Byte)_mobs.Count);
 			for(int i = 0; i < (byte)_mobs.Count; i++)
 			{

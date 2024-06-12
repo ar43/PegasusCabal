@@ -120,7 +120,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
                 {
                     if (!_instance.CheckTerrainCollision((UInt16)(baseX + i), (UInt16)(baseY + j)) && !_instance.CheckTileTown((UInt16)(baseX + i), (UInt16)(baseY + j)))
                     {
-                        values.Add((baseX + i, baseY + j));
+						values.Add((baseX + i, baseY + j));
                     }
                 }
             }
@@ -208,8 +208,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 		private static int GetDistance(int x1, int y1, int x2, int y2)
 		{
-			int iDx = x2 - x1,
-									iDy = y2 - y1;
+			int iDx = x2 - x1, iDy = y2 - y1;
 
 
 			if (iDx < 0) iDx = -iDx;
