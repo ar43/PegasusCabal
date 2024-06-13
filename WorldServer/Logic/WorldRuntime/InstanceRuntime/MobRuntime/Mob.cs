@@ -98,6 +98,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
             return _data.HP;
         }
 
+		public int GetExp()
+		{
+			return _data.EXP;
+		}
+
 		public int GetDefense()
 		{
 			return _data.Defense;

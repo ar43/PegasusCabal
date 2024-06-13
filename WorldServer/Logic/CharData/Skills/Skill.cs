@@ -1,5 +1,6 @@
 ﻿using LibPegasus.Utils;
 using System.ComponentModel;
+using System.Diagnostics;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.WorldRuntime;
@@ -23,9 +24,13 @@ namespace WorldServer.Logic.CharData.Skills
         private static SkillInfo? SkillConfig = null;
         private readonly SkillInfoMain _skillInfoMain;
 
-		public uint GetSkillExp()
+		public int GetSkillExp(int id)
 		{
-			return (UInt32)_skillInfoMain.SkillExp1;
+			Debug.Assert(id == 1 || id == 2);
+			if(id == 1)
+				return _skillInfoMain.SkillExp1;
+			else
+				return _skillInfoMain.SkillExp2;
 		}
 
 		public bool IsSwordSkill()

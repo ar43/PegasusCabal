@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Packets;
 using LibPegasus.Parsers.Mcl;
 using LibPegasus.Utils;
+using System.Reflection.Metadata;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
@@ -411,14 +412,19 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			var skillCriticalDamage = skill.CalculateCritDamage(battleStats.CriticalDamage);
 			var mobDmgReport = new List<MobDamageResult>();
 
+			int totalExp = 0;
+			int skillExp = 0;
+
 			foreach (var defenderInfo in defenders)
 			{
 				var defender = MobManager.GetMob(defenderInfo.Id.ObjectId);
 				var lvlDiffOrg = (int)(attacker.Character.Stats.Level - defender.Level);
+				var lvlDiff = BattleFormula.GetLvlDiff(attacker.Character.Stats.Level, defender.Level);
 				int roll = _random.Next(100);
 
 				int damage = 0;
 				AttackResult attackResult;
+				int exp = 0;
 
 				//TODO: check if defender is in range of defenderTarget / attacker
 
@@ -474,8 +480,29 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 				if (attackResult != AttackResult.SR_MISSINGS)
 				{
+					int expModifier = attacker.Character.RestExpCheck();
 					//TODO: exp
+					if(defender.GetMaxHP() == 0)
+					{
+						exp = 0;
+						skillExp = 0;
+					}
+					else
+					{
+						exp = BattleFormula.GetEXP(damage, defender.GetMaxHP(), defender.GetExp(), lvlDiff, 1); //this is about 25% too much, TODO, also skillExp
+
+						if(attackResult == AttackResult.SR_CRITICAL)
+						{
+							skillExp = skill.GetSkillExp(2);
+						}
+						else
+						{
+							skillExp = skill.GetSkillExp(1);
+						}
+					}
 				}
+
+				exp = (400 - 600 / (1 + 1)) * exp / 100 / 1; //what is this? some kind of scrapped aoe diminishing returns for exp??
 
 				defender.TakeDamage(damage);
 
@@ -488,10 +515,17 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				mobDmgReport.Add(dmgResult);
 
 				defender.DeathCheck();
+				totalExp += exp;
 			}
 
+			//TODO: recalc totalExp for bonuses and blah blah
+			//also skill exp
+
+			attacker.Character.Stats.AddExp(totalExp);
+			//addSkillExp
+
 			var rsp = new RSP_SkillToMobs(mobDmgReport, skill.Id, (UInt16)attacker.Character.Status.Hp, (UInt16)attacker.Character.Status.Mp,
-				(UInt16)attacker.Character.Status.Sp, attacker.Character.Stats.Exp, skill.GetSkillExp(), 0, 0, 0);
+				(UInt16)attacker.Character.Status.Sp, attacker.Character.Stats.Exp, (UInt32)skillExp, 0, 0, 0);
 			attacker.PacketManager.Send(rsp);
 
 			var nfy = new NFY_SkillToMobs(mobDmgReport, skill.Id, attacker.Character.Id, (UInt16)x, (UInt16)y);

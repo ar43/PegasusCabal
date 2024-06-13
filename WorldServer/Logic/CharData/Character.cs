@@ -126,5 +126,10 @@ namespace WorldServer.Logic.CharData
 			return new BattleStats(attack, magicAttack, swordSkillAmp, magicSkillAmp, attackRate, criticalRate, maxCriticalRate, criticalDamage);
 		}
 
+		internal Int32 RestExpCheck()
+		{
+			//todo
+			return 1;
+		}
 	}
 }

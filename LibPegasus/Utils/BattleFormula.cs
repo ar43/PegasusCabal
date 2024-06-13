@@ -28,5 +28,15 @@ namespace LibPegasus.Utils
 				(var) = (mx);
 			return var;
 		}
+
+		public static int GetEXP(int iDmg, int iHpMax, int iMobEXP, int LvDiff, int ExpM )
+		{
+			return (int)((((iDmg) * (1000 - (LvDiff)) / (iHpMax)) * (iMobEXP) / 1000)) * ExpM;
+		}
+
+		public static int GetLvlDiff(int AttackerLEV, int DefenderLEV)
+		{
+			return (int)(((AttackerLEV) - (DefenderLEV)) * ((AttackerLEV) + 30) * 1000 / (22 * (AttackerLEV) + 102));
+		}
 	}
 }

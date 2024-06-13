@@ -19,6 +19,7 @@ namespace WorldServer.Logic.CharData
 			Rank = rank;
 			Axp = 0;
 			SyncPending = DBSyncPriority.NONE;
+			ForceDebugStats();
 		}
 
 		public DBSyncPriority SyncPending { get; private set; }
@@ -51,6 +52,16 @@ namespace WorldServer.Logic.CharData
 		public int CalculateValueFromCoef(StatCoef coef)
 		{
 			return ((coef.STR * Str) + (coef.DEX * Dex) + (coef.INT * Int)) / 10000;
+		}
+
+		private void ForceDebugStats()
+		{
+			Exp = 0;
+		}
+
+		public void AddExp(int exp)
+		{
+			Exp += (UInt32)exp;
 		}
 	}
 }
