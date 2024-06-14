@@ -35,6 +35,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		private Random _rng;
 		private MobPhase _phase;
 
+		public AggroTable AggroTable { get; private set; }
+		public Client? LastAttacker { get; private set; }
+		public Client? CurrentDefender { get; private set; }
+		public bool IsAttacked { get; private set; }
+
+
 		private int evasion = 0;
 
 		private readonly int SPAWN_DELAY = 2000;
@@ -51,6 +57,10 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			_nextUpdateTime = DateTime.MinValue;
 			_rng = rng;
 			_phase = MobPhase.INVALID;
+			AggroTable = new AggroTable();
+			LastAttacker = null;
+			CurrentDefender = null;
+			IsAttacked = false;
 		}
 
 		private void SetNextUpdateTime(DateTime currentTime, int ms)
@@ -132,6 +142,20 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
             return values;
         }
 
+		public void SetAttacker(Client? client)
+		{
+			if(client == null)
+			{
+				LastAttacker = null;
+				IsAttacked = false;
+			}
+			else
+			{
+				LastAttacker = client;
+				IsAttacked = true;
+			}
+		}
+
 
         public void Spawn(DateTime currentTime)
         {
@@ -157,6 +181,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			IsSpawned = true;
 			IsDead = false;
 			SetPhaseFind(currentTime, true);
+			AggroTable.Reset();
+			SetAttacker(null);
+			CurrentDefender = null;
 
 			Level = (Byte)(_data.LEV + _rng.Next(3));
             HP = GetMaxHP();

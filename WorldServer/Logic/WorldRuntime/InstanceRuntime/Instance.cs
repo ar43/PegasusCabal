@@ -505,6 +505,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				exp = (400 - 600 / (1 + 1)) * exp / 100 / 1; //what is this? some kind of scrapped aoe diminishing returns for exp??
 
 				defender.TakeDamage(damage);
+				defender.AggroTable.Add(damage, attacker, defender.CurrentDefender);
+				defender.SetAttacker(attacker);
+				
 
 				var dmgResult = new MobDamageResult(defender.ObjectIndexData);
 				dmgResult.HasBFX = 1;
