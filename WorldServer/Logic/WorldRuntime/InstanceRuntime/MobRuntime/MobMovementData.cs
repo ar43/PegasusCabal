@@ -34,7 +34,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		public int LastDeadReckoning;
 		public int CurrentWaypoint { get; private set; } // thinking
 
-		public float MoveSpeed { get; private set; }
+		public float MoveSpeed { get; set; }
 
 		public MobMovementData(UInt16 startX, UInt16 startY, float moveSpeed)
 		{
@@ -164,7 +164,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			if (cellDx > 1 || cellDy > 1 || cellDx < -1 || cellDy < -1)
 			{
-				Serilog.Log.Warning($"Movement begin: TileDiff problem {cellDx} {cellDy}");
+				Serilog.Log.Warning($"Mob Movement begin: TileDiff problem {cellDx} {cellDy}");
 				return false;
 			}
 
@@ -355,6 +355,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			Y = y;
 			EndX = x;
 			EndY = y;
+		}
+
+		public void ForceEndMovement()
+		{
+			StartX = X;
+			StartY = Y;
+			EndX = X;
+			EndY = Y;
+
+			StopDeadReckoning();
 		}
 
 		public bool End(UInt16 x, UInt16 y)

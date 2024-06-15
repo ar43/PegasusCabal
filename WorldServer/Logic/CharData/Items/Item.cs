@@ -39,13 +39,13 @@ namespace WorldServer.Logic.CharData.Items
 
 		public int GetAttack()
 		{
-			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND);
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND || _itemInfo.TypeId == ItemType.IDT_MWPN);
 			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
 		}
 
 		public int GetMagicAttack()
 		{
-			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND);
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND || _itemInfo.TypeId == ItemType.IDT_MWPN);
 			return _itemInfo.Defense_LEVLmt_MagAttVal;
 		}
 
@@ -184,7 +184,7 @@ namespace WorldServer.Logic.CharData.Items
 
 		internal Int32 GetAttackRate()
 		{
-			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND);
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND || _itemInfo.TypeId == ItemType.IDT_MWPN);
 			return _itemInfo.AttckRate_Opt1;
 		}
 

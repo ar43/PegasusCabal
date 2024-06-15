@@ -14,13 +14,14 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 {
     internal class Instance
 	{
-		public Instance(UInt16 mapId, InstanceType type, MapData mapData)
+		public Instance(UInt16 mapId, InstanceDuration durationType, MapData mapData, InstanceType type)
 		{
 			MapId = (MapId)mapId;
 			_cells = new Cell[NUM_CELL_X, NUM_CELL_Y];
 			MapData = mapData;
-			Type = type;
+			DurationType = durationType;
 			NumClients = 0;
+			Type = type;
 
 			for (int i = 0; i < _cells.GetLength(0); i++)
 			{
@@ -30,7 +31,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				}
 			}
 
-			if (type == InstanceType.PERMANENT)
+			if (durationType == InstanceDuration.PERMANENT)
 			{
 				Id = (UInt64)MapId;
 			}
@@ -42,7 +43,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			_random = new Random(Guid.NewGuid().GetHashCode()+(int)Id);
 		}
 
-		public Instance(MapId mapId, InstanceType type, MapData mapData) : this((UInt16)mapId, type, mapData) { }
+		public Instance(MapId mapId, InstanceDuration durationType, MapData mapData, InstanceType type) : this((UInt16)mapId, durationType, mapData, type) { }
 
 		private readonly Cell[,] _cells;
 		public readonly MapData MapData;
@@ -52,6 +53,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		public TileAttributeData? TileAttributeData { get; set; }
 		public UInt64 Id { get; }
 		public MapId MapId { get; }
+		public InstanceDuration DurationType { get; }
 		public InstanceType Type { get; }
 
 		private static UInt64 InstanceIdGenerator = 1000;
@@ -97,7 +99,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			{
 				for (int j = 0; j < 16; j++)
 				{
-					if (!CheckTerrainCollision((UInt16)(baseX + i), (UInt16)(baseY + j)))
+					if (!CheckTileUnmovable((UInt16)(baseX + i), (UInt16)(baseY + j)))
 					{
 						if (!mustBeTown || CheckTileTown((UInt16)(baseX + i), (UInt16)(baseY + j)))
 							values.Add((baseX + i, baseY + j));
@@ -126,17 +128,23 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 			throw new Exception("not expected");
 		}
-		public bool CheckTerrainCollision(UInt16 x, UInt16 y)
+		public bool CheckTileUnmovable(UInt16 x, UInt16 y)
 		{
 			if (x > 255 || y > 255)
 				return true;
-			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.WALL);
+			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.MOVE_DISABLE);
+		}
+		public bool CheckTileOverAttack(UInt16 x, UInt16 y)
+		{
+			if (x > 255 || y > 255)
+				return true;
+			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.OVER_ATTACK);
 		}
 		public bool CheckTileTown(UInt16 x, UInt16 y)
 		{
 			if (x > 255 || y > 255)
 				return false;
-			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.TOWN);
+			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.TOWN_AREA);
 		}
 		public void MoveMob(Mob mob, UInt16 newCellX, UInt16 newCellY)
 		{

@@ -29,10 +29,10 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			_tileAttributes = new Dictionary<int, TileAttributeData>();
 			_random = new Random();
 
-			AddInstance(MapId.BLOODY_ICE, InstanceType.PERMANENT);
-			AddInstance(MapId.GREEN_DESPAIR, InstanceType.PERMANENT);
-			AddInstance(MapId.DESERT_SCREAM, InstanceType.PERMANENT);
-			AddInstance(MapId.WARP_CENTER, InstanceType.PERMANENT);
+			AddInstance(MapId.BLOODY_ICE, InstanceDuration.PERMANENT, InstanceType.FIELD);
+			AddInstance(MapId.GREEN_DESPAIR, InstanceDuration.PERMANENT, InstanceType.FIELD);
+			AddInstance(MapId.DESERT_SCREAM, InstanceDuration.PERMANENT, InstanceType.FIELD);
+			AddInstance(MapId.WARP_CENTER, InstanceDuration.PERMANENT, InstanceType.FIELD);
 		}
 
 		private void WarpClient(Client client, Instance newInstance, UInt32 warpType, int newX, int newY)
@@ -107,7 +107,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			//TODO: Nation checking
 			if (_instances.TryGetValue((UInt64)warp.WorldIdx, out var newInstance))
 			{
-				if (newInstance.Type != InstanceType.PERMANENT)
+				if (newInstance.DurationType != InstanceDuration.PERMANENT)
 					return false;
 				WarpClient(client, newInstance, 8, warp.PosXPnt, warp.PosYPnt);
 				return true;
@@ -116,9 +116,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			return false;
 		}
 
-		public void AddInstance(MapId mapId, InstanceType instanceType)
+		public void AddInstance(MapId mapId, InstanceDuration instanceDuration, InstanceType instanceType)
 		{
-			Instance instance = new(mapId, instanceType, _mapDataManager.Get((Int32)mapId));
+			Instance instance = new(mapId, instanceDuration, _mapDataManager.Get((Int32)mapId), instanceType);
 
 			if (_instances.ContainsKey(instance.Id))
 			{

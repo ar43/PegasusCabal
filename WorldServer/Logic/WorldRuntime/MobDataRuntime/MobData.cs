@@ -1,9 +1,11 @@
-﻿using WorldServer.Enums.Mob;
+﻿using WorldServer.Enums;
+using WorldServer.Enums.Mob;
 
 namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 {
 	internal class MobData
 	{
+		private const int FINDCNT4MOVELESS = 100000000;
 		public MobData(Int32 id, Single moveSpeed, Single chasSpeed, Int32 property, MobPattern attkPattern, MobAggressive aggressive, String cooperate, String escape, MobAttack attack, Int32 scale, Int32 findCount, Int32 findInterval, Int32 moveInterval, Int32 chasInterval, Int32 alertRange, Int32 limt0Range, Int32 limt1Range, Int32 lEV, Int32 eXP, Int32 hP, Int32 defense, Int32 attacksR, Int32 defenseR, Int32 hPRechagR, Int32 interval1, Int32 phyAttMin1, Int32 phyAttMax1, Int32 reach1, Int32 range1, Int32 group1, Int32 stance1, Int32 interval2, Int32 phyAttMin2, Int32 phyAttMax2, Int32 reach2, Int32 range2, Int32 group2, Int32 stance2, Int32 boss, Int32 atkSignal, float radius, Int32 canatk)
 		{
 			Id = id;
@@ -48,6 +50,11 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 			AtkSignal = atkSignal;
 			Radius = radius;
 			Canatk = canatk;
+
+			IsMoveless = findCount >= FINDCNT4MOVELESS;
+
+			DefaultSkill = new MobSkill(true, Interval1, PhyAttMin1, PhyAttMax1, Reach1, Range1, (SkillGroup)Group1, Stance1, Scale);
+			SpecialSkill = new MobSkill(false, Interval2, PhyAttMin2, PhyAttMax2, Reach2, Range2, (SkillGroup)Group2, Stance2, Scale);
 		}
 
 		public int Id { get; private set; }
@@ -92,5 +99,8 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 		public int AtkSignal { get; private set; }
 		public float Radius { get; private set; }
 		public int Canatk { get; private set; }
+		public MobSkill DefaultSkill { get; private set; }
+		public MobSkill SpecialSkill { get; private set; }
+		public bool IsMoveless { get; private set; }
 	}
 }

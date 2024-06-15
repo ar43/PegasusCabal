@@ -288,7 +288,7 @@ namespace WorldServer.Logic.CharData
 		{
 			if (isGm)
 				return false;
-			int tolerance = 2;
+			int tolerance = 3;
 			int drAdx = Math.Abs(x - X);
 			int drAxy = Math.Abs(y - Y);
 			if (drAdx + drAxy > tolerance)

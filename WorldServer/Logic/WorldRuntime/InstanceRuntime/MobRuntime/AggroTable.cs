@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,6 +47,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				}
 				else
 				{
+					Debug.Assert(currentDefender != null);
 					MaxAggroChar = currentDefender;
 				}
 				MaxAggro = SecondAggro;

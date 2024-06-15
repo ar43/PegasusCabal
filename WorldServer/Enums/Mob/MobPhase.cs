@@ -10,6 +10,8 @@ namespace WorldServer.Enums.Mob
 	{
 		INVALID = 0,
 		MOVE,
-		FIND
+		FIND,
+		BATTLE,
+		CHASE
 	}
 }
