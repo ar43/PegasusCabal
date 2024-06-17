@@ -8,7 +8,7 @@ namespace WorldServer.Packets.S2C
 {
 	internal class RSP_SkillToMobs : PacketS2C
 	{
-		List<MobDamageResult> _mobs;
+		List<DamageToMobResult> _mobs;
 		private ushort _skillId;
 		private ushort _hp;
 		private ushort _mp;
@@ -19,7 +19,7 @@ namespace WorldServer.Packets.S2C
 		private ushort u1;
 		private ushort _mp2;
 
-		public RSP_SkillToMobs(List<MobDamageResult> mobs, UInt16 skillId, UInt16 hp, UInt16 mp, UInt16 sp, UInt64 newXP, UInt32 skillXP, UInt16 axp, UInt16 u1, UInt16 mp2) : base((UInt16)Opcode.CSC_SKILLTOMOBS)
+		public RSP_SkillToMobs(List<DamageToMobResult> mobs, UInt16 skillId, UInt16 hp, UInt16 mp, UInt16 sp, UInt64 newXP, UInt32 skillXP, UInt16 axp, UInt16 u1, UInt16 mp2) : base((UInt16)Opcode.CSC_SKILLTOMOBS)
 		{
 			Debug.Assert(mobs.Count > 0);
 			_mobs = mobs;

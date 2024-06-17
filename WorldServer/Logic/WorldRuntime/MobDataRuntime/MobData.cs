@@ -81,20 +81,20 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 		public int AttacksR { get; private set; }
 		public int DefenseR { get; private set; }
 		public int HPRechagR { get; private set; }
-		public int Interval1 { get; private set; }
-		public int PhyAttMin1 { get; private set; }
-		public int PhyAttMax1 { get; private set; }
-		public int Reach1 { get; private set; }
-		public int Range1 { get; private set; }
-		public int Group1 { get; private set; }
-		public int Stance1 { get; private set; }
-		public int Interval2 { get; private set; }
-		public int PhyAttMin2 { get; private set; }
-		public int PhyAttMax2 { get; private set; }
-		public int Reach2 { get; private set; }
-		public int Range2 { get; private set; }
-		public int Group2 { get; private set; }
-		public int Stance2 { get; private set; }
+		private int Interval1 { get; set; }
+		private int PhyAttMin1 { get; set; }
+		private int PhyAttMax1 { get; set; }
+		private int Reach1 { get; set; }
+		private int Range1 { get; set; }
+		private int Group1 { get; set; }
+		private int Stance1 { get; set; }
+		private int Interval2 { get; set; }
+		private int PhyAttMin2 { get; set; }
+		private int PhyAttMax2 { get; set; }
+		private int Reach2 { get; set; }
+		private int Range2 { get; set; }
+		private int Group2 { get; set; }
+		private int Stance2 { get; set; }
 		public int Boss { get; private set; }
 		public int AtkSignal { get; private set; }
 		public float Radius { get; private set; }

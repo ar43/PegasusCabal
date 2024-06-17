@@ -18,7 +18,7 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 				float ChasSpeed = Convert.ToSingle(entry.Value["ChasSpeed"], CultureInfo.InvariantCulture);
 				int Property = Convert.ToInt32(entry.Value["Property"]);
 				if (!Enum.TryParse(entry.Value["AttkPattern"].Substring(1), out MobPattern AttkPattern))
-					AttkPattern = MobPattern.PATERN_NULL;
+					AttkPattern = MobPattern.PATTERN_NULL;
 				if (!Enum.TryParse(entry.Value["Aggressive"].Substring(1), out MobAggressive Aggressive))
 					throw new Exception("undefined Aggressive");
 				string Cooperate = new(entry.Value["Cooperate"]);

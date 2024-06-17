@@ -1,6 +1,6 @@
 ﻿namespace WorldServer.Enums
 {
-	internal enum ObjectType
+	internal enum ObjectType : byte
 	{
 		USER = 1,
 		MOB,

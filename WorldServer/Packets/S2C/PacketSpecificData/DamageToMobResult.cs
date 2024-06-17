@@ -8,7 +8,7 @@ using WorldServer.Logic.SharedData;
 
 namespace WorldServer.Packets.S2C.PacketSpecificData
 {
-	internal struct MobDamageResult
+	internal struct DamageToMobResult
 	{
 		public ObjectIndexData ID;
 		public byte Type;
@@ -20,7 +20,7 @@ namespace WorldServer.Packets.S2C.PacketSpecificData
 		public byte u11 = 0;
 		public byte HasBFX;
 
-		public MobDamageResult(ObjectIndexData id)
+		public DamageToMobResult(ObjectIndexData id)
 		{
 			ID = id;
 		}

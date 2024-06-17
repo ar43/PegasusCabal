@@ -140,6 +140,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				return true;
 			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.OVER_ATTACK);
 		}
+		public bool CheckTileMobsLayer(UInt16 x, UInt16 y)
+		{
+			if (x > 255 || y > 255)
+				return false;
+			return TileAttributeData.IsTileNormal(x, y);
+		}
 		public bool CheckTileTown(UInt16 x, UInt16 y)
 		{
 			if (x > 255 || y > 255)
@@ -418,7 +424,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			var skillAttack = skill.CalculateAttack(battleStats.Attack, battleStats.SwordSkillAmp, battleStats.MagicAttack, battleStats.MagicSkillAmp);
 			var skillCriticalRate = skill.CalculateCritRate(battleStats.CriticalRate, battleStats.MaxCriticalRate);
 			var skillCriticalDamage = skill.CalculateCritDamage(battleStats.CriticalDamage);
-			var mobDmgReport = new List<MobDamageResult>();
+			var mobDmgReport = new List<DamageToMobResult>();
 
 			int totalExp = 0;
 			int skillExp = 0;
@@ -439,7 +445,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				if (roll < skillCriticalRate)
 				{
 					Serilog.Log.Debug($"CRIT calculated skillAttack: {skillAttack} roll: {roll} final CR: {skillCriticalRate} finalCD: {skillCriticalDamage}");
-					damage = defender.CalculateCriticalDamage(attacker.Character, skill, skillAttack, skillCriticalDamage);
+					damage = defender.CalculateCriticalDamageTaken(attacker.Character, skill, skillAttack, skillCriticalDamage);
 					attackResult = AttackResult.SR_CRITICAL;
 				}
 				else
@@ -466,7 +472,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 					if (combo || roll < hitRate)
 					{
-						damage = defender.CalculateNormalDamage(attacker.Character, skill, skillAttack);
+						damage = defender.CalculateNormalDamageTaken(attacker.Character, skill, skillAttack);
 						attackResult = AttackResult.SR_NORMALAK;
 					}
 					else
@@ -517,7 +523,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				defender.SetAttacker(attacker);
 				
 
-				var dmgResult = new MobDamageResult(defender.ObjectIndexData);
+				var dmgResult = new DamageToMobResult(defender.ObjectIndexData);
 				dmgResult.HasBFX = 1;
 				dmgResult.DamageReceived = (UInt16)damage;
 				dmgResult.AttackResult = attackResult;

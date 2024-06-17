@@ -25,6 +25,11 @@ namespace LibPegasus.Parsers.Mcl
 			}
 		}
 
+		public bool IsTileNormal(int x, int y)
+		{
+			return GetTileAttribute(x, y) == 0; //TEMP
+		}
+
 		public void SetTileAttribute(int index, UInt32 data)
 		{
 			_attrData[index] = data;

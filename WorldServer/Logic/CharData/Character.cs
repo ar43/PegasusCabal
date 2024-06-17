@@ -131,5 +131,25 @@ namespace WorldServer.Logic.CharData
 			//todo
 			return 1;
 		}
+
+		private void OnDeath()
+		{
+			throw new NotImplementedException();
+		}
+
+		internal TakeDamageResult TakeDamage(int damage)
+		{
+			var result = TakeDamageResult.MISSED;
+			if (damage <= 0)
+				return result;
+			result = TakeDamageResult.DAMAGED;
+			Status.TakeHp(damage);
+			if(Status.Hp == 0)
+			{
+				OnDeath();
+				result = TakeDamageResult.DEAD;
+			}
+			return result;
+		}
 	}
 }

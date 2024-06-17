@@ -11,9 +11,9 @@ namespace WorldServer.Packets.S2C
 		UInt16 _skillId;
 		int _characterId;
 		UInt16 _x, _y;
-		List<MobDamageResult> _result;
+		List<DamageToMobResult> _result;
 
-		public NFY_SkillToMobs(List<MobDamageResult> mobs, UInt16 skillId, Int32 characterId, UInt16 x, UInt16 y) : base((UInt16)Opcode.NFY_SKILLTOMOBS)
+		public NFY_SkillToMobs(List<DamageToMobResult> mobs, UInt16 skillId, Int32 characterId, UInt16 x, UInt16 y) : base((UInt16)Opcode.NFY_SKILLTOMOBS)
 		{
 			_skillId = skillId;
 			_result = mobs;

@@ -31,7 +31,7 @@ namespace WorldServer.Packets.S2C
 				PacketWriter.WriteInt32(data, mob.GetMaxHP());
 				PacketWriter.WriteInt32(data, mob.HP);
 				PacketWriter.WriteBool(data, mob.IsChasing);
-				PacketWriter.WriteByte(data, mob.Level);
+				PacketWriter.WriteByte(data, (Byte)mob.Level);
 				PacketWriter.WriteByte(data, mob.Nation);
 				PacketWriter.WriteInt32(data, 0); //unknown
 				PacketWriter.WriteInt16(data, 0); //unknown

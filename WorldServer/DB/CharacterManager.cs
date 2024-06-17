@@ -278,7 +278,7 @@ namespace WorldServer.DB
 							cQuickSlotBar,
 							new Location((UInt16)reader.GetInt32(x), (UInt16)reader.GetInt32(y)),
 							new Stats((int)reader.GetInt32(level), (UInt32)reader.GetInt32(exp), (int)reader.GetInt32(str), (int)reader.GetInt32(dex), (int)reader.GetInt32(INT), (UInt32)reader.GetInt32(pnt), (UInt32)reader.GetInt32(rank)),
-							new Status((UInt32)reader.GetInt32(hp), (UInt32)reader.GetInt32(maxHp), (UInt32)reader.GetInt32(mp), (UInt32)reader.GetInt32(maxMp), (UInt32)reader.GetInt32(sp), (UInt32)reader.GetInt32(maxSp)),
+							new Status(reader.GetInt32(hp), reader.GetInt32(maxHp), reader.GetInt32(mp), reader.GetInt32(maxMp), reader.GetInt32(sp), reader.GetInt32(maxSp)),
 							reader.GetInt32(idLabel),
 							reader.GetInt32(nationData)
 						);

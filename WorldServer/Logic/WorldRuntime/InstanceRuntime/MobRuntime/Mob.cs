@@ -10,6 +10,7 @@ using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 using WorldServer.Packets.S2C;
+using WorldServer.Packets.S2C.PacketSpecificData;
 
 namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 {
@@ -21,7 +22,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		public ObjectIndexData ObjectIndexData { get; private set; }
 		public MobMovementData Movement { get; private set; }
 		public int HP { get; private set; } //temp, will be replaced by some Status class
-		public byte Level { get; private set; }
+		public int Level { get; private set; }
 		public byte Nation { get; private set; }
 		public bool IsSpawned { get; private set; } = false;
 		public bool IsDead { get; private set; } = false;
@@ -50,6 +51,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		private int evasion = 0;
 
 		private readonly int SPAWN_DELAY = 2000;
+
+		private int HP30Breakpoint;
+		private int HP50Breakpoint;
 
 		public Mob(MobData data, MobSpawnData spawnData, Instance instance, UInt16 id, Random rng)
 		{
@@ -211,6 +215,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			SetPhaseFind(currentTime, true);
 			UnselectTarget();
 			SetAttacker(null);
+
+			HP30Breakpoint = GetMaxHP() * 3 / 10;
+			HP50Breakpoint = GetMaxHP() * 5 / 10;
 
 			Level = (Byte)(_data.LEV + _rng.Next(3));
 			HP = GetMaxHP();
@@ -377,6 +384,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			var attackerMovement = LastAttacker.Character.Location.Movement;
 
+			if (!_instance.CheckTileMobsLayer((UInt16)attackerMovement.X, (UInt16)attackerMovement.Y))
+			{
+				return;
+			}
+
 			var distance = GetDistance(Movement.X, Movement.Y, attackerMovement.X, attackerMovement.Y);
 
 			if (distance < MAX_REACTION_RANGE)
@@ -515,6 +527,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			var attackerMovement = LastAttacker.Character.Location.Movement;
 
+			if (!_instance.CheckTileMobsLayer((UInt16)attackerMovement.X, (UInt16)attackerMovement.Y))
+			{
+				return;
+			}
+
 			var distance = GetDistance(Movement.X, Movement.Y, attackerMovement.X, attackerMovement.Y);
 
 			if (distance <= MAX_REACTION_RANGE)
@@ -642,10 +659,286 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			Debug.Assert(Movement.Y == Movement.StartY);
 		}
 
+		private void BattleAttacked(DateTime currentTime)
+		{
+			NextBattlePhaseBySkill(currentTime);
+
+			Debug.Assert(IsChasing && CurrentDefender != null);
+
+			IsAttacked = false;
+
+			CurrentDefender = AggroTable.MaxAggroChar;
+
+			Debug.Assert(CurrentDefender != null);
+
+			if (OpponentInvalid(CurrentDefender, currentTime))
+				return;
+
+			var defenderMovement = CurrentDefender.Character.Location.Movement;
+
+			if (CurrentDefender.Character.Status.IsDead || !_instance.CheckTileMobsLayer((UInt16)defenderMovement.X, (UInt16)defenderMovement.Y))
+			{
+				_chasePosX = Movement.X;
+				_chasePosY = Movement.Y;
+				UnselectTarget();
+				SetPhaseFind(currentTime);
+				return;
+			}
+
+			var distance = GetDistance(Movement.X, Movement.Y, defenderMovement.X, defenderMovement.Y);
+
+			if (distance > _data.AlertRange + AddedAlertRange)
+			{
+				_chasePosX = Movement.X;
+				_chasePosY = Movement.Y;
+				UnselectTarget();
+				SetPhaseFind(currentTime);
+				return;
+			}
+			else
+			{
+				switch(_data.AttkPattern)
+				{
+					case MobPattern.PATTERN1:
+					{
+						if(distance > CurrentSkill.ValidDist)
+						{
+							SetPhaseChase(currentTime);
+							return;
+						}
+						else if(HP <= HP30Breakpoint)
+						{
+							CurrentSkill = _data.SpecialSkill;
+							HP30Breakpoint = 0;
+						}
+						break;
+					}
+					case MobPattern.PATTERN2:
+					{
+						Debug.Assert(CurrentSkill == _data.DefaultSkill);
+						if(LastAttacker != null && LastAttacker != CurrentDefender)
+						{
+							//TODO
+							throw new NotImplementedException("mob pattern 2");
+						}
+						break;
+					}
+					case MobPattern.PATTERN3:
+					{
+						Debug.Assert(_data.DefaultSkill.Reach >= _data.SpecialSkill.Reach);
+
+						if (distance > CurrentSkill.ValidDist)
+						{
+							CurrentSkill = _data.DefaultSkill;
+							if (distance > _data.DefaultSkill.Reach)
+							{
+								SetPhaseChase(currentTime);
+								return;
+							}
+						}
+						else if (_data.SpecialSkill.Reach > distance)
+						{
+							CurrentSkill = _data.SpecialSkill;
+						}
+						break;
+					}
+					case MobPattern.PATTERN4:
+					{
+						SetRandomSkill();
+
+						if (distance > CurrentSkill.ValidDist)
+						{
+							SetPhaseChase(currentTime);
+							return;
+						}
+						break;
+					}
+					default:
+					{
+						if(distance > CurrentSkill.ValidDist)
+						{
+							SetPhaseChase(currentTime);
+							return;
+						}
+						break;
+					}
+				}
+			}
+
+			Debug.Assert(CurrentSkill.SkillGroup == Enums.SkillGroup.SK_GROUP___);
+
+			MobAttackG001(CurrentDefender, CurrentSkill, currentTime);
+		}
+
+		private bool OpponentInvalid(Client opponent, DateTime currentTime)
+		{
+			if (opponent == null || opponent.Dropped || opponent.Character.Location.Instance == null || opponent.Character.Location.Instance.Id != _instance.Id)
+			{
+				if (!Movement.IsMoving)
+				{
+					_chasePosX = Movement.X;
+					_chasePosY = Movement.Y;
+				}
+				UnselectTarget();
+				if (!Movement.IsMoving)
+				{
+					SetPhaseFind(currentTime);
+				}
+				return true;
+			}
+			return false;
+		}
+
+		private void SetRandomSkill()
+		{
+			var val = _rng.Next(10);
+
+			if(val > 5)
+			{
+				CurrentSkill = _data.DefaultSkill;
+			}
+			else
+			{
+				CurrentSkill = _data.SpecialSkill;
+			}
+		}
+
+		private void BattleNeutral(DateTime currentTime) 
+		{
+			NextBattlePhaseBySkill(currentTime);
+
+			Debug.Assert(IsChasing);
+			Debug.Assert(CurrentDefender != null);
+
+			if (OpponentInvalid(CurrentDefender, currentTime))
+				return;
+
+			var defenderMovement = CurrentDefender.Character.Location.Movement;
+
+			if(CurrentDefender.Character.Status.IsDead || !_instance.CheckTileMobsLayer((UInt16)defenderMovement.X, (UInt16)defenderMovement.Y))
+			{
+				_chasePosX = Movement.X;
+				_chasePosY = Movement.Y;
+				UnselectTarget();
+				SetPhaseFind(currentTime);
+				return;
+			}
+
+			var distance = GetDistance(Movement.X, Movement.Y, defenderMovement.X, defenderMovement.Y);
+
+			if (distance > _data.AlertRange + AddedAlertRange)
+			{
+				_chasePosX = Movement.X;
+				_chasePosY = Movement.Y;
+				UnselectTarget();
+				SetPhaseFind(currentTime);
+				return;
+			}
+			else
+			{
+				if (_data.AttkPattern == MobPattern.PATTERN3)
+				{
+					Debug.Assert(_data.DefaultSkill.Reach >= _data.SpecialSkill.Reach);
+
+					if (distance > CurrentSkill.ValidDist)
+					{
+						CurrentSkill = _data.DefaultSkill;
+						if (distance > _data.DefaultSkill.Reach)
+						{
+							SetPhaseChase(currentTime);
+							return;
+						}
+					}
+					else if(_data.SpecialSkill.Reach > distance)
+					{
+						CurrentSkill = _data.SpecialSkill;
+					}
+
+				}
+				else if (_data.AttkPattern == MobPattern.PATTERN4)
+				{
+					SetRandomSkill();
+
+					if (distance > CurrentSkill.ValidDist)
+					{
+						SetPhaseChase(currentTime);
+						return;
+					}
+				}
+				else if(distance > CurrentSkill.ValidDist)
+				{
+					SetPhaseChase(currentTime);
+					return;
+				}
+			}
+
+			Debug.Assert(CurrentSkill.SkillGroup == Enums.SkillGroup.SK_GROUP___);
+
+			MobAttackG001(CurrentDefender, CurrentSkill, currentTime);
+		}
+
+		private void NextBattlePhaseBySkill(DateTime currentTime)
+		{
+			Debug.Assert(_phase == MobPhase.BATTLE);
+
+			SetNextUpdateTime(currentTime, CurrentSkill.Interval);
+		}
+
+		private void MobAttackG001(Client defender, MobSkill skill, DateTime currentTime)
+		{
+			Debug.Assert(skill.SkillGroup == Enums.SkillGroup.SK_GROUP___);
+			var defenderStatus = defender.Character.Status;
+
+			if(defenderStatus.IsDead)
+			{
+				Debug.Assert(defenderStatus.Hp <= 0);
+				return;
+			}
+
+			var defenderMovement = defender.Character.Location.Movement;
+
+			var targetPos = defenderMovement.X | (defenderMovement.Y << 16);
+
+			if(!MobSkill.IsValid(Movement.X, Movement.Y, targetPos, _instance))
+			{
+				if(_data.IsMoveless || defender.Dropped)
+				{
+					UnselectTarget();
+					SetPhaseFind(currentTime);
+				}
+				else
+				{
+					Debug.Assert(false);
+					//PhaseAttackValid??? Gate?????
+					SetPhaseChase(currentTime);
+				}
+				return;
+			}
+
+			var res = ResolveAttack(defender, skill);
+
+			var takeDamageRes = defender.Character.TakeDamage(res.Damage);
+			res.RemainingHp = defender.Character.Status.Hp;
+			res.IsDead = takeDamageRes == Enums.TakeDamageResult.DEAD;
+
+			var nfy = new NFY_SkillByMWide(ObjectIndexData, skill.IsDefSkill, [res]);
+			_instance.BroadcastNearby(this, nfy);
+
+		}
+
+		
+
 		private void Battle(DateTime currentTime)
 		{
-			UnselectTarget();
-			SetPhaseFind(currentTime);
+			Debug.Assert(_phase == MobPhase.BATTLE);
+			if(IsAttacked)
+			{
+				BattleAttacked(currentTime);
+			}
+			else
+			{
+				BattleNeutral(currentTime);
+			}
 		}
 
 		private void ChaseNeutral(DateTime currentTime)
@@ -687,6 +980,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				}
 
 				var defenderMovement = CurrentDefender.Character.Location.Movement;
+
+				if (!_instance.CheckTileMobsLayer((UInt16)defenderMovement.X, (UInt16)defenderMovement.Y))
+				{
+					_chasePosX = Movement.X;
+					_chasePosY = Movement.Y;
+					var packet = new NFY_MobsChasEnd(ObjectIndexData, (UInt16)Movement.X, (UInt16)Movement.Y);
+					_instance.BroadcastNearby(this, packet);
+					SetPhaseFind(currentTime);
+					return;
+				}
 
 				//TODO MASK_MOBLAYERS??
 				//TODO QD
@@ -826,7 +1129,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 				var defenderMovement = CurrentDefender.Character.Location.Movement;
 
-				//TODO MASK_MOBLAYERS??
+				if (!_instance.CheckTileMobsLayer((UInt16)defenderMovement.X, (UInt16)defenderMovement.Y))
+				{
+					_chasePosX = Movement.X;
+					_chasePosY = Movement.Y;
+					var packet = new NFY_MobsChasEnd(ObjectIndexData, (UInt16)Movement.X, (UInt16)Movement.Y);
+					_instance.BroadcastNearby(this, packet);
+					SetPhaseFind(currentTime);
+					return;
+				}
+
 				//TODO QD
 
 				var distance = GetDistance(Movement.X, Movement.Y, defenderMovement.X, defenderMovement.Y);
@@ -923,6 +1235,110 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			}
 		}
 
+		public DamageFromMobResult ResolveAttack(Client defender, MobSkill skill)
+		{
+			var res = new DamageFromMobResult();
+			var roll = _rng.Next(100);
+			var lvDiff = BattleFormula.GetLvlDiff(Level, defender.Character.Stats.Level);
+			var lvDiffOrg = Level - defender.Character.Stats.Level;
+
+			if (lvDiff < -1000)
+				lvDiff = -1000;
+			else if(lvDiff > 1000) 
+				lvDiff = 1000;
+
+			var criticalRate = 5; //TODO
+			var criticalDamage = 0; //TODO
+
+			var defence = 7; //TODO - defender calc stats
+			var defenceRate = 16; //TODO - defender calc stats
+			var evasion = 0; //TODO
+
+			if(roll < criticalRate)
+			{
+				//crit
+				var damage = skill.PhyAttMax - defence;
+				if(damage <= 0)
+				{
+					damage = Level / 10 + Level / 30;
+				}
+				if(damage <= 0)
+				{
+					damage = 1;
+				}
+				damage += lvDiffOrg;
+				damage = damage + (criticalDamage >> 1);
+
+				if(damage <= 0)
+				{
+					damage = Level / 10 + Level / 20;
+				}
+				if (damage <= 0)
+				{
+					damage = 5;
+				}
+
+				res.AttackResult = Enums.AttackResult.SR_CRITICAL;
+				res.Damage = (UInt16)damage;
+			}
+			else
+			{
+				//normal
+				var attackRateTemp = _data.AttacksR + 16 * lvDiffOrg / 10;
+				if(attackRateTemp <= 0)
+					attackRateTemp = 0;
+				int hitRate = 0;
+				if(attackRateTemp + defenceRate == 0)
+				{
+					hitRate = 0;
+				}
+				else
+				{
+					hitRate = (BattleFormula.GetHR(attackRateTemp, defenceRate) - 50) * 2;
+				}
+				hitRate = BattleFormula.AdjustHR(hitRate, 10, 95 - evasion);
+				hitRate = (100 - criticalRate) * hitRate / 100 + criticalRate;
+
+
+				if(roll < hitRate)
+				{
+					var attack = 0;
+					if (skill.PhyAttDff == 0)
+					{
+						attack = skill.PhyAttMin;
+					}
+					else
+					{
+						attack = _rng.Next(skill.PhyAttDff) + skill.PhyAttMin;
+					}
+					var damage = attack - defence;
+					damage += lvDiffOrg;
+
+					if (damage <= 0)
+					{
+						damage = Level / 10;
+					}
+					if (damage <= 0)
+					{
+						damage = 1;
+					}
+					res.AttackResult = Enums.AttackResult.SR_NORMALAK;
+					res.Damage = (UInt16)damage;
+				}
+				else
+				{
+					res.Damage = 0;
+					res.AttackResult = Enums.AttackResult.SR_MISSINGS;
+				}
+			}
+
+			//TODO absorb
+			//TODO WAR
+			//TODO DEATH
+			res.CharId = defender.Character.Id;
+			return res;
+		}
+
 		private void Chase(DateTime currentTime)
 		{
 			Debug.Assert(_phase == MobPhase.CHASE);
@@ -961,7 +1377,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			return evasion;
 		}
 
-		public int CalculateNormalDamage(Character attacker, Skill skill, int attack)
+		public int CalculateNormalDamageTaken(Character attacker, Skill skill, int attack)
 		{
 			int iLvDiffOrg = (Int32)(attacker.Stats.Level - Level);
 			int defence = GetDefense();
@@ -1064,7 +1480,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			}
 		}
 
-		internal Int32 CalculateCriticalDamage(Character attacker, Skill skill, Int32 attack, Int32 criticalDamage)
+		internal Int32 CalculateCriticalDamageTaken(Character attacker, Skill skill, Int32 attack, Int32 criticalDamage)
 		{
 			int iLvDiffOrg = (Int32)(attacker.Stats.Level - Level);
 			int defence = GetDefense();
