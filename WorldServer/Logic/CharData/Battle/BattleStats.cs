@@ -8,7 +8,7 @@ namespace WorldServer.Logic.CharData.Battle
 {
 	internal class BattleStats
 	{
-		public BattleStats(Int32 attack, Int32 magicAttack, Int32 swordSkillAmp, Int32 magicSkillAmp, Int32 attackRate, Int32 criticalRate, Int32 maxCriticalRate, int criticalDamage)
+		public BattleStats(Int32 attack, Int32 magicAttack, Int32 swordSkillAmp, Int32 magicSkillAmp, Int32 attackRate, Int32 criticalRate, Int32 maxCriticalRate, int criticalDamage, int defense, int defenseRate)
 		{
 			Attack = attack;
 			MagicAttack = magicAttack;
@@ -18,6 +18,8 @@ namespace WorldServer.Logic.CharData.Battle
 			CriticalRate = criticalRate;
 			MaxCriticalRate = maxCriticalRate;
 			CriticalDamage = criticalDamage;
+			Defense = defense;
+			DefenseRate = defenseRate;
 		}
 
 		public int Attack { get; private set; }
@@ -28,5 +30,7 @@ namespace WorldServer.Logic.CharData.Battle
 		public int CriticalRate { get; private set; }
 		public int MaxCriticalRate { get; private set; }
 		public int CriticalDamage { get; private set; }
+		public int Defense { get; private set; }
+		public int DefenseRate { get; private set; }
 	}
 }

@@ -16,6 +16,8 @@ namespace WorldServer.Logic.CharData.Battle
 		public int AttackRate = 0;
 		public int CriticalRate = 0;
 		public int CriticalDamage = 0;
+		public int Defense = 0;
+		public int DefenseRate = 0;
 
 		public EquStats()
 		{

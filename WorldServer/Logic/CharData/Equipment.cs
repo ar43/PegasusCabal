@@ -1,4 +1,5 @@
 ﻿using Shared.Protos;
+using System.Reflection.Metadata;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.Battle;
 using WorldServer.Logic.CharData.Items;
@@ -81,6 +82,15 @@ namespace WorldServer.Logic.CharData
 							{
 								stats.CriticalRate += item.GetOpt1Val();
 							}
+							break;
+						}
+						case EquipmentIndex.GLOVES:
+						case EquipmentIndex.SUIT:
+						case EquipmentIndex.BOOTS:
+						case EquipmentIndex.HELMET:
+						{
+							stats.Defense += item.GetDefense();
+							stats.DefenseRate += item.GetDefenseRate();
 							break;
 						}
 						default:

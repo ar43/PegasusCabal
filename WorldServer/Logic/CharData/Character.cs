@@ -121,9 +121,19 @@ namespace WorldServer.Logic.CharData
 			int swordSkillAmp = equStats.SwordSkillAmp;
 			int magicSkillAmp = equStats.MagicSkillAmp;
 
-			Serilog.Log.Debug($"CalculateBattleStats: attack: {attack} magic attack: {magicAttack} attack rate: {attackRate} critical rate: {criticalRate} crit dmg: {criticalDamage}");
+			int defense = 0;
+			defense += equStats.Defense;
+			defense += Stats.CalculateValueFromCoef(Style.BattleStyle.StatDefens);
+			defense += Style.CalculateValueFromCoef(Style.BattleStyle.DefensCoef);
 
-			return new BattleStats(attack, magicAttack, swordSkillAmp, magicSkillAmp, attackRate, criticalRate, maxCriticalRate, criticalDamage);
+			int defenseRate = 0;
+			defenseRate += equStats.DefenseRate;
+			defenseRate += Stats.CalculateValueFromCoef(Style.BattleStyle.StatDefenR);
+			defenseRate += Style.CalculateValueFromCoef(Style.BattleStyle.DefenRCoef);
+
+			Serilog.Log.Debug($"CalculateBattleStats: attack: {attack} magic attack: {magicAttack} attack rate: {attackRate} critical rate: {criticalRate} crit dmg: {criticalDamage} defense: {defense} defenseRate: {defenseRate}");
+
+			return new BattleStats(attack, magicAttack, swordSkillAmp, magicSkillAmp, attackRate, criticalRate, maxCriticalRate, criticalDamage, defense, defenseRate);
 		}
 
 		internal Int32 RestExpCheck()

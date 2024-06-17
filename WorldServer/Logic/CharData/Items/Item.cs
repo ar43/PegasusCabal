@@ -197,5 +197,17 @@ namespace WorldServer.Logic.CharData.Items
 		{
 			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
 		}
+
+		internal Int32 GetDefense()
+		{
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_SUIT || _itemInfo.TypeId == ItemType.IDT_HMET || _itemInfo.TypeId == ItemType.IDT_GLOV || _itemInfo.TypeId == ItemType.IDT_BOOT);
+			return _itemInfo.Defense_LEVLmt_MagAttVal;
+		}
+
+		internal Int32 GetDefenseRate()
+		{
+			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_SUIT || _itemInfo.TypeId == ItemType.IDT_HMET || _itemInfo.TypeId == ItemType.IDT_GLOV || _itemInfo.TypeId == ItemType.IDT_BOOT);
+			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
+		}
 	}
 }

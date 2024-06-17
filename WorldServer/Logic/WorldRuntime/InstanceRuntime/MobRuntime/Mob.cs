@@ -987,6 +987,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 					_chasePosY = Movement.Y;
 					var packet = new NFY_MobsChasEnd(ObjectIndexData, (UInt16)Movement.X, (UInt16)Movement.Y);
 					_instance.BroadcastNearby(this, packet);
+					UnselectTarget();
 					SetPhaseFind(currentTime);
 					return;
 				}
@@ -1135,6 +1136,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 					_chasePosY = Movement.Y;
 					var packet = new NFY_MobsChasEnd(ObjectIndexData, (UInt16)Movement.X, (UInt16)Movement.Y);
 					_instance.BroadcastNearby(this, packet);
+					UnselectTarget();
 					SetPhaseFind(currentTime);
 					return;
 				}
@@ -1250,8 +1252,10 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			var criticalRate = 5; //TODO
 			var criticalDamage = 0; //TODO
 
-			var defence = 7; //TODO - defender calc stats
-			var defenceRate = 16; //TODO - defender calc stats
+			var battleStats = defender.Character.CalculateBattleStats();
+
+			var defence = battleStats.Defense;
+			var defenceRate = battleStats.DefenseRate;
 			var evasion = 0; //TODO
 
 			if(roll < criticalRate)
