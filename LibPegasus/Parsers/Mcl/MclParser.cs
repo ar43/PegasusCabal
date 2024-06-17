@@ -41,7 +41,7 @@ namespace LibPegasus.Parsers.Mcl
 
 						for (int i = 0; i < 256 * 256; i++)
 						{
-							AttributeData.SetTileAttribute(i, reader.ReadUInt32());
+							AttributeData.SetTileAttribute(i, Utils.Utility.ReverseBytes(reader.ReadUInt32()));
 						}
 					}
 				}

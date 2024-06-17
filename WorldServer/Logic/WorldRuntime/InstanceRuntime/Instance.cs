@@ -99,7 +99,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			{
 				for (int j = 0; j < 16; j++)
 				{
-					if (!CheckTileUnmovable((UInt16)(baseX + i), (UInt16)(baseY + j)))
+					if (!CheckTileMoveDisable((UInt16)(baseX + i), (UInt16)(baseY + j)))
 					{
 						if (!mustBeTown || CheckTileTown((UInt16)(baseX + i), (UInt16)(baseY + j)))
 							values.Add((baseX + i, baseY + j));
@@ -128,29 +128,29 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 			throw new Exception("not expected");
 		}
-		public bool CheckTileUnmovable(UInt16 x, UInt16 y)
+		public bool CheckTileMoveDisable(UInt16 x, UInt16 y)
 		{
 			if (x > 255 || y > 255)
 				return true;
-			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.MOVE_DISABLE);
+			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.MASK_MOVEDSABLE);
 		}
 		public bool CheckTileOverAttack(UInt16 x, UInt16 y)
 		{
 			if (x > 255 || y > 255)
 				return true;
-			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.OVER_ATTACK);
+			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.MASK_OVERATTCK0);
 		}
 		public bool CheckTileMobsLayer(UInt16 x, UInt16 y)
 		{
 			if (x > 255 || y > 255)
 				return false;
-			return TileAttributeData.IsTileNormal(x, y);
+			return TileAttributeData.IsTileMobsLayer(x, y);
 		}
 		public bool CheckTileTown(UInt16 x, UInt16 y)
 		{
 			if (x > 255 || y > 255)
 				return false;
-			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.TOWN_AREA);
+			return TileAttributeData.HasTileAttribute(x, y, LibPegasus.Enums.TileAttribute.MASK_TOWNAREAS0);
 		}
 		public void MoveMob(Mob mob, UInt16 newCellX, UInt16 newCellY)
 		{

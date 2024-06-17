@@ -25,9 +25,9 @@ namespace LibPegasus.Parsers.Mcl
 			}
 		}
 
-		public bool IsTileNormal(int x, int y)
+		public bool IsTileMobsLayer(int x, int y)
 		{
-			return GetTileAttribute(x, y) == 0; //TEMP
+			return GetTileAttribute(x, y) <= (uint)TileAttribute.MASK_MOBSLAYERS; //TEMP
 		}
 
 		public void SetTileAttribute(int index, UInt32 data)

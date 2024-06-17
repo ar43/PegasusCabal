@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -130,6 +131,91 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			IsDeadReckoning = true;
 			LastDeadReckoning = 0;
+		}
+
+		private void AdjustTargetPoint(int validOffset)
+		{
+			Debug.Assert(validOffset >= 0);
+			int iN,
+							iDx,
+							iDy,
+							iAdx,
+							iAdy,
+							iPos,
+							iOffX,
+							iOffY;
+
+			iN = _waypoints.Count - 2;
+			var pWayPoint = _waypoints[iN];
+			var pWayPoint2 = _waypoints[iN+1];
+
+			iDx = pWayPoint2.X - pWayPoint.X;
+			iDy = pWayPoint2.Y - pWayPoint.Y;
+			iAdx = (iDx >= 0) ? iDx : -iDx;
+			iAdy = (iDy >= 0) ? iDy : -iDy;
+
+			if (iAdx >= iAdy)
+			{
+				iPos = iAdx - validOffset;
+				if (iPos < 0)
+				{
+					_waypoints.RemoveAt(iN+1);
+					Debug.Assert(_waypoints.Count > 0);
+
+					EndX = pWayPoint.X;
+					EndY = pWayPoint.Y;
+
+					if (StartX == EndX &&
+						StartY == EndY)
+					{
+						Serilog.Log.Error(("iPos < 0"));
+					}
+					return;
+				}
+
+				iOffX = (iPos < 0) ? -iPos : iPos;
+				
+				iOffY = (iAdy * iOffX + (iAdx >> 1)) / iAdx;
+
+				if (iDx < 0)
+					iOffX = -iOffX;
+				if (iDy < 0)
+					iOffY = -iOffY;
+
+				pWayPoint2.X = pWayPoint.X + iOffX;
+				pWayPoint2.Y = pWayPoint.Y + iOffY;
+
+				EndX = pWayPoint2.X;
+				EndY = pWayPoint2.Y;
+			}
+			else
+			{
+				iPos = iAdy - validOffset;
+				if (iPos < 0)
+				{
+					_waypoints.RemoveAt(iN + 1);
+					Debug.Assert(_waypoints.Count > 0);
+
+					EndX = pWayPoint.X;
+					EndY = pWayPoint.Y;
+					return;
+				}
+
+				iOffY = (iPos < 0) ? -iPos : iPos;
+				
+				iOffX = (iAdx * iOffY + (iAdy >> 1)) / iAdy;
+
+				if (iDx < 0)
+					iOffX = -iOffX;
+				if (iDy < 0)
+					iOffY = -iOffY;
+
+				pWayPoint2.X = pWayPoint.X + iOffX;
+				pWayPoint2.Y = pWayPoint.Y + iOffY;
+
+				EndX = pWayPoint2.X;
+				EndY = pWayPoint2.X;
+			}
 		}
 
 		public bool Begin(UInt16 startX, UInt16 startY, UInt16 endX, UInt16 endY, UInt16 pntX, UInt16 pntY)

@@ -165,7 +165,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			{
 				for (int j = 0; j < height; j++)
 				{
-					if (!_instance.CheckTileUnmovable((UInt16)(baseX + i), (UInt16)(baseY + j)) && !_instance.CheckTileTown((UInt16)(baseX + i), (UInt16)(baseY + j)))
+					if (!_instance.CheckTileMoveDisable((UInt16)(baseX + i), (UInt16)(baseY + j)) && !_instance.CheckTileTown((UInt16)(baseX + i), (UInt16)(baseY + j)))
 					{
 						values.Add((baseX + i, baseY + j));
 					}
@@ -237,7 +237,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			if (endX < 0 || endY < 0 || endX > 255 || endY > 255)
 				return false;
 
-			if (_instance.CheckTileUnmovable((UInt16)endX, (UInt16)endY))
+			if (_instance.CheckTileMoveDisable((UInt16)endX, (UInt16)endY))
 				return false;
 
 			if (_instance.CheckTileTown((UInt16)endX, (UInt16)endY))
@@ -412,7 +412,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 					//todo AdjustTargetPoint...
 
-					if (Movement.X == endX && Movement.Y == endY || _instance.CheckTileTown((UInt16)endX, (UInt16)endY))
+					if (Movement.X == endX && Movement.Y == endY)
 					{
 						//when does this happen
 						_chasePosX = Movement.StartX;
@@ -560,7 +560,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 					//todo AdjustTargetPoint...
 
-					if (Movement.X == endX && Movement.Y == endY || _instance.CheckTileTown((UInt16)endX, (UInt16)endY))
+					if (Movement.X == endX && Movement.Y == endY)
 					{
 						//when does this happen
 						_chasePosX = Movement.StartX;
@@ -1026,7 +1026,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 						//todo AdjustTargetPoint...
 
-						if (Movement.X == endX && Movement.Y == endY || _instance.CheckTileTown((UInt16)endX, (UInt16)endY))
+						if (Movement.X == endX && Movement.Y == endY)
 						{
 							//when does this happen
 							_chasePosX = Movement.StartX;
@@ -1174,7 +1174,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 						//todo AdjustTargetPoint...
 
-						if (Movement.X == endX && Movement.Y == endY || _instance.CheckTileTown((UInt16)endX, (UInt16)endY))
+						if (Movement.X == endX && Movement.Y == endY)
 						{
 							//when does this happen
 							_chasePosX = Movement.StartX;

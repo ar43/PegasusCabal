@@ -29,17 +29,17 @@ namespace WorldServer.Logic.Delegates
 
 			if (loc.Movement.Begin(fromX, fromY, toX, toY, pntX, pntY, client.isGm()))
 			{
-				if (loc.Instance.CheckTileUnmovable(fromX, fromY))
+				if (loc.Instance.CheckTileMoveDisable(fromX, fromY))
 				{
 					client.Disconnect("OnMoveBegin: Illegal tile movement", Enums.ConnState.ERROR);
 					return;
 				}
-				if (loc.Instance.CheckTileUnmovable(toX, toY))
+				if (loc.Instance.CheckTileMoveDisable(toX, toY))
 				{
 					client.Disconnect("OnMoveBegin: Illegal tile movement", Enums.ConnState.ERROR);
 					return;
 				}
-				if (loc.Instance.CheckTileUnmovable(pntX, pntY))
+				if (loc.Instance.CheckTileMoveDisable(pntX, pntY))
 				{
 					client.Disconnect("OnMoveBegin: Illegal tile movement", Enums.ConnState.ERROR);
 					return;
@@ -85,17 +85,17 @@ namespace WorldServer.Logic.Delegates
 
 			if (loc.Movement.Change(fromX, fromY, toX, toY, pntX, pntY, client.isGm()))
 			{
-				if (loc.Instance.CheckTileUnmovable(fromX, fromY))
+				if (loc.Instance.CheckTileMoveDisable(fromX, fromY))
 				{
 					client.Disconnect("OnMoveChanged: Illegal tile movement", Enums.ConnState.ERROR);
 					return;
 				}
-				if (loc.Instance.CheckTileUnmovable(toX, toY))
+				if (loc.Instance.CheckTileMoveDisable(toX, toY))
 				{
 					client.Disconnect("OnMoveChanged: Illegal tile movement", Enums.ConnState.ERROR);
 					return;
 				}
-				if (loc.Instance.CheckTileUnmovable(pntX, pntY))
+				if (loc.Instance.CheckTileMoveDisable(pntX, pntY))
 				{
 					client.Disconnect("OnMoveChanged: Illegal tile movement", Enums.ConnState.ERROR);
 					return;
@@ -135,7 +135,7 @@ namespace WorldServer.Logic.Delegates
 
 			if (loc.Movement.End(x, y, client.isGm()))
 			{
-				if (loc.Instance.CheckTileUnmovable(x, y))
+				if (loc.Instance.CheckTileMoveDisable(x, y))
 				{
 					client.Disconnect("OnMoveEnd: Illegal tile movement", Enums.ConnState.ERROR);
 					return;
@@ -178,7 +178,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if (loc.Instance.CheckTileUnmovable((UInt16)loc.Movement.X, (UInt16)loc.Movement.Y))
+			if (loc.Instance.CheckTileMoveDisable((UInt16)loc.Movement.X, (UInt16)loc.Movement.Y))
 			{
 				client.Disconnect("OnMoveWaypoint: Illegal tile movement", Enums.ConnState.ERROR);
 				return;

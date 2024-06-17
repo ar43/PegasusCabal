@@ -100,7 +100,7 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 					{
 						return true;
 					}
-					else if(instance.CheckTileUnmovable((UInt16)iCheckX, (UInt16)iCheckY))
+					else if(instance.CheckTileMoveDisable((UInt16)iCheckX, (UInt16)iCheckY))
 					{
 						return false;
 					}

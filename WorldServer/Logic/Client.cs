@@ -278,7 +278,7 @@ namespace WorldServer.Logic
 
 				if (oldX != newX || oldY != newY)
 				{
-					if (Character.Location.Instance.CheckTileUnmovable((UInt16)newX, (UInt16)newY))
+					if (Character.Location.Instance.CheckTileMoveDisable((UInt16)newX, (UInt16)newY))
 					{
 						Character.Location.Movement.IllegalMovementCounter++;
 					}
