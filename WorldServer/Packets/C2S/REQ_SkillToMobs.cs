@@ -53,7 +53,7 @@ namespace WorldServer.Packets.C2S
 				return false;
 			}
 
-			actions.Enqueue((client) => Battle.OnSkillToMobs(client, skillId, slot, u0, x, y, u1, u2, mobs));
+			actions.Enqueue((client) => CharAction.OnSkillToMobs(client, skillId, slot, u0, x, y, u1, u2, mobs));
 
 			return true;
 		}

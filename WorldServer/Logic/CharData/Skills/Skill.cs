@@ -1,8 +1,10 @@
 ﻿using LibPegasus.Utils;
 using System.ComponentModel;
 using System.Diagnostics;
+using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData.Items;
+using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData.Skills
@@ -31,6 +33,43 @@ namespace WorldServer.Logic.CharData.Skills
 				return _skillInfoMain.SkillExp1;
 			else
 				return _skillInfoMain.SkillExp2;
+		}
+
+		public List<BuffData>? GetSkillBuffData()
+		{
+			var valueList = _skillInfoMain.SkillValueList;
+
+			if (valueList.Count == 0)
+				return null;
+
+			List<BuffData> buffData = new List<BuffData>();
+
+			foreach(var it in valueList)
+			{
+				buffData.Add(new((ForceCode)it.BForce_ID, it.BaseDiv(Level)));
+			}
+
+			return buffData;
+		}
+
+		public SkillGroup GetGroup()
+		{
+			return _skillInfoMain.Group;
+		}
+
+		public int GetExclusive()
+		{
+			return _skillInfoMain.Exclusive;
+		}
+
+		public int GetUseCase()
+		{
+			return _skillInfoMain.UseCase;
+		}
+
+		public bool CheckUseCase(SkillUseCase useCase)
+		{
+			return (GetUseCase() & (uint)useCase) == (uint)useCase;
 		}
 
 		public bool IsSwordSkill()
@@ -116,12 +155,12 @@ namespace WorldServer.Logic.CharData.Skills
 			}
 		}
 
-        public static void LoadConfigs(WorldConfig worldConfig)
-        {
-            if (SkillConfig != null) throw new Exception("item configs already loaded");
-            SkillConfig = new();
+		public static void LoadConfigs(WorldConfig worldConfig)
+		{
+			if (SkillConfig != null) throw new Exception("item configs already loaded");
+			SkillConfig = new();
 
-            var cfg = worldConfig.GetConfig("[SKill_Main]");
+			var cfg = worldConfig.GetConfig("[SKill_Main]");
 
 			foreach (var it in cfg.Values)
 			{
@@ -151,7 +190,7 @@ namespace WorldServer.Logic.CharData.Skills
 					Reach = 0;
 				if (!Int32.TryParse(it["Range"], out var Range))
 					Range = 0;
-				if(!Int32.TryParse(it["RangeType"], out var RangeType))
+				if (!Int32.TryParse(it["RangeType"], out var RangeType))
 					RangeType = 0;
 				if (!Int32.TryParse(it["FiringFrame"], out var FiringFrame))
 					FiringFrame = 0;
@@ -179,7 +218,23 @@ namespace WorldServer.Logic.CharData.Skills
 				SkillConfig.Add(SkillIdx, data);
 			}
 
-        }
+			cfg = worldConfig.GetConfig("[SKill_Value]");
+			foreach (var it in cfg.Values)
+			{
+				int SkillIdx = Convert.ToInt32(it["SkillIdx"]);
+				int Group = Convert.ToInt32(it["Group"]);
+				int Order = Convert.ToInt32(it["Order"]);
+				int BForce_ID = Convert.ToInt32(it["BForce_ID"]);
+				int[]? Value = Utility.StringToIntArray(it["Value"]);
+				if (!Int32.TryParse(it["Power"], out var Power))
+					Power = 0;
+				int[]? Duration = Utility.StringToIntArray(it["Dur"]);
+				int Value_type = Convert.ToInt32(it["Value_type"]); // ForceValueType
+
+				SkillValue skillValue = new(BForce_ID, Value, Duration, Value_type);
+				SkillConfig.AddSkillValue(SkillIdx, skillValue);
+			}
+		}
 
 		internal int CalculateCritDamage(Int32 criticalDamage)
 		{

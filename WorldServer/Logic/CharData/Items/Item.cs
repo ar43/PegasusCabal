@@ -43,6 +43,11 @@ namespace WorldServer.Logic.CharData.Items
 			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
 		}
 
+		public ItemType GetItemType()
+		{
+			return _itemInfo.TypeId;
+		}
+
 		public int GetMagicAttack()
 		{
 			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_1HND || _itemInfo.TypeId == ItemType.IDT_2HND || _itemInfo.TypeId == ItemType.IDT_MWPN);
@@ -208,6 +213,11 @@ namespace WorldServer.Logic.CharData.Items
 		{
 			Debug.Assert(_itemInfo.TypeId == ItemType.IDT_SUIT || _itemInfo.TypeId == ItemType.IDT_HMET || _itemInfo.TypeId == ItemType.IDT_GLOV || _itemInfo.TypeId == ItemType.IDT_BOOT);
 			return _itemInfo.DefenRate_Opt1Val_PhyAttMax;
+		}
+
+		internal Int32 GetGrade()
+		{
+			return _itemInfo.Grade;
 		}
 	}
 }

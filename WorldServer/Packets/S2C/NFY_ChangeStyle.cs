@@ -18,7 +18,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteInt32(data, _character.Id);
 			PacketWriter.WriteUInt32(data, _character.Style.Serialize());
 			PacketWriter.WriteUInt32(data, _character.LiveStyle.Serialize());
-			PacketWriter.WriteUInt32(data, _character.BuffFlag.Serialize());
+			PacketWriter.WriteUInt32(data, _character.BuffManager.BuffFlag.Serialize());
 			PacketWriter.WriteUInt16(data, _character.ActionFlag.Serialize());
 		}
 	}

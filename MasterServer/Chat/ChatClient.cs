@@ -194,7 +194,7 @@ namespace MasterServer.Chat
 			//todo - send session timeout
 		}
 
-		internal async void OnLinkedLogin(UInt32 authKey, UInt32 accountId)
+		internal void OnLinkedLogin(UInt32 authKey, UInt32 accountId)
 		{
 			if (authKey != ClientInfo.AuthKey)
 			{

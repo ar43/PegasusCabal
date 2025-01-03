@@ -16,6 +16,7 @@ namespace WorldServer.Logic.CharData.Styles
         public byte ShowHelmet { get; private set; }
 
 		public BattleStyle BattleStyle { get; private set; }
+		public StyleEx StyleEx { get; private set; }
         private static Dictionary<int, BattleStyle>? _battleStyleData;
 		public int MasteryLevel { get; private set; } //TODO
 
@@ -26,6 +27,7 @@ namespace WorldServer.Logic.CharData.Styles
 
             BattleStyleNum = battleStyle; //3
 			BattleStyle = _battleStyleData[BattleStyleNum];
+			StyleEx = new();
             Rank = rank; //5
             Face = face; //5
             HairColor = hairColor; //4
@@ -48,6 +50,8 @@ namespace WorldServer.Logic.CharData.Styles
             Aura = (Byte)(serial >> 22 & 0b1111);
             Gender = (Byte)(serial >> 26 & 0b1);
             ShowHelmet = (Byte)(serial >> 27 & 0b1);
+
+			StyleEx = new();
 
 			BattleStyle = _battleStyleData[BattleStyleNum];
 			MasteryLevel = 1; //todo

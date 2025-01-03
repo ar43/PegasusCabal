@@ -71,6 +71,7 @@ namespace WorldServer.Packets
 				Opcode.CSC_ITEMMOVE => new REQ_ItemMove(data),
 				Opcode.CSC_ITEMSWAP => new REQ_ItemSwap(data),
 				Opcode.CSC_SKILLTOMOBS => new REQ_SkillToMobs(data),
+				Opcode.CSC_SKILLTOUSER => new REQ_SkillToUser(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

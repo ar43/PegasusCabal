@@ -49,6 +49,14 @@ namespace WorldServer.Logic.CharData
 			return data;
 		}
 
+		public Item? GetItem(EquipmentIndex index)
+		{
+			var item = _list[(int)index];
+			if (item != null && item.Kind == 0)
+				return null;
+			return item;
+		}
+
 		public EquStats GetStats()
 		{
 			EquStats stats = new EquStats();

@@ -22,6 +22,10 @@ namespace WorldServer.Logic.CharData.Skills
 		{
 			MainData.Add(id, mainInfo);
 		}
+		public void AddSkillValue(int skillId, SkillValue skillValue) 
+		{
+			MainData[skillId].SkillValueList.Add(skillValue);
+		}
 	}
 
 	internal class SkillInfoMain
@@ -64,6 +68,7 @@ namespace WorldServer.Logic.CharData.Skills
 			Rate = rate;
 			AmpCount = ampCount;
 			DamageType = damageType;
+			SkillValueList = new();
 		}
 
 		public int SkillIdx { get; private set; }
@@ -102,6 +107,28 @@ namespace WorldServer.Logic.CharData.Skills
 		public int Rate { get; private set; }
 		public int AmpCount { get; private set; }
 		public int DamageType { get; private set; }
+		public List<SkillValue> SkillValueList { get; private set; }
+	}
+
+	internal class SkillValue
+	{
+		public int BForce_ID;
+		public int[]? Value;
+		public int[]? Duration;
+		public int ForceValueType;
+
+		public SkillValue(Int32 bForce_ID, Int32[]? value, Int32[]? duration, Int32 forceValueType)
+		{
+			BForce_ID = bForce_ID;
+			Value = value;
+			Duration = duration;
+			ForceValueType = forceValueType;
+		}
+
+		public int BaseDiv(int level)
+		{
+			return (Value[0] * level + Value[1]) / 10;
+		}
 	}
 
 	internal class SkillCoef
