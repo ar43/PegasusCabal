@@ -120,7 +120,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteByte(data, 0); //active quest count
 			PacketWriter.WriteUInt16(data, 0); //Period Item Count
 
-			PacketWriter.WriteNull(data, 1023); //??
+			PacketWriter.WriteNull(data, 1023); // quests completed - bitfield
 			PacketWriter.WriteNull(data, 128); //quest dung flag
 			PacketWriter.WriteNull(data, 128); //mission dung flag
 

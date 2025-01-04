@@ -40,3 +40,22 @@ message SkillData
 	}
 	map<uint32, SkillDataItem> skillData = 1;
 }
+
+message ActiveQuestData
+{
+	message ActiveQuestDataItem
+	{
+		uint32 id = 1;
+		uint32 flag = 2;
+		bool isTracked = 3;
+		bool isExpanded = 4;
+		uint32 slot = 5;
+		bytes progress = 6;
+	}
+	map<uint32, ActiveQuestDataItem> activeQuestData = 1;
+}
+
+message CompletedQuestsData
+{
+	bytes completedQuests = 1;
+}

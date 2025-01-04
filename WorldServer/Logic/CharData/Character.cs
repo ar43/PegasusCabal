@@ -1,5 +1,6 @@
 ﻿using WorldServer.Enums;
 using WorldServer.Logic.CharData.Battle;
+using WorldServer.Logic.CharData.Quests;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.SharedData;
@@ -17,6 +18,7 @@ namespace WorldServer.Logic.CharData
 			BuffManager = new();
 			ActionFlag = new ActionFlag(0);
 			Id = 0;
+			QuestManager = new();
 		}
 
 		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, LearnedSkills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id, int nation)
@@ -35,6 +37,7 @@ namespace WorldServer.Logic.CharData
 			ActionFlag = new ActionFlag(0);
 			Id = id;
 			Nation = (NationCode)nation;
+			QuestManager = new();
 		}
 
 		public bool Verify()
@@ -56,6 +59,7 @@ namespace WorldServer.Logic.CharData
 		public Stats? Stats { get; set; }
 		public Status? Status { get; set; }
 		public BuffManager BuffManager { get; private set; }
+		public QuestManager QuestManager { get; private set; }
 
 		public LiveStyle LiveStyle { get; private set; }
 		public ActionFlag ActionFlag { get; private set; }

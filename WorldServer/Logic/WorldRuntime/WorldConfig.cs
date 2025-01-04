@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Parsers.Scp;
 using System.Text.RegularExpressions;
 using WorldServer.Logic.CharData.Items;
+using WorldServer.Logic.CharData.Quests;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.CharData.Styles;
 
@@ -20,10 +21,12 @@ namespace WorldServer.Logic.WorldRuntime
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Mobs.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Skill.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Rank.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Quest.scp");
 
 			Item.LoadConfigs(this);
 			Skill.LoadConfigs(this);
 			Style.LoadConfigs(this);
+			Quest.LoadConfigs(this);
 		}
 
 		private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _config;

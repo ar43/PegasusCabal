@@ -157,7 +157,7 @@ namespace WorldServer.Logic.CharData.Skills
 
 		public static void LoadConfigs(WorldConfig worldConfig)
 		{
-			if (SkillConfig != null) throw new Exception("item configs already loaded");
+			if (SkillConfig != null) throw new Exception("skill configs already loaded");
 			SkillConfig = new();
 
 			var cfg = worldConfig.GetConfig("[SKill_Main]");

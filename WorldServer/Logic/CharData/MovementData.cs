@@ -60,6 +60,27 @@ namespace WorldServer.Logic.CharData
 			CellY = Y / 16;
 		}
 
+		public bool VerifyDistanceToNpc(int npcX, int npcY)
+		{
+			var dx = X - npcX;
+			var dy = Y - npcY;
+
+			var adx = Math.Abs(dx);
+			var ady = Math.Abs(dy);
+
+			if (adx >= 6)
+			{
+				return false;
+			}
+
+			if (ady >= 6)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		private void StartDeadReckoning()
 		{
 			var waypoint = _waypoints[0];

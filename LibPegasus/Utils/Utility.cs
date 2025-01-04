@@ -38,6 +38,13 @@ namespace LibPegasus.Utils
 			return str.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
 		}
 
+		public static int[]? StringToIntArrayComplex(string str)
+		{
+			if (str == "<null>")
+				return null;
+			return str.Split([',', ':']).Select(n => Convert.ToInt32(n)).ToArray();
+		}
+
 		public static UInt32 ReadBits(UInt32 input, int startBit, int length)
 		{
 			UInt32 mask = (UInt32)(((1 << length) - 1) << startBit);
