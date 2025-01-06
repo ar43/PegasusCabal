@@ -11,7 +11,7 @@ using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData.Quests
 {
-	internal class Quest
+    internal class Quest
 	{
 		public Quest(UInt16 id)
 		{
@@ -24,6 +24,7 @@ namespace WorldServer.Logic.CharData.Quests
 		public UInt16 Id { get; private set; }
 		private static QuestInfo? _questConfig = null;
 		private readonly QuestInfoMain _questInfoMain;
+
 		public bool Started { get; private set; }
 		public UInt16 Flags { get; private set; }
 		private uint ActCounter = 0;
@@ -35,16 +36,41 @@ namespace WorldServer.Logic.CharData.Quests
 			ActCounter = 0;
 		}
 
+		public QuestReward GetQuestReward()
+		{
+			if (_questInfoMain.QuestReward != null)
+				return _questInfoMain.QuestReward;
+			else
+				throw new NotImplementedException();
+		}
+
 		public int GetStartMapId()
 		{
 			Debug.Assert(_questInfoMain.OpenNpcs.Length == 2);
 			return _questInfoMain.OpenNpcs[0];
 		}
 
+		public int GetEndMapId()
+		{
+			Debug.Assert(_questInfoMain.CloseNpcs.Length == 2);
+			return _questInfoMain.CloseNpcs[0];
+		}
+
+		public UInt16 GetEndFlags()
+		{
+			return _questInfoMain.CompletedFlags;
+		}
+
 		public int GetStartNpcId()
 		{
 			Debug.Assert(_questInfoMain.OpenNpcs.Length == 2);
 			return _questInfoMain.OpenNpcs[1];
+		}
+
+		public int GetEndNpcId()
+		{
+			Debug.Assert(_questInfoMain.CloseNpcs.Length == 2);
+			return _questInfoMain.CloseNpcs[1];
 		}
 
 		public bool HasNpcActionSet()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,32 @@ namespace WorldServer.Logic.Delegates
 {
 	internal static class CharQuest
 	{
+		internal static void OnQuestEnd(Client client, UInt16 questId, UInt16 slot, UInt16 choice, UInt16 invSlot)
+		{
+			if (client.Character?.Location.Instance == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "null Character");
+				return;
+			}
+
+			uint xpReward;
+
+			try
+			{
+				var npcData = client.Character.Location.Instance.MapData.NpcData;
+				var posData = client.Character.Location;
+				xpReward = client.Character.QuestManager.EndQuest(questId, slot, posData, npcData, client, choice, invSlot);
+			}
+			catch (Exception e)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, $"quest desync ({e.Message})");
+				return;
+			}
+
+			var packet_rsp = new RSP_QuestClsEvt(1, slot, 0, 0, xpReward);
+			client.PacketManager.Send(packet_rsp);
+		}
+
 		internal static void OnQuestNpcInteract(Client client, UInt16 questId, UInt32 setId, Byte maybeSlot, List<QuestAction> questActions)
 		{
 			if (client.Character?.Location.Instance == null)
@@ -38,9 +65,9 @@ namespace WorldServer.Logic.Delegates
 				var posData = client.Character.Location;
 				quest = client.Character.QuestManager.ProgressQuest(questId, posData, npcData, questActions);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "quest desync");
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, $"quest desync ({e.Message})");
 				return;
 			}
 
@@ -62,9 +89,9 @@ namespace WorldServer.Logic.Delegates
 				var posData = client.Character.Location;
 				client.Character.QuestManager.StartQuest(questId, slot, posData, npcData);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "quest desync");
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, $"quest desync ({e.Message})");
 				return;
 			}
 

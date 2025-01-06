@@ -37,6 +37,13 @@ namespace WorldServer.Logic.CharData
 				SyncPending = DBSyncPriority.NONE;
 		}
 
+		public void GiveAlz(UInt64 amt)
+		{
+			if (amt < 0)
+				throw new Exception("expected amt > 0");
+			Alz += amt;
+		}
+
 		public InventoryData GetProtobuf()
 		{
 			InventoryData data = new InventoryData();
@@ -116,7 +123,7 @@ namespace WorldServer.Logic.CharData
 			return (UInt16)(y * 8 + x);
 		}
 
-		private bool AddItem(UInt16 slot, Item item)
+		public bool AddItem(UInt16 slot, Item item)
 		{
 			//todo, check item collision with a cache
 			var slotX = slot % 8;

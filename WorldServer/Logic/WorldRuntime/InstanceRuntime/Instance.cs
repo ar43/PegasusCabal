@@ -538,7 +538,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			//TODO: recalc totalExp for bonuses and blah blah
 			//also skill exp
 
-			attacker.Character.Stats.AddExp(totalExp);
+			attacker.Character.Stats.AddExp((UInt64)totalExp);
 			//addSkillExp
 
 			var rsp = new RSP_SkillToMobs(mobDmgReport, skill.Id, (UInt16)attacker.Character.Status.Hp, (UInt16)attacker.Character.Status.Mp,

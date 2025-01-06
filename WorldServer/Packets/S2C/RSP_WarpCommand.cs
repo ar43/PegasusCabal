@@ -24,8 +24,8 @@ namespace WorldServer.Packets.S2C
 		{
 			PacketWriter.WriteUInt16(data, (UInt16)_character.Location.Movement.X);
 			PacketWriter.WriteUInt16(data, (UInt16)_character.Location.Movement.Y);
-			PacketWriter.WriteUInt32(data, _character.Stats.Exp);
-			PacketWriter.WriteUInt32(data, _character.Stats.Axp);
+			PacketWriter.WriteUInt64(data, _character.Stats.Exp);
+			//PacketWriter.WriteUInt32(data, _character.Stats.Axp); NEED TO RESEARCH
 			PacketWriter.WriteUInt64(data, _character.Inventory.Alz);
 			PacketWriter.WriteUInt16(data, _character.ObjectIndexData.ObjectId);
 			PacketWriter.WriteByte(data, _character.ObjectIndexData.WorldIndex);

@@ -68,13 +68,15 @@ namespace WorldServer.Logic.CharData
 			var adx = Math.Abs(dx);
 			var ady = Math.Abs(dy);
 
-			if (adx >= 6)
+			if (adx > 7)
 			{
+				Serilog.Log.Warning($"{adx} | {ady}");
 				return false;
 			}
 
-			if (ady >= 6)
+			if (ady > 7)
 			{
+				Serilog.Log.Warning($"{adx} | {ady}");
 				return false;
 			}
 

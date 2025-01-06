@@ -5,11 +5,11 @@ using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData.Items
 {
-	internal class Item
+    internal class Item
 	{
 		public Item(UInt32 kind, UInt32 option, UInt32 serial, UInt32 duration)
 		{
-			if (ItemConfig == null)
+			if (ItemConfig == null || _itemRewardData == null)
 				throw new Exception("item configs not yet loaded");
 			Kind = kind;
 			Option = option;
@@ -25,6 +25,7 @@ namespace WorldServer.Logic.CharData.Items
 		public UInt32 Duration { get; private set; } //change to period
 
 		private static Dictionary<UInt32, ItemInfo>? ItemConfig;
+		private static ItemRewardData? _itemRewardData = null;
 		private ItemInfo _itemInfo;
 
 		public int GetWidth()
@@ -94,6 +95,48 @@ namespace WorldServer.Logic.CharData.Items
 			ItemData data = new ItemData { Kind = Kind, Option = Option, Serial = Serial, Duration = Duration };
 
 			return data;
+		}
+
+		public static Item GenerateReward(uint rewardItemIdx, uint battleStyle, uint order)
+		{
+			if(_itemRewardData.MainData.TryGetValue(new(rewardItemIdx, battleStyle, order), out var reward))
+			{
+				Item item = new(reward.ItemKind, reward.ItemOpt, 0, reward.Duration);
+				return item;
+			}
+			else
+			{
+				if (_itemRewardData.MainData.TryGetValue(new(rewardItemIdx, 0, order), out var reward2))
+				{
+					Item item = new(reward2.ItemKind, reward2.ItemOpt, 0, reward2.Duration);
+					return item;
+				}
+				else
+				{
+					throw new Exception("Item could not be generated");
+				}
+			}
+			
+		}
+
+		public static void LoadItemRewards(WorldConfig worldConfig)
+		{
+			if (_itemRewardData != null) throw new Exception("item reward config already loaded");
+			_itemRewardData = new();
+
+			var cfg = worldConfig.GetConfig("[RewardItem]");
+			foreach (var it in cfg.Values)
+			{
+				uint RewardItemIdx = Convert.ToUInt32(it["RewardItemIdx"]);
+				uint Class = Convert.ToUInt32(it["Class"]);
+				string Type = new(it["Type"]);
+				uint Grade = Convert.ToUInt32(it["Grade"]);
+				uint Order = Convert.ToUInt32(it["Order"]);
+				uint ItemKind = Convert.ToUInt32(it["ItemKind"]);
+				int ItemOpt = Convert.ToInt32(it["ItemOpt"]);
+				uint Duration = Convert.ToUInt32(it["Duration"]);
+				_itemRewardData.Add(new(RewardItemIdx, Class, Order), new(RewardItemIdx, Class, Type, Grade, Order, ItemKind, (uint)ItemOpt, Duration));
+			}
 		}
 
 		public static void LoadConfigs(WorldConfig worldConfig)

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
+using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 
 namespace WorldServer.Logic.CharData.Quests
@@ -14,10 +15,12 @@ namespace WorldServer.Logic.CharData.Quests
     {
 		private Dictionary<int, Quest> _activeQuests = new();
 		private BitArray _startedQuests;
+		private BitArray _completedQuests;
 
 		public QuestManager()
 		{
 			_startedQuests = new(1023 * 8);
+			_completedQuests = new(1023 * 8);
 		}
 
 		public void StartQuest(int questId, int slot, Location posData, Dictionary<Int32, WorldRuntime.MapDataRuntime.NpcData> npcData)
@@ -37,6 +40,69 @@ namespace WorldServer.Logic.CharData.Quests
 			_startedQuests[questId] = true;
 			_activeQuests[slot] = quest;
 			quest.Start();
+		}
+
+		internal UInt32 EndQuest(UInt16 questId, UInt16 slot, Location posData, Dictionary<Int32, NpcData> npcData, Client client, UInt16 choice, UInt16 invSlot)
+		{
+			_activeQuests.TryGetValue(slot, out var quest);
+			var inv = client.Character.Inventory;
+
+			if (quest == null)
+				throw new Exception("quest does not exist in the slot");
+			if (quest.Id != questId)
+				throw new Exception("incorrect quest");
+
+			if(quest.Flags != quest.GetEndFlags())
+				throw new Exception("cant complete the quest yet");
+
+			var npcPosX = npcData[quest.GetEndNpcId()].PosX;
+			var npcPosY = npcData[quest.GetEndNpcId()].PosY;
+
+			if (posData.Instance?.MapId != (MapId)quest.GetEndMapId())
+				throw new Exception("char not in correct instance");
+			if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
+				throw new Exception("char too far away from npc");
+
+			var questReward = quest.GetQuestReward();
+
+			Item? itemReward = null;
+
+            if (questReward.RewardItemIdx > 0)
+            {
+				itemReward = Item.GenerateReward((UInt32)questReward.RewardItemIdx, client.Character.Style.BattleStyleNum, choice);
+            }
+
+			if(itemReward != null)
+			{
+				if (!inv.AddItem(invSlot, itemReward))
+					throw new Exception("failed to add reward item");
+			}
+
+			client.Character.Stats.AddExp((UInt32)questReward.Exp);
+			inv.GiveAlz((UInt64)questReward.Alz);
+
+			//TODO:
+			/*
+			MapCode = mapCode;
+			WarpCode = warpCode;
+			SkillIdx = skillIdx;
+			RewardItemIdx = rewardItemIdx;
+			Reputation = reputation;
+			SkillEXP = skillEXP;
+			AXP = aXP;
+			CraftEXP = craftEXP;
+			PetEXP = petEXP;
+			GuildEXP = guildEXP;
+			*/
+
+			//send packet 760 NFY_SkillStatus
+
+			var exp = (UInt32)questReward.Exp;
+
+			_activeQuests.Remove(slot);
+			_completedQuests[questId] = true;
+
+			return exp;
 		}
 
 		internal Quest ProgressQuest(UInt16 questId, Location posData, Dictionary<Int32, NpcData> npcData, List<QuestAction> questActions)

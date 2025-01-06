@@ -41,7 +41,7 @@ namespace WorldServer.Logic.Delegates
 
 			if (skill.CheckUseCase(SkillUseCase.ENABLE_BM1_2HND) || skill.CheckUseCase(SkillUseCase.ENABLE_BM2_2HND))
 			{
-				if (item_left?.GetItemType() == ItemType.IDT_2HND)
+				if (item_right?.GetItemType() == ItemType.IDT_2HND)
 					return true;
 			}
 

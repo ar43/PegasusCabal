@@ -289,6 +289,14 @@ namespace WorldServer.Logic
 					}
 				}
 			}
+			while (Character.Stats.LvlUpEventQueue.Count > 0)
+			{
+				var packet_update = new NFY_UpdateDatas(UpdateType.UT_LEVEL, (ushort)Character.Stats.LvlUpEventQueue.Dequeue(), 0);
+				PacketManager.Send(packet_update);
+
+				var packet_nfy = new NFY_ChartrEvent(CharEvent.EVT_LEVELUP, Character.Id);
+				this.BroadcastNearby(packet_nfy);
+			} 
 		}
 
 		internal void Error(string funcName, string message)
@@ -467,10 +475,12 @@ namespace WorldServer.Logic
 				return false;
 			}
 
+#if !DEBUG
 			if (Character.Nation != NationCode.NATION_GM)
 			{
 				return false;
 			}
+#endif
 
 			return true;
 		}

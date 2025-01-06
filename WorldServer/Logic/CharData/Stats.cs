@@ -3,6 +3,7 @@ using System;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.DbSyncData;
 using WorldServer.Logic.CharData.Styles.Coefs;
+using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData
 {
@@ -19,18 +20,20 @@ namespace WorldServer.Logic.CharData
 			Rank = rank;
 			Axp = 0;
 			SyncPending = DBSyncPriority.NONE;
-			ForceDebugStats();
+			LvlUpEventQueue = new();
 		}
 
 		public DBSyncPriority SyncPending { get; private set; }
 		public Int32 Level { get; private set; }
-		public UInt32 Exp { get; private set; }
+		public UInt64 Exp { get; private set; }
 		public UInt32 Axp { get; private set; }
 		public int Str { get; private set; }
 		public int Dex { get; private set; }
 		public int Int { get; private set; }
 		public UInt32 Pnt { get; private set; }
 		public UInt32 Rank { get; private set; }
+		private static UInt64[]? _expTable;
+		public Queue<int> LvlUpEventQueue { get; private set; }
 
 		public const int BASE_CR = 5;
 		public const int BASE_CD = 120;
@@ -43,9 +46,31 @@ namespace WorldServer.Logic.CharData
 				SyncPending = DBSyncPriority.NONE;
 		}
 
+		public static void LoadExpTable(WorldConfig worldConfig)
+		{
+			if (_expTable != null) throw new Exception("quest configs already loaded");
+			_expTable = new ulong[250];
+
+			var cfg = worldConfig.GetConfig("[ReqEXP]");
+			_expTable[0] = 0;
+			int i = 0;
+				
+			foreach(var it in cfg.Values)
+			{
+				if(i == 0)
+				{
+					i++;
+					continue;
+				}
+				UInt64 ReqEXP = Convert.ToUInt64(it["ReqEXP"]);
+				_expTable[i] = ReqEXP;
+				i++;
+			}
+		}
+
 		public DbSyncStats GetDB()
 		{
-			DbSyncStats stats = new DbSyncStats((Int32)Level, Exp, (Int32)Axp, (Int32)Str, (Int32)Dex, (Int32)Int, (Int32)Pnt, (Int32)Rank);
+			DbSyncStats stats = new DbSyncStats((Int32)Level, (Int64)Exp, (Int32)Axp, (Int32)Str, (Int32)Dex, (Int32)Int, (Int32)Pnt, (Int32)Rank);
 			return stats;
 		}
 
@@ -54,14 +79,35 @@ namespace WorldServer.Logic.CharData
 			return ((coef.STR * Str) + (coef.DEX * Dex) + (coef.INT * Int)) / 10000;
 		}
 
-		private void ForceDebugStats()
+		private ulong GetNextLevelXPDiff()
 		{
-			Exp = 0;
+			return _expTable[Level] - Exp;
 		}
 
-		public void AddExp(int exp)
+		private void LevelUp()
 		{
-			Exp += (UInt32)exp;
+			Level++;
+			Pnt += 5;
+			LvlUpEventQueue.Enqueue(Level);
+		}
+
+		public void AddExp(ulong exp)
+		{
+			while(exp > 0)
+			{
+				var reqToLvl = GetNextLevelXPDiff();
+				if(exp < reqToLvl)
+				{
+					Exp += exp;
+					exp -= exp;
+				}
+				else
+				{
+					LevelUp();
+					Exp += exp;
+					exp -= reqToLvl;
+				}
+			}
 		}
 	}
 }
