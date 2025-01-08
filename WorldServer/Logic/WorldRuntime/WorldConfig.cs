@@ -6,6 +6,7 @@ using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.CharData.Quests;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.CharData.Styles;
+using WorldServer.Logic.Extra;
 
 namespace WorldServer.Logic.WorldRuntime
 {
@@ -33,6 +34,8 @@ namespace WorldServer.Logic.WorldRuntime
 			Style.LoadConfigs(this);
 			Quest.LoadConfigs(this);
 			Stats.LoadExpTable(this);
+
+			CommandManager.Init();
 		}
 
 		private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _config;

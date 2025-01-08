@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -43,6 +44,16 @@ namespace LibPegasus.Utils
 			if (str == "<null>")
 				return null;
 			return str.Split([',', ':']).Select(n => Convert.ToInt32(n)).ToArray();
+		}
+
+		public static List<string>? GetCmdArgs(string cmd)
+		{
+			var result = cmd.Split('"')
+					 .Select((element, index) => index % 2 == 0  // If even index
+										   ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
+										   : new string[] { element })  // Keep the entire item
+					 .SelectMany(element => element).ToList();
+			return result;
 		}
 
 		public static UInt32 ReadBits(UInt32 input, int startBit, int length)

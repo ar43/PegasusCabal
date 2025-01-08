@@ -1,4 +1,5 @@
 ﻿using Nito.Collections;
+using System.Text;
 
 namespace LibPegasus.Packets
 {
@@ -109,6 +110,11 @@ namespace LibPegasus.Packets
 			{
 				data.AddToBack(input[i]);
 			}
+		}
+
+		public static void WriteString(Deque<Byte> data, String message)
+		{
+			WriteArray(data, Encoding.ASCII.GetBytes(message));
 		}
 	}
 }
