@@ -31,6 +31,10 @@ namespace WorldServer.Packets.S2C
 			var ip = BitConverter.ToUInt32(IPAddress.Parse("127.0.0.1").GetAddressBytes(), 0); //fixme
 			var chatIp = BitConverter.ToUInt32(_chatServerIp.GetAddressBytes(), 0);
 			UInt32 channelType = 0; //fixme
+			byte[] completedQuests = new byte[1023];
+			_character.QuestManager.CompletedQuests.RightShift(8); //hackerman
+			_character.QuestManager.CompletedQuests.CopyTo(completedQuests, 0);
+			_character.QuestManager.CompletedQuests.LeftShift(8);
 
 			PacketWriter.WriteNull(data, 57); //unknown
 			PacketWriter.WriteByte(data, 0); //unknown
@@ -117,10 +121,10 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, 0); //axp
 			PacketWriter.WriteUInt16(data, 0); //??
 			PacketWriter.WriteByte(data, 0); //bb count
-			PacketWriter.WriteByte(data, 0); //active quest count
+			PacketWriter.WriteByte(data, (byte)_character.QuestManager.ActiveQuests.Count); //active quest count
 			PacketWriter.WriteUInt16(data, 0); //Period Item Count
 
-			PacketWriter.WriteNull(data, 1023); // quests completed - bitfield
+			PacketWriter.WriteArray(data, completedQuests); // quests completed - bitfield
 			PacketWriter.WriteNull(data, 128); //quest dung flag
 			PacketWriter.WriteNull(data, 128); //mission dung flag
 
@@ -153,6 +157,8 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteArray(data, _character.Inventory.Serialize());
 			PacketWriter.WriteArray(data, _character.Skills.Serialize());
 			PacketWriter.WriteArray(data, _character.QuickSlotBar.Serialize());
+			PacketWriter.WriteArray(data, _character.QuestManager.Serialize());
+
 		}
 	}
 }

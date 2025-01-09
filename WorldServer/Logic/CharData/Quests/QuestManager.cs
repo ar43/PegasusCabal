@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Google.Protobuf;
+using Shared.Protos;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,26 +8,78 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
+using WorldServer.Logic.CharData.DbSyncData;
 using WorldServer.Logic.CharData.Items;
+using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 
 namespace WorldServer.Logic.CharData.Quests
 {
     internal class QuestManager
     {
-		private Dictionary<int, Quest> _activeQuests = new();
+		public DBSyncPriority SyncPending { get; private set; }
+		public Dictionary<int, Quest> ActiveQuests { get; private set; }
 		private BitArray _startedQuests;
-		private BitArray _completedQuests;
+		public BitArray CompletedQuests { get; private set; }
 
 		public QuestManager()
 		{
 			_startedQuests = new(1023 * 8);
-			_completedQuests = new(1023 * 8);
+			CompletedQuests = new(1023 * 8);
+			ActiveQuests = new();
+		}
+
+		public DbSyncQuest GetDB()
+		{
+			return new DbSyncQuest(GetActiveProtobuf(), GetCompletedProtobuf());
+		}
+
+		private CompletedQuestsData GetCompletedProtobuf()
+		{
+			CompletedQuestsData data = new CompletedQuestsData();
+			byte[] bytes = new byte[(CompletedQuests.Length-1) / 8 + 1];
+
+			for(int i = 0; i < CompletedQuests.Length; i++)
+			{
+				if (CompletedQuests[i] == true)
+					Serilog.Log.Warning(i.ToString());
+				i++;
+			}
+
+			if (CompletedQuests[3001] == true)
+				Serilog.Log.Warning("huh");
+
+			CompletedQuests.CopyTo(bytes, 0);
+			
+
+			data.CompletedQuests = ByteString.CopyFrom(bytes);
+
+			return data;
+		}
+
+		public void Sync(DBSyncPriority prio)
+		{
+			if (SyncPending < prio)
+				SyncPending = prio;
+			if (prio == DBSyncPriority.NONE)
+				SyncPending = DBSyncPriority.NONE;
+		}
+
+		private ActiveQuestData GetActiveProtobuf()
+		{
+			ActiveQuestData data = new ActiveQuestData();
+
+			foreach(var it in ActiveQuests)
+			{
+				data.ActiveQuestData_.Add((uint)it.Key, new ActiveQuestData.Types.ActiveQuestDataItem { Flag = it.Value.Flags, Id = it.Value.Id, IsExpanded = true, IsTracked = true, Progress = ByteString.Empty, ActCounter=it.Value.ActCounter, Slot = (uint)it.Key, Started = it.Value.Started });
+			}
+
+			return data;
 		}
 
 		public void StartQuest(int questId, int slot, Location posData, Dictionary<Int32, WorldRuntime.MapDataRuntime.NpcData> npcData)
 		{
-			if (_activeQuests.ContainsKey(slot) || _startedQuests[questId] == true)
+			if (ActiveQuests.ContainsKey(slot) || _startedQuests[questId] == true)
 				throw new Exception("Either the slot is full or quest is already started");
 
 			var quest = new Quest((UInt16)questId);
@@ -38,13 +92,13 @@ namespace WorldServer.Logic.CharData.Quests
 				throw new Exception("char too far away from npc");
 
 			_startedQuests[questId] = true;
-			_activeQuests[slot] = quest;
+			ActiveQuests[slot] = quest;
 			quest.Start();
 		}
 
 		internal UInt32 EndQuest(UInt16 questId, UInt16 slot, Location posData, Dictionary<Int32, NpcData> npcData, Client client, UInt16 choice, UInt16 invSlot)
 		{
-			_activeQuests.TryGetValue(slot, out var quest);
+			ActiveQuests.TryGetValue(slot, out var quest);
 			var inv = client.Character.Inventory;
 
 			if (quest == null)
@@ -99,8 +153,8 @@ namespace WorldServer.Logic.CharData.Quests
 
 			var exp = (UInt32)questReward.Exp;
 
-			_activeQuests.Remove(slot);
-			_completedQuests[questId] = true;
+			ActiveQuests.Remove(slot);
+			CompletedQuests[questId] = true;
 
 			return exp;
 		}
@@ -108,7 +162,7 @@ namespace WorldServer.Logic.CharData.Quests
 		internal Quest ProgressQuest(UInt16 questId, Location posData, Dictionary<Int32, NpcData> npcData, List<QuestAction> questActions)
 		{
 			Quest? quest = null;
-			foreach(var it in _activeQuests.Values)
+			foreach(var it in ActiveQuests.Values)
 			{
 				if (it.Id == questId)
 					quest = it;
@@ -149,6 +203,57 @@ namespace WorldServer.Logic.CharData.Quests
 
 			
 			return quest;
+		}
+
+		internal void SetCompletedQuests(CompletedQuestsData? questsCompletedProtobuf)
+		{
+			if(questsCompletedProtobuf != null)
+			{
+				CompletedQuests = new BitArray(questsCompletedProtobuf.CompletedQuests.ToByteArray());
+			}
+		}
+
+		internal void SetActiveQuests(ActiveQuestData? questsActiveProtobuf)
+		{
+			if(questsActiveProtobuf != null)
+			{
+				ActiveQuests = new();
+
+				foreach(var it in questsActiveProtobuf.ActiveQuestData_)
+				{
+					Quest quest = new((ushort)it.Value.Id, it.Value.Started, (ushort)it.Value.Flag, it.Value.ActCounter);
+
+					ActiveQuests[(int)it.Key] = quest;
+				}
+			}
+		}
+
+		public byte[] Serialize()
+		{
+			var bytes = new List<byte>();
+			foreach (var quest in ActiveQuests)
+			{
+				if (quest.Value != null)
+				{
+					bytes.AddRange(BitConverter.GetBytes(quest.Value.Id));
+					bytes.AddRange(BitConverter.GetBytes(quest.Value.Flags));
+					bytes.Add(1); //TODO - SAVE ISTRACKED AND ISEXPANDED
+					bytes.Add(1); //TODO - SAVE ISTRACKED AND ISEXPANDED
+					bytes.Add((byte)quest.Key); //TODO - SAVE ISTRACKED AND ISEXPANDED
+					//TODO - add progress for kill quests etc
+				}
+			}
+			return bytes.ToArray();
+		}
+
+		internal void SetStartedQuests()
+		{
+			_startedQuests = new(CompletedQuests);
+
+			foreach(var it in ActiveQuests.Values)
+			{
+				_startedQuests[it.Id] = true;
+			}
 		}
 	}
 }

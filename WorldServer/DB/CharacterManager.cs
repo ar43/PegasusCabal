@@ -3,6 +3,7 @@ using Npgsql;
 using Shared.Protos;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.CharData.DbSyncData;
+using WorldServer.Logic.CharData.Quests;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.CharData.Styles;
 
@@ -187,6 +188,27 @@ namespace WorldServer.DB
 			}
 		}
 
+		public async Task<int> SyncQuest(int charId, DbSyncQuest questData)
+		{
+			using var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET quests_completed = @a, quests_active = @c WHERE char_id = @b", conn))
+			{
+				try
+				{
+					cmd.Parameters.AddWithValue("b", charId);
+					cmd.Parameters.AddWithValue("a", questData.CompletedQuestsData.ToByteArray());
+					cmd.Parameters.AddWithValue("c", questData.ActiveQuestData.ToByteArray());
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
 		public async Task<(Character?, int)> GetCharacter(UInt32 charId)
 		{
 			using var conn = await _dataSource.OpenConnectionAsync();
@@ -226,10 +248,12 @@ namespace WorldServer.DB
 					var skillData = reader.GetOrdinal("skill_data");
 					var quickslotData = reader.GetOrdinal("quickslot_data");
 					var nationData = reader.GetOrdinal("nation");
+					var questsCompleted = reader.GetOrdinal("quests_completed");
+					var questsActive = reader.GetOrdinal("quests_active");
 
 					if (await reader.ReadAsync())
 					{
-						byte[] dbDataBytes = new byte[1024];
+						byte[] dbDataBytes = new byte[2048];
 
 						var dataLen = reader.GetBytes(equipment, 0, dbDataBytes, 0, dbDataBytes.Length);
 
@@ -268,6 +292,40 @@ namespace WorldServer.DB
 						var linksProtobuf = ToProtoObject<QuickSlotData>(dbDataBytes, (int)dataLen);
 						QuickSlotBar cQuickSlotBar = new QuickSlotBar(linksProtobuf);
 
+						Array.Clear(dbDataBytes);
+						QuestManager questManager = new QuestManager();
+						if(!reader.IsDBNull(questsCompleted))
+						{
+							dataLen = reader.GetBytes(questsCompleted, 0, dbDataBytes, 0, dbDataBytes.Length);
+							if(dataLen > 1)
+							{
+								if (dataLen == dbDataBytes.Length)
+								{
+									throw new Exception("increase dbDataBytes buffer");
+								}
+								var questsCompletedProtobuf = ToProtoObject<CompletedQuestsData>(dbDataBytes, (int)dataLen);
+								questManager.SetCompletedQuests(questsCompletedProtobuf);
+							}
+							
+						}
+
+						Array.Clear(dbDataBytes);
+						if (!reader.IsDBNull(questsActive))
+						{
+							dataLen = reader.GetBytes(questsActive, 0, dbDataBytes, 0, dbDataBytes.Length);
+							if (dataLen > 1)
+							{
+								if (dataLen == dbDataBytes.Length)
+								{
+									throw new Exception("increase dbDataBytes buffer");
+								}
+								var questsActiveProtobuf = ToProtoObject<ActiveQuestData>(dbDataBytes, (int)dataLen);
+								questManager.SetActiveQuests(questsActiveProtobuf);
+							}
+						}
+
+						questManager.SetStartedQuests();
+
 						var wid = reader.GetInt32(worldId);
 						Character character = new Character(
 							new Style((UInt32)reader.GetInt32(style)),
@@ -280,7 +338,8 @@ namespace WorldServer.DB
 							new Stats((int)reader.GetInt32(level), (UInt32)reader.GetInt32(exp), (int)reader.GetInt32(str), (int)reader.GetInt32(dex), (int)reader.GetInt32(INT), (UInt32)reader.GetInt32(pnt), (UInt32)reader.GetInt32(rank)),
 							new Status(reader.GetInt32(hp), reader.GetInt32(maxHp), reader.GetInt32(mp), reader.GetInt32(maxMp), reader.GetInt32(sp), reader.GetInt32(maxSp)),
 							reader.GetInt32(idLabel),
-							reader.GetInt32(nationData)
+							reader.GetInt32(nationData),
+							questManager
 						);
 						return (character, wid);
 					}

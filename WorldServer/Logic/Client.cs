@@ -402,6 +402,7 @@ namespace WorldServer.Logic
 					DbSyncSkills? dbSyncSkills = null;
 					DbSyncStats? dbSyncStats = null;
 					DbSyncStatus? dbSyncStatus = null;
+					DbSyncQuest? dbSyncQuest = null;
 
 					if (Character.Inventory.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
 					{
@@ -445,6 +446,12 @@ namespace WorldServer.Logic
 							highestPrio = Character.Status.SyncPending;
 						dbSyncStatus = Character.Status.GetDB();
 					}
+					if (Character.QuestManager.SyncPending > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
+					{
+						if (Character.QuestManager.SyncPending > highestPrio)
+							highestPrio = Character.QuestManager.SyncPending;
+						dbSyncQuest = Character.QuestManager.GetDB();
+					}
 
 					if (highestPrio > DBSyncPriority.NONE || globalPrio > DBSyncPriority.NONE)
 					{
@@ -458,6 +465,7 @@ namespace WorldServer.Logic
 						dbSyncRequest.DbSyncStatus = dbSyncStatus;
 						dbSyncRequest.DbSyncEquipment = dbSyncEquipment;
 						dbSyncRequest.DbSyncLocation = dbSyncLocation;
+						dbSyncRequest.DbSyncQuest = dbSyncQuest;
 						Log.Information($"Sent sync request (prio: {highestPrio}, char: {Character.Id}, final: {isFinal})");
 						syncManager.AddToQueue(dbSyncRequest, highestPrio);
 						Character.ClearSync();

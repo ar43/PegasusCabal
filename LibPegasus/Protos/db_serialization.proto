@@ -50,7 +50,9 @@ message ActiveQuestData
 		bool isTracked = 3;
 		bool isExpanded = 4;
 		uint32 slot = 5;
-		bytes progress = 6;
+		uint32 actCounter = 6;
+		bool started = 7;
+		bytes progress = 8;
 	}
 	map<uint32, ActiveQuestDataItem> activeQuestData = 1;
 }

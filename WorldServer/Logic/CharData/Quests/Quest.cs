@@ -1,4 +1,5 @@
 ﻿using LibPegasus.Utils;
+using Shared.Protos;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,13 +22,20 @@ namespace WorldServer.Logic.CharData.Quests
 			_questInfoMain = _questConfig.MainData[id];
 		}
 
+		public Quest(UInt16 id, Boolean started, UInt16 flags, UInt32 actCounter) : this(id)
+		{
+			Started = started;
+			Flags = flags;
+			ActCounter = actCounter;
+		}
+
 		public UInt16 Id { get; private set; }
 		private static QuestInfo? _questConfig = null;
 		private readonly QuestInfoMain _questInfoMain;
 
 		public bool Started { get; private set; }
 		public UInt16 Flags { get; private set; }
-		private uint ActCounter = 0;
+		public uint ActCounter { get; private set; }
 
 		public void Start()
 		{

@@ -171,13 +171,15 @@ namespace MasterServer.DB
 			var quickslotSerial = JsonToProtobuf(charInitData.QuickSlotData);
 			var time = DateTime.UtcNow;
 			int defaultNation = 0;
+			byte[] empty = new byte[1];
+			empty[0] = 0;
 
 			if ((createCharacterRequest.Style & 7) != charInitData.ClassType)
 			{
 				return (0, CharCreateResult.DATABRK);
 			}
 
-			await using (var cmd = new NpgsqlCommand("INSERT INTO main.characters VALUES (@c1, @c2, @c3, @c4, @c5, @c6, @c7, @c8, @c9, @c10, @c11, @c12, @c13, @c14, @c15, @c16, @c17, @c18, @c19, @c20, @c21, @c22, @c23, @c24, @c25, @c26, @c27, @c28, @c29, @c30, @c31, @c32, @c33, @c34) RETURNING char_id", conn))
+			await using (var cmd = new NpgsqlCommand("INSERT INTO main.characters VALUES (@c1, @c2, @c3, @c4, @c5, @c6, @c7, @c8, @c9, @c10, @c11, @c12, @c13, @c14, @c15, @c16, @c17, @c18, @c19, @c20, @c21, @c22, @c23, @c24, @c25, @c26, @c27, @c28, @c29, @c30, @c31, @c32, @c33, @c34, @c35, @c36) RETURNING char_id", conn))
 			{
 				cmd.Parameters.AddWithValue("c1", (int)charId);
 				cmd.Parameters.AddWithValue("c2", (int)createCharacterRequest.AccountId);
@@ -213,6 +215,8 @@ namespace MasterServer.DB
 				cmd.Parameters.AddWithValue("c32", charInitData.HP);
 				cmd.Parameters.AddWithValue("c33", charInitData.MP);
 				cmd.Parameters.AddWithValue("c34", defaultNation);
+				cmd.Parameters.AddWithValue("c35", empty);
+				cmd.Parameters.AddWithValue("c36", empty);
 				var output = await cmd.ExecuteScalarAsync();
 				if (output != null)
 				{

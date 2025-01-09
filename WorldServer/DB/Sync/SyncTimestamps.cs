@@ -9,6 +9,7 @@
 		public DateTime Skills;
 		public DateTime Stats;
 		public DateTime Status;
+		public DateTime Quest;
 
 		public SyncTimestamps()
 		{
@@ -19,6 +20,7 @@
 			Skills = DateTime.MinValue;
 			Stats = DateTime.MinValue;
 			Status = DateTime.MinValue;
+			Quest = DateTime.MinValue;
 		}
 	}
 }

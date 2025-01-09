@@ -21,7 +21,7 @@ namespace WorldServer.Logic.CharData
 			QuestManager = new();
 		}
 
-		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, LearnedSkills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id, int nation)
+		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, LearnedSkills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id, int nation, QuestManager questManager)
 		{
 			Equipment = equipment;
 			Inventory = inventory;
@@ -37,7 +37,7 @@ namespace WorldServer.Logic.CharData
 			ActionFlag = new ActionFlag(0);
 			Id = id;
 			Nation = (NationCode)nation;
-			QuestManager = new();
+			QuestManager = questManager;
 		}
 
 		public bool Verify()
@@ -87,6 +87,7 @@ namespace WorldServer.Logic.CharData
 			Stats.Sync(DBSyncPriority.NONE);
 			Skills.Sync(DBSyncPriority.NONE);
 			QuickSlotBar.Sync(DBSyncPriority.NONE);
+			QuestManager.Sync(DBSyncPriority.NONE);
 		}
 
 		public BattleStats CalculateBattleStats()

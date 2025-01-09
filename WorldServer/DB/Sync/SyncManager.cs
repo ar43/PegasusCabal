@@ -121,6 +121,14 @@ namespace WorldServer.DB.Sync
 						_databaseManager.CharacterManager.SyncStatus(charId, request.DbSyncStatus).ExecuteDbSync(isFinal, _masterRpcChannel, SyncFlags.STATUS, charId);
 					}
 				}
+				if (request.DbSyncQuest != null)
+				{
+					if (oldTimestamps.Quest.Ticks < newTimestamps.Ticks)
+					{
+						oldTimestamps.Quest = newTimestamps;
+						_databaseManager.CharacterManager.SyncQuest(charId, request.DbSyncQuest).ExecuteDbSync(isFinal, _masterRpcChannel, SyncFlags.QUEST, charId);
+					}
+				}
 
 				//todo: tell master server to release lock, but when....
 				//have to do SOMETHING when all of the Sync* functions are done, SOMEHOW

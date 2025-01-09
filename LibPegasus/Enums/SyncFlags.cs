@@ -9,6 +9,7 @@
 		SKILLS,
 		STATS,
 		STATUS,
+		QUEST,
 		NUM_FLAGS,
 	}
 }

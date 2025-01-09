@@ -21,6 +21,7 @@ namespace WorldServer.Logic.CharData.DbSyncData
 		public DbSyncSkills? DbSyncSkills { get; set; }
 		public DbSyncStats? DbSyncStats { get; set; }
 		public DbSyncStatus? DbSyncStatus { get; set; }
+		public DbSyncQuest? DbSyncQuest { get; set; }
 		public DateTime Timestamp { get; private set; }
 		public DBSyncPriority Priority { get; private set; }
 		public int CharId { get; private set; }
