@@ -61,7 +61,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 			foreach(var it in ActiveQuests)
 			{
-				data.ActiveQuestData_.Add((uint)it.Key, new ActiveQuestData.Types.ActiveQuestDataItem { Flag = it.Value.Flags, Id = it.Value.Id, IsExpanded = true, IsTracked = true, Progress = ByteString.Empty, ActCounter=it.Value.ActCounter, Slot = (uint)it.Key, Started = it.Value.Started });
+				data.ActiveQuestData_.Add((uint)it.Key, new ActiveQuestData.Types.ActiveQuestDataItem { Flag = it.Value.Flags, Id = it.Value.Id, IsExpanded = true, IsTracked = true, Progress = ByteString.CopyFrom(it.Value.QuestMobProgress.ToArray()), ActCounter=it.Value.ActCounter, Slot = (uint)it.Key, Started = it.Value.Started });
 			}
 
 			return data;
@@ -211,7 +211,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 				foreach(var it in questsActiveProtobuf.ActiveQuestData_)
 				{
-					Quest quest = new((ushort)it.Value.Id, it.Value.Started, (ushort)it.Value.Flag, it.Value.ActCounter);
+					Quest quest = new((ushort)it.Value.Id, it.Value.Started, (ushort)it.Value.Flag, it.Value.ActCounter, new List<Byte>(it.Value.Progress));
 
 					ActiveQuests[(int)it.Key] = quest;
 				}
@@ -230,7 +230,9 @@ namespace WorldServer.Logic.CharData.Quests
 					bytes.Add(1); //TODO - SAVE ISTRACKED AND ISEXPANDED
 					bytes.Add(1); //TODO - SAVE ISTRACKED AND ISEXPANDED
 					bytes.Add((byte)quest.Key); //TODO - SAVE ISTRACKED AND ISEXPANDED
-					//TODO - add progress for kill quests etc
+					if(quest.Value.QuestMobProgress?.Count > 0)
+						bytes.AddRange(quest.Value.QuestMobProgress);
+					//TODO - add progress for other quests
 				}
 			}
 			return bytes.ToArray();
@@ -244,6 +246,16 @@ namespace WorldServer.Logic.CharData.Quests
 			{
 				_startedQuests[it.Id] = true;
 			}
+		}
+
+		//debug only
+		internal void Reset()
+		{
+#if DEBUG
+			_startedQuests = new(1023 * 8);
+			CompletedQuests = new(1023 * 8);
+			ActiveQuests = new();
+#endif
 		}
 	}
 }

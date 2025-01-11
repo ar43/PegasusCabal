@@ -476,6 +476,14 @@ namespace WorldServer.Logic
 			}
 		}
 
+		public void SendServerMessage(string message, NewLoudMsgType messageType = NewLoudMsgType.INFO)
+		{
+			if (message.Length > 0xFFFF)
+				return;
+			NFY_NewLoudMsg msg = new((int)messageType, this.Character.Id, 3, message, "[Server]");
+			PacketManager.Send(msg);
+		}
+
 		public bool isGm()
 		{
 			if (Character == null)

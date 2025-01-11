@@ -22,11 +22,20 @@ namespace WorldServer.Logic.CharData.Quests
 			_questInfoMain = _questConfig.MainData[id];
 		}
 
-		public Quest(UInt16 id, Boolean started, UInt16 flags, UInt32 actCounter) : this(id)
+		public Quest(UInt16 id, Boolean started, UInt16 flags, UInt32 actCounter, List<byte>? questProgress) : this(id)
 		{
 			Started = started;
 			Flags = flags;
 			ActCounter = actCounter;
+			if(questProgress?.Count > 0)
+			{
+				QuestMobProgress = questProgress;
+			}
+			else
+			{
+				QuestMobProgress = null;
+			}
+			
 		}
 
 		public UInt16 Id { get; private set; }
@@ -36,12 +45,32 @@ namespace WorldServer.Logic.CharData.Quests
 		public bool Started { get; private set; }
 		public UInt16 Flags { get; private set; }
 		public uint ActCounter { get; private set; }
+		public List<byte>? QuestMobProgress;
 
 		public void Start()
 		{
 			Started = true;
 			Flags = 0;
 			ActCounter = 0;
+
+			if(_questInfoMain.MissionItem?.Length > 0)
+			{
+				throw new NotImplementedException();
+			}
+			if (_questInfoMain.MissionDungeon?.Length > 0)
+			{
+				throw new NotImplementedException();
+			}
+
+			if (_questInfoMain.MissionMob?.Length > 0)
+			{
+				QuestMobProgress = new List<byte>();
+				Debug.Assert(_questInfoMain.MissionMob.Length % 2 == 0);
+				for (int i = 0; i < _questInfoMain.MissionMob.Length / 2; i++)
+				{
+					QuestMobProgress.Add(0);
+				}
+			}
 		}
 
 		public QuestReward GetQuestReward()
