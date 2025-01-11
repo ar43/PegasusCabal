@@ -1526,7 +1526,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			HP -= damage;
 		}
 
-		internal void DeathCheck()
+		internal void DeathCheck(Client attacker, int skillId)
 		{
 			if(HP <= 0)
 			{
@@ -1534,6 +1534,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				IsDead = true;
 				_instance.RemoveMobFromCell(this, false);
 				SetNextUpdateTime(DateTime.UtcNow, _spawnData.SpwnInterval);
+
+				attacker.Character.QuestManager.OnMobDeath(attacker, (UInt16)_data.Id, skillId);
 			}
 		}
 	}

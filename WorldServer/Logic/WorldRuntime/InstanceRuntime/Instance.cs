@@ -637,7 +637,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				dmgResult.HPLeft = (UInt32)defender.HP;
 				mobDmgReport.Add(dmgResult);
 
-				defender.DeathCheck();
+				defender.DeathCheck(attacker, skill.Id);
 				totalExp += exp;
 			}
 

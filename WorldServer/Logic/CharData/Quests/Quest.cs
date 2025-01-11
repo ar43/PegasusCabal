@@ -73,6 +73,34 @@ namespace WorldServer.Logic.CharData.Quests
 			}
 		}
 
+		public bool OnMobDeath(int mobId)
+		{
+			if (Started == false || QuestMobProgress?.Count == 0)
+				return false;
+
+			for(int i = 0; i < _questInfoMain.MissionMob.Length; i++)
+			{
+				if(i % 2 == 0)
+				{
+					if (_questInfoMain.MissionMob[i] == mobId)
+					{
+						var currentProgress = QuestMobProgress[i / 2];
+						if (currentProgress < _questInfoMain.MissionMob[i + 1])
+						{
+							QuestMobProgress[i / 2]++;
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
 		public QuestReward GetQuestReward()
 		{
 			if (_questInfoMain.QuestReward != null)

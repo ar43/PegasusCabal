@@ -12,6 +12,7 @@ using WorldServer.Logic.CharData.DbSyncData;
 using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
+using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.CharData.Quests
 {
@@ -55,6 +56,18 @@ namespace WorldServer.Logic.CharData.Quests
 				SyncPending = DBSyncPriority.NONE;
 		}
 
+		public void OnMobDeath(Client client, ushort mobId, int skillId)
+		{
+			foreach(var quest in ActiveQuests.Values)
+			{
+				if(quest.OnMobDeath(mobId))
+				{
+					NFY_QuestMobKilled success = new(mobId, skillId);
+					client.PacketManager.Send(success);
+				}
+			}
+		}
+
 		private ActiveQuestData GetActiveProtobuf()
 		{
 			ActiveQuestData data = new ActiveQuestData();
@@ -81,9 +94,9 @@ namespace WorldServer.Logic.CharData.Quests
 			if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
 				throw new Exception("char too far away from npc");
 
+			quest.Start();
 			_startedQuests[questId] = true;
 			ActiveQuests[slot] = quest;
-			quest.Start();
 		}
 
 		internal UInt32 EndQuest(UInt16 questId, UInt16 slot, Location posData, Dictionary<Int32, NpcData> npcData, Client client, UInt16 choice, UInt16 invSlot)

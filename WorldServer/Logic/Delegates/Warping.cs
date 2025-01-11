@@ -53,7 +53,7 @@ namespace WorldServer.Logic.Delegates
 				}
 				case (Byte)SpecialWarpIndex.NPCSIDX_GM:
 				{
-					if (client.Character.Nation != NationCode.NATION_GM)
+					if (!client.isGm())
 					{
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "tried to gm warp without gm nation");
 						return;

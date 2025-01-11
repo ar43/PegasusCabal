@@ -43,6 +43,12 @@ namespace WorldServer.Logic.CharData.Skills
 			return _learnedSkills[(UInt16)slot];
 		}
 
+		//temp
+		public void DebugAddSkill(UInt16 skillSlot, Skill skill)
+		{
+			_learnedSkills[skillSlot] = skill;
+		}
+
         public SkillData GetProtobuf()
         {
             SkillData skillData = new SkillData();

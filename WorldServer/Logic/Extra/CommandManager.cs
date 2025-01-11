@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.Logic.CharData.Skills;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WorldServer.Logic.Extra
@@ -18,6 +19,7 @@ namespace WorldServer.Logic.Extra
 			CommandList["reset"] = CommandDelegates.Reset;
 			CommandList["kickme"] = CommandDelegates.KickMe;
 			CommandList["testmsg"] = CommandDelegates.TestMsg;
+			CommandList["give"] = CommandDelegates.Give;
 		}
 	}
 
@@ -44,6 +46,24 @@ namespace WorldServer.Logic.Extra
 			{
 				client.SendServerMessage("Resetting quests..");
 				client.Character.QuestManager.Reset();
+			}
+			else
+			{
+				client.SendServerMessage("Invalid args");
+			}
+		}
+
+		public static void Give(Client client, List<string>? args)
+		{
+			if (args.Count != 2)
+			{
+				client.SendServerMessage("Invalid args");
+			}
+			if (args.ElementAt(1).ToLower() == "gmskill")
+			{
+				client.SendServerMessage("Gave GM skill..");
+				client.Character.Skills.DebugAddSkill(32, new Skill(147, 1));
+				client.Character.Skills.DebugAddSkill(33, new Skill(146,1));
 			}
 			else
 			{
