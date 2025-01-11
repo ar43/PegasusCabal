@@ -49,5 +49,45 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 			_groundItems[oid.ObjectId] = groundItem;
 			_instance.AddGroundItemToCell(groundItem, groundItem.CellX, groundItem.CellY, true);
 		}
+
+		public void RemoveGroundItem(GroundItem groundItem) 
+		{
+			groundItem.Delete();
+			_instance.RemoveGroundItemFromCell(groundItem, true);
+			_groundItems.Remove(groundItem.ObjectIndexData.ObjectId);
+		}
+
+		internal Item? OnLootRequest(Client client, ObjectIndexData objectIndexData, UInt16 key, UInt32 itemKind, UInt16 slot)
+		{
+			var groundItem = _groundItems[objectIndexData.ObjectId];
+
+			if (groundItem == null)
+				throw new Exception("ground item not found");
+
+			if (groundItem.Key != key)
+				throw new Exception("incorrect key");
+
+			if (groundItem.Item.Kind != itemKind)
+				throw new Exception("item kind mismatch");
+
+			if (groundItem.Active == false)
+				throw new Exception("item already looted");
+
+			if(client.Character?.Location?.Instance?.Id == _instance.Id)
+			{
+				Item item = groundItem.Item;
+				bool addSuccess = client.Character.Inventory.AddItem(slot, item);
+				if (!addSuccess)
+					throw new Exception("inventory desync (slot not empty?)");
+
+				RemoveGroundItem(groundItem);
+
+				return item;
+			}
+			else
+			{
+				throw new Exception("instance mismatch");
+			}
+		}
 	}
 }

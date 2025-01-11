@@ -107,7 +107,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			if (notifyAround)
 			{
 				//possibly optimize this... no need to broadcast to empty instance for example
-				BroadcastNearby(groundItem, new NFY_DelMobsList(groundItem.ObjectIndexData, type));
+				BroadcastNearby(groundItem, new NFY_DelItemList(groundItem.ObjectIndexData, type));
 			}
 		}
 

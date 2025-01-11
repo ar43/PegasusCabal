@@ -77,6 +77,7 @@ namespace WorldServer.Packets
 				Opcode.CSC_QUESTCLSEVT => new REQ_QuestClsEvt(data),
 				Opcode.REQ_MESSAGEEVNT => new REQ_MessageEvnt(data),
 				Opcode.CSC_ITEMDROP => new REQ_ItemDrop(data),
+				Opcode.CSC_ITEMLOOTING => new REQ_ItemLooting(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

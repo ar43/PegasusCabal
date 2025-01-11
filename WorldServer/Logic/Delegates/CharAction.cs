@@ -1,7 +1,9 @@
 ﻿using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.CharData.Styles;
+using WorldServer.Logic.SharedData;
 using WorldServer.Packets.C2S.PacketSpecificData;
 using WorldServer.Packets.S2C;
 
@@ -302,6 +304,61 @@ namespace WorldServer.Logic.Delegates
 
 			var packet_success = new RSP_ItemDrop(1);
 			client.PacketManager.Send(packet_success);
+
+		}
+
+		internal static void OnItemLoot(Client client, ObjectIndexData objectIndexData, UInt16 key, UInt32 itemKind, UInt16 slot)
+		{
+			if (client.Character == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "character not yet loaded");
+				return;
+			}
+
+			var inv = client.Character?.Inventory;
+			var instance = client.Character?.Location?.Instance;
+			var movement = client.Character?.Location?.Movement;
+
+			if (inv == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "inventory not yet loaded");
+				return;
+			}
+			if (instance == null || movement == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "client not in instance");
+				return;
+			}
+
+			if((byte)instance.MapId != objectIndexData.WorldIndex)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "client not in correct world");
+				return;
+			}
+			Item? lootedItem = null;
+
+			try
+			{
+				lootedItem = instance.GroundItemManager.OnLootRequest(client, objectIndexData, key, itemKind, slot);
+			}
+			catch(Exception e) 
+			{
+				Serilog.Log.Error("Could not loot item: " + e.Message);
+
+				//TODO - proper msgs for proper cases
+				var packet_fail = new RSP_ItemLooting((Byte)ItemLootingResult.OUT_OF_RANGE, 0, 0, 0);
+				client.PacketManager.Send(packet_fail);
+
+				return;
+			}
+
+			if(lootedItem != null)
+			{
+				var packet_success = new RSP_ItemLooting((Byte)ItemLootingResult.SUCCESS, lootedItem.Kind, lootedItem.Option, slot);
+				client.PacketManager.Send(packet_success);
+			}
+			
+
 
 		}
 	}

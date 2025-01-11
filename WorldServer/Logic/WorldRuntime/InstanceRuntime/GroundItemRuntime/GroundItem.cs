@@ -36,5 +36,10 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 		public ItemContextType ItemContextType { get; private set; }
 		public UInt32 FromId { get; private set; }
 
+		public void Delete()
+		{
+			Active = false;
+		}
+
 	}
 }
