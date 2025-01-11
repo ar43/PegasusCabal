@@ -39,16 +39,6 @@ namespace WorldServer.Logic.CharData.Quests
 			CompletedQuestsData data = new CompletedQuestsData();
 			byte[] bytes = new byte[(CompletedQuests.Length-1) / 8 + 1];
 
-			for(int i = 0; i < CompletedQuests.Length; i++)
-			{
-				if (CompletedQuests[i] == true)
-					Serilog.Log.Warning(i.ToString());
-				i++;
-			}
-
-			if (CompletedQuests[3001] == true)
-				Serilog.Log.Warning("huh");
-
 			CompletedQuests.CopyTo(bytes, 0);
 			
 

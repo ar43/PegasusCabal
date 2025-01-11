@@ -1,4 +1,5 @@
-﻿using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
+﻿using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 
 namespace WorldServer.Logic.WorldRuntime
 {
@@ -8,9 +9,11 @@ namespace WorldServer.Logic.WorldRuntime
 		{
 			LocalClients = new();
 			LocalMobs = new();
+			LocalGroundItems = new();
 		}
 
 		public HashSet<Client> LocalClients { get; private set; }
 		public HashSet<Mob> LocalMobs { get; private set; }
+		public HashSet<GroundItem> LocalGroundItems { get; private set; }
 	}
 }

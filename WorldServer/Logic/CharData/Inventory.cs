@@ -156,7 +156,7 @@ namespace WorldServer.Logic.CharData
 			return true;
 		}
 
-		private Item? RemoveItem(UInt16 slot)
+		public Item? RemoveItem(UInt16 slot)
 		{
 			//todo, check item collision with a cache
 

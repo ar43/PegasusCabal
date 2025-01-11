@@ -253,5 +253,56 @@ namespace WorldServer.Logic.Delegates
 			client.BroadcastNearby(packet_nfy);
 
 		}
+
+		internal static void OnItemDrop(Client client, ItemMoveType fromType, Int32 fromSlot)
+		{
+			if (client.Character == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "character not yet loaded");
+				return;
+			}
+
+			var inv = client.Character?.Inventory;
+			var instance = client.Character?.Location?.Instance;
+			var movement = client.Character?.Location?.Movement;
+
+			if (inv == null) 
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "inventory not yet loaded");
+				return;
+			}
+			if (instance == null || movement == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "client not in instance");
+				return;
+			}
+			if (fromType != ItemMoveType.INVENTORY)
+			{
+				throw new NotImplementedException();
+			}
+
+			var item = inv.RemoveItem((ushort)fromSlot);
+
+			if (item == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "item not found");
+				return;
+			}
+
+			try
+			{
+				instance.GroundItemManager.AddGroundItem(item, (UInt32)client.Character.Id, (UInt16)movement.X, (UInt16)movement.Y, ItemContextType.ItemFromUser);
+			}
+			catch (Exception)
+			{
+				Serilog.Log.Error("Could not add ground item");
+				inv.AddItem((UInt16)fromSlot, item);
+				return;
+			}
+
+			var packet_success = new RSP_ItemDrop(1);
+			client.PacketManager.Send(packet_success);
+
+		}
 	}
 }

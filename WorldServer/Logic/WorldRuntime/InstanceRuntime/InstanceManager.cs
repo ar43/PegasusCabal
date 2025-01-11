@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Parsers.Mcl;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Logic.WorldRuntime.WarpsRuntime;
@@ -127,6 +128,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 			instance.TileAttributeData = GetTileAttributeData((Int32)instance.MapId);
 			instance.MobManager = new MobManager(instance);
+			instance.GroundItemManager = new GroundItemManager(instance);
 
 
 			_instances[instance.Id] = instance;
@@ -171,6 +173,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			{
 				var packetMobs = new NFY_NewMobsList(mobList);
 				client.PacketManager.Send(packetMobs);
+			}
+
+			var groundItemList = client.Character.Location.Instance.GetNearbyGroundItems(client);
+			if (groundItemList.Count > 0)
+			{
+				var packetItems = new NFY_NewItemList(groundItemList, 0xFFFFFFFF);
+				client.PacketManager.Send(packetItems);
 			}
 
 			var packet_new_list_this = new NFY_NewUserList(new List<Character>() { client.Character }, type);

@@ -15,9 +15,12 @@ namespace WorldServer.Packets.S2C
 
 		public override void WritePayload(Deque<byte> data)
 		{
+			int i = 0;
 			PacketWriter.WriteByte(data, (Byte)_mobs.Count);
 			foreach (var mob in _mobs)
 			{
+				if (i == 256)
+					throw new Exception("hit local ent limit, FIXME");
 				if (!mob.IsSpawned)
 					throw new Exception("Sending data about unspawned mob");
 				PacketWriter.WriteUInt16(data, mob.ObjectIndexData.ObjectId);
@@ -35,6 +38,7 @@ namespace WorldServer.Packets.S2C
 				PacketWriter.WriteByte(data, mob.Nation);
 				PacketWriter.WriteInt32(data, 0); //unknown
 				PacketWriter.WriteInt16(data, 0); //unknown
+				i++;
 			}
 		}
 	}

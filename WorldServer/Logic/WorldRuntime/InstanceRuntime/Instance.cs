@@ -4,6 +4,7 @@ using LibPegasus.Utils;
 using System.Reflection.Metadata;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Packets.C2S.PacketSpecificData;
@@ -40,7 +41,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				Id = InstanceIdGenerator;
 				InstanceIdGenerator++;
 			}
-			_random = new Random(Guid.NewGuid().GetHashCode()+(int)Id);
+			Rng = new Random(Guid.NewGuid().GetHashCode()+(int)Id);
 		}
 
 		public Instance(MapId mapId, InstanceDuration durationType, MapData mapData, InstanceType type) : this((UInt16)mapId, durationType, mapData, type) { }
@@ -48,7 +49,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		private readonly Cell[,] _cells;
 		public readonly MapData MapData;
 		public MobManager? MobManager = null;
-		Random _random;
+		public GroundItemManager? GroundItemManager = null;
+		public Random Rng { get; private set; }
 
 		public TileAttributeData? TileAttributeData { get; set; }
 		public UInt64 Id { get; }
@@ -86,6 +88,26 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			{
 				//possibly optimize this... no need to broadcast to empty instance for example
 				BroadcastNearby(mob, new NFY_DelMobsList(mob.ObjectIndexData, type));
+			}
+		}
+
+		public void AddGroundItemToCell(GroundItem groundItem, UInt16 cellX, UInt16 cellY, bool notifyAround)
+		{
+			_cells[cellX, cellY].LocalGroundItems.Add(groundItem);
+			if (notifyAround)
+			{
+				//possibly optimize this... no need to broadcast to empty instance for example
+				BroadcastNearby(groundItem, new NFY_NewItemList(new List<GroundItem> { groundItem }));
+			}
+		}
+
+		public void RemoveGroundItemFromCell(GroundItem groundItem, bool notifyAround, DelObjectType type = DelObjectType.DISAPPEAR)
+		{
+			_cells[groundItem.CellX, groundItem.CellY].LocalGroundItems.Remove(groundItem);
+			if (notifyAround)
+			{
+				//possibly optimize this... no need to broadcast to empty instance for example
+				BroadcastNearby(groundItem, new NFY_DelMobsList(groundItem.ObjectIndexData, type));
 			}
 		}
 
@@ -202,11 +224,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 			var currentNeighbours = GetNeighbours((Int16)cellX, (Int16)cellY);
 			var newNeightbours = GetNeighbours((Int16)newCellX, (Int16)newCellY);
-
 			var relevantCells = newNeightbours.Except(currentNeighbours).ToList();
+
+			//TODO: this is not efficient
+			var currentNeighboursShort = GetNeighboursShort((Int16)cellX, (Int16)cellY);
+			var newNeightboursShort = GetNeighboursShort((Int16)newCellX, (Int16)newCellY);
+			var relevantCellsShort = newNeightboursShort.Except(currentNeighboursShort).ToList();
 
 			List<Character> newChars = new List<Character>();
 			List<Mob> newMobs = new List<Mob>();
+			List<GroundItem> newItems = new List<GroundItem>();
 
 			foreach (var cellPos in relevantCells)
 			{
@@ -235,6 +262,20 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				}
 			}
 
+			//TODO: this is not efficient, two loops
+			foreach (var cellPos in relevantCellsShort)
+			{
+				foreach (var i in _cells[cellPos.Item1, cellPos.Item2].LocalGroundItems)
+				{
+					if (i == null)
+						throw new NullReferenceException("null item");
+					if (i.Active == false)
+						throw new Exception("item not active, shouldnt be in a cell");
+
+					newItems.Add(i);
+				}
+			}
+
 			if (newChars.Count > 0)
 			{
 				var packetOtherPlayers = new NFY_NewUserList(newChars, AddObjectType.OTHERPLAYERS);
@@ -245,6 +286,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			{
 				var packetNewMobs = new NFY_NewMobsList(newMobs);
 				client.PacketManager.Send(packetNewMobs);
+			}
+
+			if(newItems.Count > 0)
+			{
+				var packetNewItems = new NFY_NewItemList(newItems, 0xFFFFFFFF);
+				client.PacketManager.Send(packetNewItems);
 			}
 
 			currentCell.LocalClients.Remove(client);
@@ -261,6 +308,25 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 								{ 1, 1 }, { -1, -1 }, { 1, -1 }, { -1, 1 } };
 
 			for (int i = 0; i < 13; i++)
+			{
+				var x = cellX + offsets[i, 0];
+				var y = cellY + offsets[i, 1];
+				if (x >= 0 && y >= 0 && x < NUM_CELL_X && y < NUM_CELL_Y)
+				{
+					values.Add(((Int16, Int16))(x, y));
+				}
+			}
+			return values;
+		}
+		private static List<(Int16, Int16)> GetNeighboursShort(Int16 cellX, Int16 cellY)
+		{
+			List<(Int16, Int16)> values = new List<(Int16, Int16)>();
+
+			Int16[,] offsets = { { 0, 0 }, { 1, 0 }, { -1, 0 },
+										   { 0, 1 }, { 0, -1 },
+								{ 1, 1 }, { -1, -1 }, { 1, -1 }, { -1, 1 } };
+
+			for (int i = 0; i < 9; i++)
 			{
 				var x = cellX + offsets[i, 0];
 				var y = cellY + offsets[i, 1];
@@ -298,6 +364,24 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			var cellY = mob.Movement.CellY;
 
 			foreach (var cellPos in GetNeighbours((Int16)cellX, (Int16)cellY))
+			{
+				foreach (var c in _cells[cellPos.Item1, cellPos.Item2].LocalClients)
+				{
+					if (c == null)
+						throw new NullReferenceException("null client");
+					if (c.Character == null)
+						throw new NullReferenceException("null client");
+
+					c.PacketManager.Send(packet);
+				}
+			}
+		}
+		public void BroadcastNearby(GroundItem groundItem, PacketS2C packet)
+		{
+			var cellX = groundItem.CellX;
+			var cellY = groundItem.CellY;
+
+			foreach (var cellPos in GetNeighboursShort((Int16)cellX, (Int16)cellY))
 			{
 				foreach (var c in _cells[cellPos.Item1, cellPos.Item2].LocalClients)
 				{
@@ -353,6 +437,28 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				}
 			}
 			return mobs;
+		}
+
+		public List<GroundItem> GetNearbyGroundItems(Client client)
+		{
+			List<GroundItem> groundItems = new List<GroundItem>();
+
+			var cellX = client.Character.Location.Movement.CellX;
+			var cellY = client.Character.Location.Movement.CellY;
+
+			foreach (var cellPos in GetNeighboursShort((Int16)cellX, (Int16)cellY))
+			{
+				foreach (var i in _cells[cellPos.Item1, cellPos.Item2].LocalGroundItems)
+				{
+					if (i == null)
+						throw new NullReferenceException("null mob");
+					if (i.Active == false)
+						throw new Exception("item inactive, shouldnt be in a cell");
+
+					groundItems.Add(i);
+				}
+			}
+			return groundItems;
 		}
 
 		internal void Update()
@@ -434,7 +540,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				var defender = MobManager.GetMob(defenderInfo.Id.ObjectId);
 				var lvlDiffOrg = (int)(attacker.Character.Stats.Level - defender.Level);
 				var lvlDiff = BattleFormula.GetLvlDiff(attacker.Character.Stats.Level, defender.Level);
-				int roll = _random.Next(100);
+				int roll = Rng.Next(100);
 
 				int damage = 0;
 				AttackResult attackResult;
