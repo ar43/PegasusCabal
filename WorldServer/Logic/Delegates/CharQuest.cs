@@ -46,7 +46,13 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(questActions.Count == 0)
+			if (client.Character?.Inventory == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "null Character");
+				return;
+			}
+
+			if (questActions.Count == 0)
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "empty questActions");
 				return;
@@ -63,7 +69,7 @@ namespace WorldServer.Logic.Delegates
 			{
 				var npcData = client.Character.Location.Instance.MapData.NpcData;
 				var posData = client.Character.Location;
-				quest = client.Character.QuestManager.ProgressQuest(questId, posData, npcData, questActions);
+				quest = client.Character.QuestManager.ProgressQuest(questId, posData, npcData, questActions, client.Character.Inventory);
 			}
 			catch (Exception e)
 			{

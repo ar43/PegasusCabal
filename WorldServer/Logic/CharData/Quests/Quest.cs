@@ -1,6 +1,7 @@
 ﻿using LibPegasus.Utils;
 using Shared.Protos;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,13 +28,18 @@ namespace WorldServer.Logic.CharData.Quests
 			Started = started;
 			Flags = flags;
 			ActCounter = actCounter;
-			if(questProgress?.Count > 0)
+			MobProgress = null;
+			ItemProgress = null;
+			if (questProgress?.Count > 0)
 			{
-				QuestMobProgress = questProgress;
-			}
-			else
-			{
-				QuestMobProgress = null;
+				if(_questInfoMain.MissionMob?.Length > 0)
+				{
+					MobProgress = questProgress;
+				}
+				else if (_questInfoMain.MissionItem?.Length > 0)
+				{
+					ItemProgress = questProgress;
+				}
 			}
 			
 		}
@@ -45,37 +51,54 @@ namespace WorldServer.Logic.CharData.Quests
 		public bool Started { get; private set; }
 		public UInt16 Flags { get; private set; }
 		public uint ActCounter { get; private set; }
-		public List<byte>? QuestMobProgress;
+		public List<byte>? MobProgress;
+		public List<byte>? ItemProgress;
 
 		public void Start()
 		{
+			int debugCountProgressTypes = 0;
+
 			Started = true;
 			Flags = 0;
 			ActCounter = 0;
 
 			if(_questInfoMain.MissionItem?.Length > 0)
 			{
-				throw new NotImplementedException();
+				debugCountProgressTypes++;
+				ItemProgress = new List<byte>();
+				Debug.Assert(_questInfoMain.MissionItem.Length % 3 == 0);
+				for (int i = 0; i < _questInfoMain.MissionItem.Length / 3; i++)
+				{
+					ItemProgress.Add(0);
+				}
+
 			}
 			if (_questInfoMain.MissionDungeon?.Length > 0)
 			{
-				throw new NotImplementedException();
+				debugCountProgressTypes++;
+				throw new NotImplementedException("unimplemented dungeon - " + Id.ToString());
 			}
 
 			if (_questInfoMain.MissionMob?.Length > 0)
 			{
-				QuestMobProgress = new List<byte>();
+				debugCountProgressTypes++;
+				MobProgress = new List<byte>();
 				Debug.Assert(_questInfoMain.MissionMob.Length % 2 == 0);
 				for (int i = 0; i < _questInfoMain.MissionMob.Length / 2; i++)
 				{
-					QuestMobProgress.Add(0);
+					MobProgress.Add(0);
 				}
+			}
+
+			if(debugCountProgressTypes >= 2)
+			{
+				throw new NotImplementedException("unimplemented combo quest - " + Id.ToString());
 			}
 		}
 
 		public bool OnMobDeath(int mobId)
 		{
-			if (Started == false || QuestMobProgress?.Count == 0)
+			if (Started == false || MobProgress?.Count == 0 || Flags != GetEndFlags())
 				return false;
 
 			for(int i = 0; i < _questInfoMain.MissionMob.Length; i++)
@@ -84,10 +107,10 @@ namespace WorldServer.Logic.CharData.Quests
 				{
 					if (_questInfoMain.MissionMob[i] == mobId)
 					{
-						var currentProgress = QuestMobProgress[i / 2];
+						var currentProgress = MobProgress[i / 2];
 						if (currentProgress < _questInfoMain.MissionMob[i + 1])
 						{
-							QuestMobProgress[i / 2]++;
+							MobProgress[i / 2]++;
 							return true;
 						}
 						else
@@ -265,6 +288,6 @@ namespace WorldServer.Logic.CharData.Quests
 	internal class QuestAction
 	{
 		public uint ChoiceId;
-		public ushort Unknown;
+		public ushort Param; //seems to be inventory Slot, maybe can also be sth else?
 	}
 }

@@ -36,7 +36,7 @@ namespace WorldServer.Packets.C2S
 				{
 					var action = new QuestAction();
 					action.ChoiceId = PacketReader.ReadUInt32(_data);
-					action.Unknown = PacketReader.ReadUInt16(_data);
+					action.Param = PacketReader.ReadUInt16(_data);
 					questActions.Add(action);
 				}
 

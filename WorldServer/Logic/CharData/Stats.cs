@@ -104,7 +104,7 @@ namespace WorldServer.Logic.CharData
 				else
 				{
 					LevelUp();
-					Exp += exp;
+					Exp += reqToLvl;
 					exp -= reqToLvl;
 				}
 			}

@@ -179,6 +179,15 @@ namespace WorldServer.Logic.CharData
 			return item;
 		}
 
+		public Item? PeekItem(UInt16 slot)
+		{
+			if (!_items.ContainsKey(slot))
+				return null;
+
+			var item = _items[slot];
+			return item;
+		}
+
 		public byte[] Serialize()
 		{
 			var bytes = new List<byte>();

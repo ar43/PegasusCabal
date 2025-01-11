@@ -74,7 +74,13 @@ namespace WorldServer.Logic.CharData.Quests
 
 			foreach(var it in ActiveQuests)
 			{
-				data.ActiveQuestData_.Add((uint)it.Key, new ActiveQuestData.Types.ActiveQuestDataItem { Flag = it.Value.Flags, Id = it.Value.Id, IsExpanded = true, IsTracked = true, Progress = ByteString.CopyFrom(it.Value.QuestMobProgress.ToArray()), ActCounter=it.Value.ActCounter, Slot = (uint)it.Key, Started = it.Value.Started });
+				ByteString progress = ByteString.Empty;
+				if(it.Value.ItemProgress?.Count > 0)
+					progress = ByteString.CopyFrom(it.Value.ItemProgress.ToArray());
+				else if(it.Value.MobProgress?.Count > 0)
+					progress = ByteString.CopyFrom(it.Value.MobProgress.ToArray());
+
+				data.ActiveQuestData_.Add((uint)it.Key, new ActiveQuestData.Types.ActiveQuestDataItem { Flag = it.Value.Flags, Id = it.Value.Id, IsExpanded = true, IsTracked = true, Progress = progress, ActCounter=it.Value.ActCounter, Slot = (uint)it.Key, Started = it.Value.Started });
 			}
 
 			return data;
@@ -162,7 +168,7 @@ namespace WorldServer.Logic.CharData.Quests
 			return exp;
 		}
 
-		internal Quest ProgressQuest(UInt16 questId, Location posData, Dictionary<Int32, NpcData> npcData, List<QuestAction> questActions)
+		internal Quest ProgressQuest(UInt16 questId, Location posData, Dictionary<Int32, NpcData> npcData, List<QuestAction> questActions, Inventory inv)
 		{
 			Quest? quest = null;
 			foreach(var it in ActiveQuests.Values)
@@ -200,6 +206,32 @@ namespace WorldServer.Logic.CharData.Quests
 				var npcPosY = npcData[actionSet.ActNpc[1]].PosY;
 				if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
 					throw new Exception("char too far away from npc");
+
+				if(actionSet.Action == NpcActionType.QACT_GIVE)
+				{
+					Serilog.Log.Debug($"it.Unknown: {it.Param}");
+					inv.AddItem(it.Param, new Item((UInt32)actionSet.ItemKindCode, (UInt32)actionSet.ItemOpt, 0, 0));
+				}
+				else if (actionSet.Action == NpcActionType.QACT_TAKE)
+				{
+					Serilog.Log.Debug($"it.Unknown: {it.Param}");
+					var item = inv.PeekItem(it.Param);
+					if (item == null)
+						throw new Exception("item slot empty");
+
+					if(item.Kind == (UInt32)actionSet.ItemKindCode && item.Option == (UInt32)actionSet.ItemOpt)
+					{
+						_ = inv.RemoveItem(it.Param);
+					}
+					else
+					{
+						throw new Exception("invalid item");
+					}
+				}
+				else if (actionSet.Action != NpcActionType.QACT_TALK)
+				{
+					throw new NotImplementedException("Unimplemented NpcActionType");
+				}
 
 				quest.AddFlag(actIdx, (ushort)(1 << actionSet.Order));
 			}
@@ -243,8 +275,8 @@ namespace WorldServer.Logic.CharData.Quests
 					bytes.Add(1); //TODO - SAVE ISTRACKED AND ISEXPANDED
 					bytes.Add(1); //TODO - SAVE ISTRACKED AND ISEXPANDED
 					bytes.Add((byte)quest.Key); //TODO - SAVE ISTRACKED AND ISEXPANDED
-					if(quest.Value.QuestMobProgress?.Count > 0)
-						bytes.AddRange(quest.Value.QuestMobProgress);
+					if(quest.Value.MobProgress?.Count > 0)
+						bytes.AddRange(quest.Value.MobProgress);
 					//TODO - add progress for other quests
 				}
 			}
