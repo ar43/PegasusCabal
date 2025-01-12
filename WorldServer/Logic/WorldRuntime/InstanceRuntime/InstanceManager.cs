@@ -178,7 +178,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			var groundItemList = client.Character.Location.Instance.GetNearbyGroundItems(client);
 			if (groundItemList.Count > 0)
 			{
-				var packetItems = new NFY_NewItemList(groundItemList, 0xFFFFFFFF);
+				var packetItems = new NFY_NewItemList(groundItemList, 0, 0xFFFFFFFF);
 				client.PacketManager.Send(packetItems);
 			}
 

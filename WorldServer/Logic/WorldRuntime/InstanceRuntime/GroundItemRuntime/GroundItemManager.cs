@@ -16,7 +16,6 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 		private readonly Instance _instance;
 		private BitArray _takenIds;
 		private UInt16 _groundItemIdGenerator = 1;
-
 		public GroundItemManager(Instance instance)
 		{
 			_instance = instance;
@@ -39,7 +38,6 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 			
 		}
 
-
 		public void AddGroundItem(Item item, UInt32 fromId, UInt16 X, UInt16 Y, ItemContextType itemContextType)
 		{
 			UInt16 newKey = (UInt16)_instance.Rng.Next(0xFFFF+1);
@@ -60,6 +58,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 		internal Item? OnLootRequest(Client client, ObjectIndexData objectIndexData, UInt16 key, UInt32 itemKind, UInt16 slot)
 		{
 			var groundItem = _groundItems[objectIndexData.ObjectId];
+			var questLootInfo = (0, 0, 0);
 
 			if (groundItem == null)
 				throw new Exception("ground item not found");
@@ -73,7 +72,14 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 			if (groundItem.Active == false)
 				throw new Exception("item already looted");
 
-			if(client.Character?.Location?.Instance?.Id == _instance.Id)
+			if(groundItem.Item.IsQuestItem())
+			{
+				questLootInfo = client.Character.QuestManager.NeedItem(groundItem.Item);
+				if (questLootInfo == (0,0,0))
+					throw new Exception("don't need this quest item");
+			}
+
+			if (client.Character?.Location?.Instance?.Id == _instance.Id)
 			{
 				Item item = groundItem.Item;
 				bool addSuccess = client.Character.Inventory.AddItem(slot, item);
@@ -81,6 +87,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 					throw new Exception("inventory desync (slot not empty?)");
 
 				RemoveGroundItem(groundItem);
+
+				if (questLootInfo != (0,0,0))
+				{
+					client.Character.QuestManager.OnQuestItemLoot(questLootInfo.Item1,questLootInfo.Item2,questLootInfo.Item3);
+				}
 
 				return item;
 			}

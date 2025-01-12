@@ -126,6 +126,36 @@ namespace WorldServer.Logic.CharData.Quests
 			if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
 				throw new Exception("char too far away from npc");
 
+			if(quest.ItemProgress != null)
+			{
+				int i = 0;
+				foreach(var prog in quest.ItemProgress)
+				{
+                    if (prog != quest.QuestInfoMain.MissionItem[i].Item3)
+                    {
+						throw new Exception("quest item mission not completed");
+                    }
+					bool success = inv.RemoveAllQuestItemsByKind((UInt32)quest.QuestInfoMain.MissionItem[i].Item1) >= quest.QuestInfoMain.MissionItem[i].Item3;
+					if(!success)
+					{
+						throw new Exception("quest item mission not completed (SHOULD NOT HAPPEN)");
+					}
+					i++;
+				}
+			}
+
+			if(quest.MobProgress != null)
+			{
+				int i = 0;
+				foreach(var prog in quest.MobProgress)
+				{
+					if (prog != quest.QuestInfoMain.MissionMob[i*2+1])
+					{
+						throw new Exception("quest mob mission not completed");
+					}
+				}
+			}
+
 			var questReward = quest.GetQuestReward();
 
 			Item? itemReward = null;
@@ -277,6 +307,8 @@ namespace WorldServer.Logic.CharData.Quests
 					bytes.Add((byte)quest.Key); //TODO - SAVE ISTRACKED AND ISEXPANDED
 					if(quest.Value.MobProgress?.Count > 0)
 						bytes.AddRange(quest.Value.MobProgress);
+					if (quest.Value.ItemProgress?.Count > 0)
+						bytes.AddRange(quest.Value.ItemProgress);
 					//TODO - add progress for other quests
 				}
 			}
@@ -301,6 +333,45 @@ namespace WorldServer.Logic.CharData.Quests
 			CompletedQuests = new(1023 * 8);
 			ActiveQuests = new();
 #endif
+		}
+
+		internal (int,int,int) NeedItem(Item item)
+		{
+			Debug.Assert(item.IsQuestItem());
+
+			var real_opt = item.GetQuestItemOpt();
+			var real_quant = item.GetQuestItemCount();
+
+			foreach(var quest in ActiveQuests)
+			{
+				if(quest.Value.ItemProgress != null)
+				{
+					int i = 0;
+					foreach (var lootProgress in quest.Value.ItemProgress)
+					{
+						var neededKind = quest.Value.QuestInfoMain.MissionItem[i].Item1;
+						var neededOpt = quest.Value.QuestInfoMain.MissionItem[i].Item2;
+						var neededCount = quest.Value.QuestInfoMain.MissionItem[i].Item3;
+
+						var remaining = neededCount - lootProgress;
+
+						if(neededKind == item.Kind && neededOpt == real_opt && remaining > 0 && remaining - real_quant >= 0)
+						{
+							return (quest.Key, i, (int)real_quant);
+						}
+
+						i++;
+					}
+				}
+			}
+
+			return (0,0,0);
+		}
+
+		internal void OnQuestItemLoot(int slot, int lootIndex, int lootQuant)
+		{
+			var quest = ActiveQuests[slot];
+			quest.ItemProgress[lootIndex] += (Byte)lootQuant;
 		}
 	}
 }

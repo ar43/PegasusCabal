@@ -97,7 +97,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			if (notifyAround)
 			{
 				//possibly optimize this... no need to broadcast to empty instance for example
-				BroadcastNearby(groundItem, new NFY_NewItemList(new List<GroundItem> { groundItem }));
+				BroadcastNearby(groundItem, new NFY_NewItemList(new List<GroundItem> { groundItem }, (Byte)MapId));
 			}
 		}
 
@@ -290,7 +290,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 			if(newItems.Count > 0)
 			{
-				var packetNewItems = new NFY_NewItemList(newItems, 0xFFFFFFFF);
+				var packetNewItems = new NFY_NewItemList(newItems, 0, 0xFFFFFFFF);
 				client.PacketManager.Send(packetNewItems);
 			}
 

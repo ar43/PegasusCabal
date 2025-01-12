@@ -156,6 +156,24 @@ namespace WorldServer.Logic.CharData
 			return true;
 		}
 
+		public UInt32 RemoveAllQuestItemsByKind(uint kind)
+		{
+			UInt32 cnt = 0;
+			List<UInt16> slots = new();
+			foreach(var item in _items)
+			{
+				if (item.Value.Kind == kind)
+					slots.Add(item.Key);
+			}
+			foreach(var slot in slots)
+			{
+				var item = RemoveItem(slot);
+				if (item != null)
+					cnt += item.GetQuestItemCount();
+			}
+			return cnt;
+		}
+
 		public Item? RemoveItem(UInt16 slot)
 		{
 			//todo, check item collision with a cache
@@ -208,6 +226,11 @@ namespace WorldServer.Logic.CharData
 		public int Count()
 		{
 			return _items.Count;
+		}
+
+		public void DebugWipe()
+		{
+			_items = new();
 		}
 	}
 }

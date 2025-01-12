@@ -52,6 +52,11 @@ namespace WorldServer.Logic.Extra
 			{
 				
 			}
+			else if (args.ElementAt(1).ToLower() == "inv")
+			{
+				client.SendServerMessage("Resetting inventory..");
+				client.Character.Inventory.DebugWipe();
+			}
 			else
 			{
 				client.SendServerMessage("Invalid args");
@@ -89,6 +94,16 @@ namespace WorldServer.Logic.Extra
 			{
 				client.SendServerMessage("Setting quests to specific setup..");
 				int[] list = { 3001, 3002, 3003, 3005, 3006, 3007, 3008};
+				client.Character.QuestManager.Reset();
+				foreach (var qnum in list)
+				{
+					client.Character.QuestManager.CompletedQuests[qnum] = true;
+				}
+			}
+			else if (args.ElementAt(1).ToLower() == "qdbg2")
+			{
+				client.SendServerMessage("Setting quests to specific setup..");
+				int[] list = { 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011 };
 				client.Character.QuestManager.Reset();
 				foreach (var qnum in list)
 				{

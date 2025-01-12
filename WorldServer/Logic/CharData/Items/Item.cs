@@ -28,9 +28,34 @@ namespace WorldServer.Logic.CharData.Items
 		private static ItemRewardData? _itemRewardData = null;
 		private ItemInfo _itemInfo;
 
+		public readonly uint MASK_QITEM_CNT = 0x7f;
+		public readonly uint MASK_QITEM_IDX = 0xFFF80;
+		public bool IsQuestItem()
+		{
+			return GetItemType() == ItemType.IDT_QSTS;
+		}
+
 		public int GetWidth()
 		{
 			return _itemInfo.Width;
+		}
+
+		public void ConvertOptionToQuestOption(int quantity)
+		{
+			Debug.Assert(IsQuestItem());
+			Option = (uint)((Option << 7) + (quantity & MASK_QITEM_CNT));
+		}
+
+		public uint GetQuestItemOpt()
+		{
+			Debug.Assert(IsQuestItem());
+			return (Option & MASK_QITEM_IDX) >> 7;
+		}
+
+		public uint GetQuestItemCount()
+		{
+			Debug.Assert(IsQuestItem());
+			return Option & MASK_QITEM_CNT;
 		}
 
 		public int GetHeight()

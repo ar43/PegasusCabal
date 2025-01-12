@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using WorldServer.Logic.Delegates;
 using WorldServer.Logic;
 using WorldServer.Enums;
+using WorldServer.Logic.CharData.Quests;
 
 namespace WorldServer.Packets.C2S
 {
@@ -24,11 +25,20 @@ namespace WorldServer.Packets.C2S
 			UInt16 choice;
 			UInt16 invSlot;
 
+			
+
 			try
 			{
 				questId = PacketReader.ReadUInt16(_data);
+				Quest temp = new Quest(questId);
+				var itemCnt = temp.QuestInfoMain.MissionItem.Length;
+
+
+
 				slot = PacketReader.ReadUInt16(_data);
 				choice = PacketReader.ReadUInt16(_data);
+				for(int i = 0; i < itemCnt; i++)
+					_ = PacketReader.ReadUInt16(_data); // TODO - slots for various needed items
 				invSlot = PacketReader.ReadUInt16(_data);
 			}
 			catch (IndexOutOfRangeException)

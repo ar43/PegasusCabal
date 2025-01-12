@@ -28,6 +28,8 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 				if (subConfig != null)
 				{
 					var terrainData = subConfig["0"];
+					if (subConfig.Count > 1)
+						throw new NotImplementedException("Multi terrain map - figure it out: " + mapId.ToString());
 					if (terrainData != null)
 					{
 						var terrainX = Convert.ToInt32(terrainData["TerrainX"]);
@@ -70,6 +72,20 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							mobSpawnData.Add(spawnId, new MobSpawnData(SpeciesIdx, MobData, PosX, PosY, Width, Height, SpwnInterval, SpawnDefault,
 								EvtProperty, EvtMobs, EvtInterval,
 								MissionGate, PerfectDrop, Type, Min, Max, Authority, Server_Mob, Loot_Delay));
+						}
+
+						Dictionary<(int, int, int), MissionDropData> localMissionDropData = new();
+						configStr = "[MobsDropMission" + Convert.ToString(mapId) + "]";
+						subConfig = _config.GetConfig(configStr);
+						foreach (var missionDrop in subConfig.Values)
+						{
+							int TerrainIdx = Convert.ToInt32(missionDrop["TerrainIdx"]);
+							int SpeciesIdx = Convert.ToInt32(missionDrop["SpeciesIdx"]);
+							int ItemKind = Convert.ToInt32(missionDrop["ItemKind"]);
+							int ItemOpt = Convert.ToInt32(missionDrop["ItemOpt"]);
+							int DropRate = Convert.ToInt32(missionDrop["DropRate"]);
+							int MaxDropCnt = Convert.ToInt32(missionDrop["MaxDropCnt"]);
+							localMissionDropData.Add((SpeciesIdx, ItemKind, ItemOpt), new(TerrainIdx, SpeciesIdx, ItemKind, ItemOpt, DropRate, MaxDropCnt));
 						}
 
 						Dictionary<int, NpcData> npcData = new();
@@ -121,7 +137,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							}
 						}
 
-						var mapData = new MapData(mapId, terrainInfo, npcData, mobSpawnData);
+						var mapData = new MapData(mapId, terrainInfo, npcData, mobSpawnData, localMissionDropData);
 						if (!_maps.TryAdd(mapId, mapData))
 							throw new Exception($"Map {mapId} already exists");
 						return mapData;

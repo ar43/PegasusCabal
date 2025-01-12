@@ -93,7 +93,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 	internal class QuestInfoMain
 	{
-		public QuestInfoMain(Int32 questIdx, Int32 level, Int32 maxlv, Int32 maxRank, Int32 rankType, Int32[]? battleStyle, Int32[]? openItem, Int32[]? openSkill, Int32 cancelType, Int32 minReputationClass, Int32 maxReputationClass, Int32 penaltyEXP, Int32 missionNPCSet, Int32 reward, Int32 useDungeon, Int32[]? missionItem, Int32[]? missionMob, Int32[]? missionDungeon, Int32[]? openNpcs, Int32[]? closeNpcs, Int32 questType, Int32 partyQuest, Int32 deleteType, Int32 dailyCount, Int32 nation_Type, Int32[]? exclusiveCraft, Int32 commonCraftLevel, Int32 mission_Player)
+		public QuestInfoMain(Int32 questIdx, Int32 level, Int32 maxlv, Int32 maxRank, Int32 rankType, Int32[]? battleStyle, Int32[]? openItem, Int32[]? openSkill, Int32 cancelType, Int32 minReputationClass, Int32 maxReputationClass, Int32 penaltyEXP, Int32 missionNPCSet, Int32 reward, Int32 useDungeon, (int, int, int)[]? missionItem, Int32[]? missionMob, Int32[]? missionDungeon, Int32[]? openNpcs, Int32[]? closeNpcs, Int32 questType, Int32 partyQuest, Int32 deleteType, Int32 dailyCount, Int32 nation_Type, Int32[]? exclusiveCraft, Int32 commonCraftLevel, Int32 mission_Player)
 		{
 			QuestIdx = questIdx;
 			Level = level;
@@ -143,7 +143,7 @@ namespace WorldServer.Logic.CharData.Quests
 		public int MissionNPCSet { get; private set; }
 		public int Reward { get; private set; }
 		public int UseDungeon { get; private set; }
-		public int[]? MissionItem { get; private set; }
+		public (int, int, int)[]? MissionItem { get; private set; }
 		public int[]? MissionMob { get; private set; }
 		public int[]? MissionDungeon { get; private set; }
 		public int[]? OpenNpcs { get; private set; }

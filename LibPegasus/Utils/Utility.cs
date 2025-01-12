@@ -39,6 +39,21 @@ namespace LibPegasus.Utils
 			return str.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
 		}
 
+		public static (int, int, int)[]? IntArrayToTupleArray3(int[]? arrayIn)
+		{
+			if (arrayIn == null)
+				return null;
+			if (arrayIn.Length % 3 != 0)
+				throw new Exception("expected % 3");
+			(int, int, int)[] newArray = new (int, int, int)[arrayIn.Length / 3];
+			var test = new[] { (1, 2, 3) };
+			for(int i = 0; i < arrayIn.Length; i +=3)
+			{
+				newArray[i / 3] = (arrayIn[i], arrayIn[i + 1], arrayIn[i + 2]);
+			}
+			return newArray;
+		}
+
 		public static int[]? StringToIntArrayComplex(string str)
 		{
 			if (str == "<null>")

@@ -14,11 +14,13 @@ namespace WorldServer.Packets.S2C
 	{
 		List<GroundItem> _items;
 		uint _fromIdOverride;
+		byte _mapId;
 
-		public NFY_NewItemList(List<GroundItem> items, uint fromIdOverride = 0) : base((UInt16)Opcode.NFY_NEWITEMLIST)
+		public NFY_NewItemList(List<GroundItem> items, byte mapId, uint fromIdOverride = 0) : base((UInt16)Opcode.NFY_NEWITEMLIST)
 		{
 			_items = items;
 			_fromIdOverride = fromIdOverride;
+			_mapId = mapId;
 		}
 
 		public override void WritePayload(Deque<byte> data)
@@ -29,14 +31,25 @@ namespace WorldServer.Packets.S2C
 			{
 				if (i == 256)
 					throw new Exception("hit local ent limit, FIXME");
+				if(_fromIdOverride != 0)
+				{
+
+				}
+				else if(item.ItemContextType == ItemContextType.ItemFromMobs)
+				{
+					_fromIdOverride = item.FromId & 0xFFFF;
+					_fromIdOverride |= ((uint)_mapId << 16); 
+					_fromIdOverride |= (0x02 << 24); //TODO: figure it out
+				}
+				else
+				{
+					_fromIdOverride = item.FromId;
+				}
 				PacketWriter.WriteUInt16(data, item.ObjectIndexData.ObjectId);
 				PacketWriter.WriteByte(data, item.ObjectIndexData.WorldIndex);
 				PacketWriter.WriteByte(data, (Byte)item.ObjectIndexData.ObjectType);
 				PacketWriter.WriteUInt32(data, item.Item.Option);
-				if(_fromIdOverride == 0)
-					PacketWriter.WriteUInt32(data, item.FromId);
-				else
-					PacketWriter.WriteUInt32(data, _fromIdOverride);
+				PacketWriter.WriteUInt32(data, _fromIdOverride);
 				PacketWriter.WriteUInt32(data, item.Item.Kind);
 				PacketWriter.WriteUInt16(data, item.X);
 				PacketWriter.WriteUInt16(data, item.Y);

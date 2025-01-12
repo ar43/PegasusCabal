@@ -20,7 +20,7 @@ namespace WorldServer.Logic.CharData.Quests
 			if (_questConfig == null)
 				throw new Exception("Quest Data not yet loaded");
 			Id = id;
-			_questInfoMain = _questConfig.MainData[id];
+			QuestInfoMain = _questConfig.MainData[id];
 		}
 
 		public Quest(UInt16 id, Boolean started, UInt16 flags, UInt32 actCounter, List<byte>? questProgress) : this(id)
@@ -32,11 +32,11 @@ namespace WorldServer.Logic.CharData.Quests
 			ItemProgress = null;
 			if (questProgress?.Count > 0)
 			{
-				if(_questInfoMain.MissionMob?.Length > 0)
+				if(QuestInfoMain.MissionMob?.Length > 0)
 				{
 					MobProgress = questProgress;
 				}
-				else if (_questInfoMain.MissionItem?.Length > 0)
+				else if (QuestInfoMain.MissionItem?.Length > 0)
 				{
 					ItemProgress = questProgress;
 				}
@@ -46,7 +46,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 		public UInt16 Id { get; private set; }
 		private static QuestInfo? _questConfig = null;
-		private readonly QuestInfoMain _questInfoMain;
+		public readonly QuestInfoMain QuestInfoMain;
 
 		public bool Started { get; private set; }
 		public UInt16 Flags { get; private set; }
@@ -62,29 +62,29 @@ namespace WorldServer.Logic.CharData.Quests
 			Flags = 0;
 			ActCounter = 0;
 
-			if(_questInfoMain.MissionItem?.Length > 0)
+			if(QuestInfoMain.MissionItem?.Length > 0)
 			{
 				debugCountProgressTypes++;
 				ItemProgress = new List<byte>();
-				Debug.Assert(_questInfoMain.MissionItem.Length % 3 == 0);
-				for (int i = 0; i < _questInfoMain.MissionItem.Length / 3; i++)
+
+				foreach(var tuple in QuestInfoMain.MissionItem)
 				{
 					ItemProgress.Add(0);
 				}
 
 			}
-			if (_questInfoMain.MissionDungeon?.Length > 0)
+			if (QuestInfoMain.MissionDungeon?.Length > 0)
 			{
 				debugCountProgressTypes++;
 				throw new NotImplementedException("unimplemented dungeon - " + Id.ToString());
 			}
 
-			if (_questInfoMain.MissionMob?.Length > 0)
+			if (QuestInfoMain.MissionMob?.Length > 0)
 			{
 				debugCountProgressTypes++;
 				MobProgress = new List<byte>();
-				Debug.Assert(_questInfoMain.MissionMob.Length % 2 == 0);
-				for (int i = 0; i < _questInfoMain.MissionMob.Length / 2; i++)
+				Debug.Assert(QuestInfoMain.MissionMob.Length % 2 == 0);
+				for (int i = 0; i < QuestInfoMain.MissionMob.Length / 2; i++)
 				{
 					MobProgress.Add(0);
 				}
@@ -98,17 +98,17 @@ namespace WorldServer.Logic.CharData.Quests
 
 		public bool OnMobDeath(int mobId)
 		{
-			if (Started == false || MobProgress?.Count == 0 || Flags != GetEndFlags())
+			if (Started == false || MobProgress == null || Flags != GetEndFlags())
 				return false;
 
-			for(int i = 0; i < _questInfoMain.MissionMob.Length; i++)
+			for(int i = 0; i < QuestInfoMain.MissionMob.Length; i++)
 			{
 				if(i % 2 == 0)
 				{
-					if (_questInfoMain.MissionMob[i] == mobId)
+					if (QuestInfoMain.MissionMob[i] == mobId)
 					{
 						var currentProgress = MobProgress[i / 2];
-						if (currentProgress < _questInfoMain.MissionMob[i + 1])
+						if (currentProgress < QuestInfoMain.MissionMob[i + 1])
 						{
 							MobProgress[i / 2]++;
 							return true;
@@ -124,46 +124,48 @@ namespace WorldServer.Logic.CharData.Quests
 			return false;
 		}
 
+		
+
 		public QuestReward GetQuestReward()
 		{
-			if (_questInfoMain.QuestReward != null)
-				return _questInfoMain.QuestReward;
+			if (QuestInfoMain.QuestReward != null)
+				return QuestInfoMain.QuestReward;
 			else
 				throw new NotImplementedException();
 		}
 
 		public int GetStartMapId()
 		{
-			Debug.Assert(_questInfoMain.OpenNpcs.Length == 2);
-			return _questInfoMain.OpenNpcs[0];
+			Debug.Assert(QuestInfoMain.OpenNpcs.Length == 2);
+			return QuestInfoMain.OpenNpcs[0];
 		}
 
 		public int GetEndMapId()
 		{
-			Debug.Assert(_questInfoMain.CloseNpcs.Length == 2);
-			return _questInfoMain.CloseNpcs[0];
+			Debug.Assert(QuestInfoMain.CloseNpcs.Length == 2);
+			return QuestInfoMain.CloseNpcs[0];
 		}
 
 		public UInt16 GetEndFlags()
 		{
-			return _questInfoMain.CompletedFlags;
+			return QuestInfoMain.CompletedFlags;
 		}
 
 		public int GetStartNpcId()
 		{
-			Debug.Assert(_questInfoMain.OpenNpcs.Length == 2);
-			return _questInfoMain.OpenNpcs[1];
+			Debug.Assert(QuestInfoMain.OpenNpcs.Length == 2);
+			return QuestInfoMain.OpenNpcs[1];
 		}
 
 		public int GetEndNpcId()
 		{
-			Debug.Assert(_questInfoMain.CloseNpcs.Length == 2);
-			return _questInfoMain.CloseNpcs[1];
+			Debug.Assert(QuestInfoMain.CloseNpcs.Length == 2);
+			return QuestInfoMain.CloseNpcs[1];
 		}
 
 		public bool HasNpcActionSet()
 		{
-			return _questInfoMain.MissionNPCSet > 0 ? true : false;
+			return QuestInfoMain.MissionNPCSet > 0 ? true : false;
 		}
 
 		public uint GetExpectedChoice()
@@ -173,7 +175,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 		public QuestNpcActionSet GetActionSet(uint choice)
 		{
-			return _questInfoMain.NpcActionSet[(uint)choice];
+			return QuestInfoMain.NpcActionSet[(uint)choice];
 		}
 
 		public void AddFlag(uint actIdx, ushort flag)
@@ -228,7 +230,7 @@ namespace WorldServer.Logic.CharData.Quests
 					MissionPlayer = 0;
 				QuestInfoMain data = new(QuestIdx, Level, maxlv, MaxRank, RankType, BattleStyle, OpenItem,
 					OpenSkill, CancelType, MinReputationClass, MaxReputationClass, PenaltyEXP, MissionNPCSet,
-					Reward, UseDungeon, MissionItem, MissionMob, MissionDungeon, OpenNpcs,
+					Reward, UseDungeon, Utility.IntArrayToTupleArray3(MissionItem), MissionMob, MissionDungeon, OpenNpcs,
 					CloseNpcs, QuestType, PartyQuest, DeleteType, DailyCount, Nation_Type,
 					ExclusiveCraft, CommonCraftLevel, MissionPlayer);
 				_questConfig.Add(QuestIdx, data);

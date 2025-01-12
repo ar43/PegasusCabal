@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using WorldServer.Enums.Mob;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.CharData.Items;
+using WorldServer.Logic.CharData.Quests;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
@@ -1526,6 +1528,39 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			HP -= damage;
 		}
 
+		private void DropQuestItem(Client attacker)
+		{
+			foreach(var quest in attacker.Character?.QuestManager.ActiveQuests)
+			{
+				if(quest.Value.ItemProgress?.Count > 0)
+				{
+					int i = 0;
+					foreach(var itemInfo in quest.Value.QuestInfoMain.MissionItem)
+					{
+						var questProgressAtIndex = quest.Value.ItemProgress.ElementAt(i);
+						if (questProgressAtIndex >= itemInfo.Item3)
+						{
+							i++;
+							continue;
+						}
+							
+						if(_instance.MapData.LocalMissionDropData.TryGetValue((GetSpecies(), itemInfo.Item1, itemInfo.Item2), out var dropData))
+						{
+							int randNum = _rng.Next(100);
+							if(randNum < dropData.DropRate)
+							{
+								var qitem = new Item((UInt32)dropData.ItemKind, (UInt32)dropData.ItemOpt, 0, 0);
+								qitem.ConvertOptionToQuestOption(1);
+								_instance.GroundItemManager.AddGroundItem(qitem, ObjectIndexData.ObjectId, (UInt16)Movement.X, (UInt16)Movement.Y, Enums.ItemContextType.ItemFromMobs);
+								break;
+							}
+						}
+						i++;
+					}
+				}
+			}
+		}
+
 		internal void DeathCheck(Client attacker, int skillId)
 		{
 			if(HP <= 0)
@@ -1536,6 +1571,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				SetNextUpdateTime(DateTime.UtcNow, _spawnData.SpwnInterval);
 
 				attacker.Character.QuestManager.OnMobDeath(attacker, (UInt16)_data.Id, skillId);
+				DropQuestItem(attacker);
 			}
 		}
 	}
