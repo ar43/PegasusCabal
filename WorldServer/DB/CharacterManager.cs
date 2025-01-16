@@ -9,7 +9,7 @@ using WorldServer.Logic.CharData.Styles;
 
 namespace WorldServer.DB
 {
-    internal class CharacterManager
+	internal class CharacterManager
 	{
 		private NpgsqlDataSource _dataSource;
 
@@ -294,10 +294,10 @@ namespace WorldServer.DB
 
 						Array.Clear(dbDataBytes);
 						QuestManager questManager = new QuestManager();
-						if(!reader.IsDBNull(questsCompleted))
+						if (!reader.IsDBNull(questsCompleted))
 						{
 							dataLen = reader.GetBytes(questsCompleted, 0, dbDataBytes, 0, dbDataBytes.Length);
-							if(dataLen > 1)
+							if (dataLen > 1)
 							{
 								if (dataLen == dbDataBytes.Length)
 								{
@@ -306,7 +306,7 @@ namespace WorldServer.DB
 								var questsCompletedProtobuf = ToProtoObject<CompletedQuestsData>(dbDataBytes, (int)dataLen);
 								questManager.SetCompletedQuests(questsCompletedProtobuf);
 							}
-							
+
 						}
 
 						Array.Clear(dbDataBytes);

@@ -32,7 +32,7 @@ namespace WorldServer.Packets.C2S
 					Serilog.Log.Error("Client sent a skill that doesnt exist on SkillToUser");
 					return false;
 				}
-				if(temp.GetGroup() == SkillGroup.SK_GROUP031)
+				if (temp.GetGroup() == SkillGroup.SK_GROUP031)
 				{
 					slot = PacketReader.ReadByte(_data);
 					state = PacketReader.ReadUInt16(_data);
@@ -48,7 +48,7 @@ namespace WorldServer.Packets.C2S
 				return false;
 			}
 
-			switch(temp.GetGroup())
+			switch (temp.GetGroup())
 			{
 				case SkillGroup.SK_GROUP031:
 					actions.Enqueue((client) => CharAction.OnSkillToUserG31(client, skillId, slot, state, flags));
@@ -56,7 +56,7 @@ namespace WorldServer.Packets.C2S
 				default:
 					throw new NotImplementedException("research for different skill groups, packet differs");
 			}
-			
+
 
 			return true;
 		}

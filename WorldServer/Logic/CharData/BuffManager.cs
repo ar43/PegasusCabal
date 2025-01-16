@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
+﻿using WorldServer.Enums;
 using WorldServer.Logic.CharData.Skills;
 
 namespace WorldServer.Logic.CharData
@@ -19,7 +14,7 @@ namespace WorldServer.Logic.CharData
 		public void ActivateBuff(Skill skill)
 		{
 			var list = skill.GetSkillBuffData();
-			if(list == null)
+			if (list == null)
 			{
 				return;
 			}
@@ -36,9 +31,9 @@ namespace WorldServer.Logic.CharData
 		{
 			BuffStats stats = new();
 
-			foreach(var buffList in _activeBuffs.Values)
+			foreach (var buffList in _activeBuffs.Values)
 			{
-				foreach(var buff in buffList)
+				foreach (var buff in buffList)
 				{
 					stats.AddBuff(buff);
 				}

@@ -43,7 +43,7 @@ namespace WorldServer.Logic.CharData
 			if (Hp <= 0)
 				Hp = 0;
 
-			if(DebugUndying)
+			if (DebugUndying)
 				Hp = Math.Max(Hp, 1);
 		}
 

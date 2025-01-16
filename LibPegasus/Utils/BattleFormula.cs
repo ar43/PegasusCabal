@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPegasus.Utils
+﻿namespace LibPegasus.Utils
 {
 	public static class BattleFormula
 	{
@@ -29,7 +23,7 @@ namespace LibPegasus.Utils
 			return var;
 		}
 
-		public static int GetEXP(int iDmg, int iHpMax, int iMobEXP, int LvDiff, int ExpM )
+		public static int GetEXP(int iDmg, int iHpMax, int iMobEXP, int LvDiff, int ExpM)
 		{
 			return (int)((((iDmg) * (1000 - (LvDiff)) / (iHpMax)) * (iMobEXP) / 1000)) * ExpM;
 		}

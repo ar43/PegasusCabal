@@ -1,19 +1,11 @@
 ﻿using LibPegasus.Utils;
-using Shared.Protos;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
-using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData.Quests
 {
-    internal class Quest
+	internal class Quest
 	{
 		public Quest(UInt16 id)
 		{
@@ -48,7 +40,7 @@ namespace WorldServer.Logic.CharData.Quests
 					DungeonProgress = questProgress.Slice(itemLen + mobLen, dungeonLen);
 				}
 			}
-			
+
 		}
 
 		public UInt16 Id { get; private set; }
@@ -70,12 +62,12 @@ namespace WorldServer.Logic.CharData.Quests
 			Flags = 0;
 			ActCounter = 0;
 
-			if(QuestInfoMain.MissionItem?.Length > 0)
+			if (QuestInfoMain.MissionItem?.Length > 0)
 			{
 				debugCountProgressTypes++;
 				ItemProgress = new List<byte>();
 
-				foreach(var tuple in QuestInfoMain.MissionItem)
+				foreach (var tuple in QuestInfoMain.MissionItem)
 				{
 					ItemProgress.Add(0);
 				}
@@ -103,7 +95,7 @@ namespace WorldServer.Logic.CharData.Quests
 				}
 			}
 
-			if(debugCountProgressTypes >= 2)
+			if (debugCountProgressTypes >= 2)
 			{
 				throw new NotImplementedException("unimplemented combo quest - " + Id.ToString());
 			}
@@ -114,9 +106,9 @@ namespace WorldServer.Logic.CharData.Quests
 			if (Started == false || MobProgress == null || Flags != GetEndFlags())
 				return false;
 
-			for(int i = 0; i < QuestInfoMain.MissionMob.Length; i++)
+			for (int i = 0; i < QuestInfoMain.MissionMob.Length; i++)
 			{
-				if(i % 2 == 0)
+				if (i % 2 == 0)
 				{
 					if (QuestInfoMain.MissionMob[i] == mobId)
 					{
@@ -137,7 +129,7 @@ namespace WorldServer.Logic.CharData.Quests
 			return false;
 		}
 
-		
+
 
 		public QuestReward GetQuestReward()
 		{
@@ -272,7 +264,7 @@ namespace WorldServer.Logic.CharData.Quests
 				int PetEXP = Convert.ToInt32(it["PetEXP"]);
 				int GuildEXP = Convert.ToInt32(it["GuildEXP"]);
 
-				if(_questConfig.MainData.TryGetValue(RwdIdx, out var data))
+				if (_questConfig.MainData.TryGetValue(RwdIdx, out var data))
 				{
 					data.SetQuestReward(new QuestReward(RwdIdx, Order, Exp, Alz, MapCode, WarpCode, SkillIdx, RewardItemIdx, Reputation, SkillEXP, AXP, CraftEXP, PetEXP, GuildEXP));
 				}

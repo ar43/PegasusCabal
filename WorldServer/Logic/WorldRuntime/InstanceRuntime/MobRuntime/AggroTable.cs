@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.CharData;
+﻿using System.Diagnostics;
 
 namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 {
 	internal class AggroTable
 	{
 		public Client? MaxAggroChar { get; private set; }
-		public int MaxAggro {  get; private set; }
+		public int MaxAggro { get; private set; }
 		public int SecondAggro { get; private set; }
 		private int _aggroCounter;
 
@@ -25,14 +19,14 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 		public void Add(int aggro, Client newAttacker, Client? currentDefender)
 		{
-			if(_aggroCounter < 10)
+			if (_aggroCounter < 10)
 			{
-				if(aggro >= MaxAggro)
+				if (aggro >= MaxAggro)
 				{
 					MaxAggro = aggro;
 					MaxAggroChar = newAttacker;
 				}
-				else if(aggro >= SecondAggro)
+				else if (aggro >= SecondAggro)
 				{
 					SecondAggro = aggro;
 				}
@@ -41,7 +35,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			else
 			{
 				_aggroCounter = 1;
-				if(aggro >= SecondAggro)
+				if (aggro >= SecondAggro)
 				{
 					MaxAggroChar = newAttacker;
 				}

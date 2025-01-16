@@ -26,10 +26,10 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteByte(data, (Byte)_mobId.ObjectType);
 			PacketWriter.WriteBool(data, _isDefaultSkill);
 			PacketWriter.WriteUInt16(data, (UInt16)_results.Count);
-			foreach(DamageFromMobResult result in _results)
+			foreach (DamageFromMobResult result in _results)
 			{
-				PacketWriter.WriteInt32(data,result.CharId);
-				PacketWriter.WriteBool(data,result.IsDead);
+				PacketWriter.WriteInt32(data, result.CharId);
+				PacketWriter.WriteBool(data, result.IsDead);
 				PacketWriter.WriteByte(data, (Byte)result.AttackResult);
 				PacketWriter.WriteUInt16(data, result.Damage);
 				PacketWriter.WriteInt32(data, result.RemainingHp);

@@ -16,7 +16,7 @@ namespace WorldServer.Logic.Delegates
 			if (character == null)
 				return false;
 
-			if(!character.Skills.HasSkill((UInt16)slot, (UInt16)skillId))
+			if (!character.Skills.HasSkill((UInt16)slot, (UInt16)skillId))
 				return false;
 
 			var skill = character.Skills.Get(slot);
@@ -26,9 +26,9 @@ namespace WorldServer.Logic.Delegates
 			if (skill.Id != skillId)
 				return false;
 
-			if(skill.GetExclusive() != 0)
+			if (skill.GetExclusive() != 0)
 			{
-				if(skill.GetExclusive() != character.Style.BattleStyleNum)
+				if (skill.GetExclusive() != character.Style.BattleStyleNum)
 					return false;
 			}
 
@@ -136,13 +136,13 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(!VerifySkill(client.Character, skillId, slot))
+			if (!VerifySkill(client.Character, skillId, slot))
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "skill info mismatch");
 				return;
 			}
 
-			if(state > 1 || state < 0)
+			if (state > 1 || state < 0)
 			{
 				client.Disconnect("invalid state", Enums.ConnState.ERROR);
 				return;
@@ -150,7 +150,7 @@ namespace WorldServer.Logic.Delegates
 
 			//u0 - Skip anim?
 
-			switch(skillId)
+			switch (skillId)
 			{
 				case 331: //Astral bow
 				{
@@ -158,9 +158,9 @@ namespace WorldServer.Logic.Delegates
 					var item_right = client.Character.Equipment.GetItem(Enums.EquipmentIndex.RIGHTHAND);
 					int grade = 0;
 
-					if(item_left != null)
+					if (item_left != null)
 					{
-						if(item_left.GetItemType() != Enums.ItemType.IDT_MWPN)
+						if (item_left.GetItemType() != Enums.ItemType.IDT_MWPN)
 						{
 							client.Disconnect("astral bow with a non-magic weapon", Enums.ConnState.ERROR);
 							return;
@@ -176,7 +176,7 @@ namespace WorldServer.Logic.Delegates
 						}
 					}
 
-					if(item_left == null)
+					if (item_left == null)
 					{
 						grade = 0;
 					}
@@ -186,7 +186,7 @@ namespace WorldServer.Logic.Delegates
 					}
 
 					Skill skill = new(skillId, (Byte)grade);
-					if(state == 1)
+					if (state == 1)
 					{
 						client.Character.Style.StyleEx.ToggleAstralWeapon(true);
 						client.Character.BuffManager.ActivateBuff(skill);
@@ -268,7 +268,7 @@ namespace WorldServer.Logic.Delegates
 			var instance = client.Character?.Location?.Instance;
 			var movement = client.Character?.Location?.Movement;
 
-			if (inv == null) 
+			if (inv == null)
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "inventory not yet loaded");
 				return;
@@ -330,7 +330,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if((byte)instance.MapId != objectIndexData.WorldIndex)
+			if ((byte)instance.MapId != objectIndexData.WorldIndex)
 			{
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "client not in correct world");
 				return;
@@ -341,7 +341,7 @@ namespace WorldServer.Logic.Delegates
 			{
 				lootedItem = instance.GroundItemManager.OnLootRequest(client, objectIndexData, key, itemKind, slot);
 			}
-			catch(Exception e) 
+			catch (Exception e)
 			{
 				Serilog.Log.Error("Could not loot item: " + e.Message);
 
@@ -352,12 +352,12 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if(lootedItem != null)
+			if (lootedItem != null)
 			{
 				var packet_success = new RSP_ItemLooting((Byte)ItemLootingResult.SUCCESS, lootedItem.Kind, lootedItem.Option, slot);
 				client.PacketManager.Send(packet_success);
 			}
-			
+
 
 
 		}

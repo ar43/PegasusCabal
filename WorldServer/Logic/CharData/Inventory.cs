@@ -61,9 +61,9 @@ namespace WorldServer.Logic.CharData
 				return false;
 			if (!_items.TryGetValue((UInt16)fromSlot, out var item))
 				return false;
-			if(item.TryUse())
+			if (item.TryUse())
 			{
-				if(sync)
+				if (sync)
 					Sync(DBSyncPriority.NORMAL);
 				return true;
 			}
@@ -160,12 +160,12 @@ namespace WorldServer.Logic.CharData
 		{
 			UInt32 cnt = 0;
 			List<UInt16> slots = new();
-			foreach(var item in _items)
+			foreach (var item in _items)
 			{
 				if (item.Value.Kind == kind)
 					slots.Add(item.Key);
 			}
-			foreach(var slot in slots)
+			foreach (var slot in slots)
 			{
 				var item = RemoveItem(slot);
 				if (item != null)

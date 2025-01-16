@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Logic.CharData.Styles.Coefs
+﻿namespace WorldServer.Logic.CharData.Styles.Coefs
 {
 	internal class StyleCoef
 	{
@@ -16,7 +10,7 @@ namespace WorldServer.Logic.CharData.Styles.Coefs
 
 		public StyleCoef(int[]? array)
 		{
-			if(array == null) throw new ArgumentNullException("array");
+			if (array == null) throw new ArgumentNullException("array");
 
 			A = array[0];
 			B = array[1];

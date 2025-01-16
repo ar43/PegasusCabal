@@ -1,5 +1,4 @@
 ﻿using Shared.Protos;
-using System.Reflection.Metadata;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.Battle;
 using WorldServer.Logic.CharData.Items;
@@ -60,12 +59,12 @@ namespace WorldServer.Logic.CharData
 		public EquStats GetStats()
 		{
 			EquStats stats = new EquStats();
-			for(int i = 0; i < _list.Length; i++)
+			for (int i = 0; i < _list.Length; i++)
 			{
 				var item = _list[i];
-				if(item != null && item.Kind != 0)
+				if (item != null && item.Kind != 0)
 				{
-					switch((EquipmentIndex)i)
+					switch ((EquipmentIndex)i)
 					{
 						case EquipmentIndex.RIGHTHAND:
 						case EquipmentIndex.LEFTHAND:
@@ -82,7 +81,7 @@ namespace WorldServer.Logic.CharData
 						{
 							//TEMP
 							//TODO: PROPER OPTION READING SYSTEM UNIVERSAL
-							if(item.GetOpt1() == 8)
+							if (item.GetOpt1() == 8)
 							{
 								stats.CriticalDamage += item.GetOpt1Val();
 							}

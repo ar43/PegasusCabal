@@ -51,7 +51,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteByte(data, 255); //??
 			PacketWriter.WriteByte(data, 255); //??
 			PacketWriter.WriteByte(data, (Byte)_mobs.Count);
-			for(int i = 0; i < (byte)_mobs.Count; i++)
+			for (int i = 0; i < (byte)_mobs.Count; i++)
 			{
 				PacketWriter.WriteUInt16(data, _mobs[i].ID.ObjectId);
 				PacketWriter.WriteByte(data, _mobs[i].ID.WorldIndex);

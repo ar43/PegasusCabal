@@ -15,6 +15,6 @@
 		public TerrainInfo TerrainInfo { get; private set; }
 		public Dictionary<int, NpcData> NpcData { get; private set; }
 		public Dictionary<int, MobSpawnData> MobSpawnData { get; private set; }
-		public Dictionary<(int,int,int), MissionDropData> LocalMissionDropData { get; private set; }
+		public Dictionary<(int, int, int), MissionDropData> LocalMissionDropData { get; private set; }
 	}
 }

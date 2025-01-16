@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.CharData.Styles.Coefs;
+﻿using WorldServer.Logic.CharData.Styles.Coefs;
 
 namespace WorldServer.Logic.CharData.Styles
 {
@@ -38,7 +33,7 @@ namespace WorldServer.Logic.CharData.Styles
 		public StyleCoef DefenRCoef { get; private set; }
 		public StatCoef StatMaxAtt { get; private set; } //Attack
 		public StatCoef StatMagAtt { get; private set; } //MagicAttack
-		public StatCoef StatDefens {  get; private set; }
+		public StatCoef StatDefens { get; private set; }
 		public StatCoef StatAttckR { get; private set; }
 		public StatCoef StatDefenR { get; private set; }
 		public int InitHP { get; private set; }

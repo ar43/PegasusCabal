@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
+﻿using WorldServer.Enums;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime;
 
 namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
@@ -24,7 +19,7 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 			N2 = (scale + 1) >> 2;
 			ValidDist = (scale >> 1) + Reach;
 			ValidOffset = N2 + ((Reach - N2) >> 1);
-			if(ValidOffset < N2)
+			if (ValidOffset < N2)
 				ValidOffset = N2;
 		}
 
@@ -33,7 +28,7 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 		public int PhyAttMin { get; private set; }
 		public int PhyAttMax { get; private set; }
 		public int PhyAttDff { get; private set; }
-		public int Reach {  get; private set; }
+		public int Reach { get; private set; }
 		public int Range { get; private set; }
 		public SkillGroup SkillGroup { get; private set; }
 		public int Stance { get; private set; }
@@ -100,7 +95,7 @@ namespace WorldServer.Logic.WorldRuntime.MobDataRuntime
 					{
 						return true;
 					}
-					else if(instance.CheckTileMoveDisable((UInt16)iCheckX, (UInt16)iCheckY))
+					else if (instance.CheckTileMoveDisable((UInt16)iCheckX, (UInt16)iCheckY))
 					{
 						return false;
 					}

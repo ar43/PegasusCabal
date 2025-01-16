@@ -192,7 +192,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 		internal void Update()
 		{
-			foreach(var instance in _instances.Values)
+			foreach (var instance in _instances.Values)
 			{
 				if (instance == null)
 					continue;

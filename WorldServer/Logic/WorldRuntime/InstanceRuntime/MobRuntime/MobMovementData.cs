@@ -1,10 +1,5 @@
 ﻿using LibPegasus.Utils;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Logic.CharData;
 
 namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
@@ -147,7 +142,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			iN = _waypoints.Count - 2;
 			var pWayPoint = _waypoints[iN];
-			var pWayPoint2 = _waypoints[iN+1];
+			var pWayPoint2 = _waypoints[iN + 1];
 
 			iDx = pWayPoint2.X - pWayPoint.X;
 			iDy = pWayPoint2.Y - pWayPoint.Y;
@@ -159,7 +154,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				iPos = iAdx - validOffset;
 				if (iPos < 0)
 				{
-					_waypoints.RemoveAt(iN+1);
+					_waypoints.RemoveAt(iN + 1);
 					Debug.Assert(_waypoints.Count > 0);
 
 					EndX = pWayPoint.X;
@@ -174,7 +169,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				}
 
 				iOffX = (iPos < 0) ? -iPos : iPos;
-				
+
 				iOffY = (iAdy * iOffX + (iAdx >> 1)) / iAdx;
 
 				if (iDx < 0)
@@ -202,7 +197,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				}
 
 				iOffY = (iPos < 0) ? -iPos : iPos;
-				
+
 				iOffX = (iAdx * iOffY + (iAdy >> 1)) / iAdy;
 
 				if (iDx < 0)

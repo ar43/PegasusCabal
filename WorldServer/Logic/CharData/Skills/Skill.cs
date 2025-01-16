@@ -1,35 +1,31 @@
 ﻿using LibPegasus.Utils;
-using System.ComponentModel;
 using System.Diagnostics;
 using WorldServer.Enums;
-using WorldServer.Logic.AccountData;
-using WorldServer.Logic.CharData.Items;
-using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData.Skills
 {
-    internal class Skill
-    {
-        public Skill(UInt16 id, byte level)
-        {
+	internal class Skill
+	{
+		public Skill(UInt16 id, byte level)
+		{
 			if (SkillConfig == null)
 				throw new Exception("Skill Data not yet loaded");
-            Id = id;
-            Level = level;
+			Id = id;
+			Level = level;
 			_skillInfoMain = SkillConfig.MainData[id];
-        }
+		}
 
-        public UInt16 Id { get; private set; }
-        public byte Level { get; private set; }
+		public UInt16 Id { get; private set; }
+		public byte Level { get; private set; }
 
-        private static SkillInfo? SkillConfig = null;
-        private readonly SkillInfoMain _skillInfoMain;
+		private static SkillInfo? SkillConfig = null;
+		private readonly SkillInfoMain _skillInfoMain;
 
 		public int GetSkillExp(int id)
 		{
 			Debug.Assert(id == 1 || id == 2);
-			if(id == 1)
+			if (id == 1)
 				return _skillInfoMain.SkillExp1;
 			else
 				return _skillInfoMain.SkillExp2;
@@ -44,7 +40,7 @@ namespace WorldServer.Logic.CharData.Skills
 
 			List<BuffData> buffData = new List<BuffData>();
 
-			foreach(var it in valueList)
+			foreach (var it in valueList)
 			{
 				buffData.Add(new((ForceCode)it.BForce_ID, it.BaseDiv(Level)));
 			}
@@ -84,15 +80,15 @@ namespace WorldServer.Logic.CharData.Skills
 
 		private int DeltaSwordAmp()
 		{
-            if (IsSwordSkill())
-            {
+			if (IsSwordSkill())
+			{
 				return (int)(Level / 10) + (int)(Level / 13) + (int)(Level / 16) + (int)(Level / 19);
 			}
 			else
 			{
 				return 0;
 			}
-        }
+		}
 
 		private int DeltaMagicAmp()
 		{
@@ -108,7 +104,7 @@ namespace WorldServer.Logic.CharData.Skills
 
 		public int CalculateAttackRate(int attackRate)
 		{
-			return attackRate + (_skillInfoMain.ARatingCoef.CoefA * Level + _skillInfoMain.ARatingCoef.CoefB); 
+			return attackRate + (_skillInfoMain.ARatingCoef.CoefA * Level + _skillInfoMain.ARatingCoef.CoefB);
 		}
 
 		public int CalculateAttack(int attack, int swordAmp, int magicAttack, int magicAmp)
@@ -136,7 +132,7 @@ namespace WorldServer.Logic.CharData.Skills
 
 		public int CalculateCritRate(int criticalRate, int maxCriticalRate)
 		{
-			switch(_skillInfoMain.Group)
+			switch (_skillInfoMain.Group)
 			{
 				case Enums.SkillGroup.SK_GROUP001:
 				case Enums.SkillGroup.SK_GROUP002:

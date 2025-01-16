@@ -35,7 +35,7 @@ namespace WorldServer.Packets.C2S
 				u1 = PacketReader.ReadByte(_data);
 				u2 = PacketReader.ReadUInt32(_data);
 				mobAmount = PacketReader.ReadByte(_data);
-				for(int i = 0; i < mobAmount; i++)
+				for (int i = 0; i < mobAmount; i++)
 				{
 					var mobId = PacketReader.ReadUInt16(_data);
 					var worldIndex = PacketReader.ReadByte(_data);

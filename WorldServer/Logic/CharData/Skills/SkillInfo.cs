@@ -1,11 +1,4 @@
-﻿using LibPegasus.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Enums;
-using WorldServer.Logic.AccountData;
+﻿using WorldServer.Enums;
 
 namespace WorldServer.Logic.CharData.Skills
 {
@@ -22,7 +15,7 @@ namespace WorldServer.Logic.CharData.Skills
 		{
 			MainData.Add(id, mainInfo);
 		}
-		public void AddSkillValue(int skillId, SkillValue skillValue) 
+		public void AddSkillValue(int skillId, SkillValue skillValue)
 		{
 			MainData[skillId].SkillValueList.Add(skillValue);
 		}
@@ -135,7 +128,7 @@ namespace WorldServer.Logic.CharData.Skills
 	{
 		public SkillCoef(int[]? array)
 		{
-			if(array == null)
+			if (array == null)
 			{
 				CoefA = 0;
 				CoefB = 0;
@@ -144,7 +137,7 @@ namespace WorldServer.Logic.CharData.Skills
 			}
 			else
 			{
-				if(array.Length > 0)
+				if (array.Length > 0)
 					CoefA = array[0];
 				if (array.Length > 1)
 					CoefB = array[1];

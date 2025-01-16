@@ -1,5 +1,4 @@
 ﻿using LibPegasus.Parsers.Scp;
-using Serilog.Events;
 using System.Text.RegularExpressions;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.CharData.Items;
@@ -10,7 +9,7 @@ using WorldServer.Logic.Extra;
 
 namespace WorldServer.Logic.WorldRuntime
 {
-    internal class WorldConfig
+	internal class WorldConfig
 	{
 
 		public WorldConfig()

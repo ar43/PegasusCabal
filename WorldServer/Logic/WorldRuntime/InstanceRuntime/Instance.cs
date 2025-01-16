@@ -1,7 +1,6 @@
 ﻿using LibPegasus.Packets;
 using LibPegasus.Parsers.Mcl;
 using LibPegasus.Utils;
-using System.Reflection.Metadata;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
@@ -13,7 +12,7 @@ using WorldServer.Packets.S2C.PacketSpecificData;
 
 namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 {
-    internal class Instance
+	internal class Instance
 	{
 		public Instance(UInt16 mapId, InstanceDuration durationType, MapData mapData, InstanceType type)
 		{
@@ -41,7 +40,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				Id = InstanceIdGenerator;
 				InstanceIdGenerator++;
 			}
-			Rng = new Random(Guid.NewGuid().GetHashCode()+(int)Id);
+			Rng = new Random(Guid.NewGuid().GetHashCode() + (int)Id);
 		}
 
 		public Instance(MapId mapId, InstanceDuration durationType, MapData mapData, InstanceType type) : this((UInt16)mapId, durationType, mapData, type) { }
@@ -288,7 +287,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				client.PacketManager.Send(packetNewMobs);
 			}
 
-			if(newItems.Count > 0)
+			if (newItems.Count > 0)
 			{
 				var packetNewItems = new NFY_NewItemList(newItems, 0, 0xFFFFFFFF);
 				client.PacketManager.Send(packetNewItems);
@@ -493,25 +492,25 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				return false;
 			}
 
-			if(defenderTarget.IsDead)
+			if (defenderTarget.IsDead)
 			{
 				Serilog.Log.Warning("defender is dead");
 				return false;
 			}
 
-			if(attacker.Character.Location.Movement.IsMoving)
+			if (attacker.Character.Location.Movement.IsMoving)
 			{
 				Serilog.Log.Warning("attacker is moving");
 				return false;
 			}
 
-			if(CheckTileTown((UInt16)attacker.Character.Location.Movement.X, (UInt16)attacker.Character.Location.Movement.Y))
+			if (CheckTileTown((UInt16)attacker.Character.Location.Movement.X, (UInt16)attacker.Character.Location.Movement.Y))
 			{
 				Serilog.Log.Warning("attacker is in town");
 				return false;
 			}
 
-			if(defenders.Count > 255)
+			if (defenders.Count > 255)
 			{
 				//hard cap, but there should be an even lower cap, TODO, also kick the client
 				Serilog.Log.Warning("abnormal mob list");
@@ -519,9 +518,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			}
 
 			//todo, cooldown check 
-            //todo, position check
+			//todo, position check
 
-            var skill = attacker.Character.Skills.Get(skillSlot);
+			var skill = attacker.Character.Skills.Get(skillSlot);
 			if (skill == null)
 				return false;
 
@@ -602,7 +601,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				{
 					int expModifier = attacker.Character.RestExpCheck();
 					//TODO: exp
-					if(defender.GetMaxHP() == 0)
+					if (defender.GetMaxHP() == 0)
 					{
 						exp = 0;
 						skillExp = 0;
@@ -611,7 +610,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 					{
 						exp = BattleFormula.GetEXP(damage, defender.GetMaxHP(), defender.GetExp(), lvlDiff, 1); //this is about 25% too much, TODO, also skillExp
 
-						if(attackResult == AttackResult.SR_CRITICAL)
+						if (attackResult == AttackResult.SR_CRITICAL)
 						{
 							skillExp = skill.GetSkillExp(2);
 						}
@@ -627,7 +626,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				defender.TakeDamage(damage);
 				defender.AggroTable.Add(damage, attacker, defender.CurrentDefender);
 				defender.SetAttacker(attacker);
-				
+
 
 				var dmgResult = new DamageToMobResult(defender.ObjectIndexData);
 				dmgResult.HasBFX = 1;
@@ -655,6 +654,6 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			BroadcastNearby(attacker, nfy, false);
 
 			return true;
-        }
+		}
 	}
 }

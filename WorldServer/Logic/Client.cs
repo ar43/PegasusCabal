@@ -296,7 +296,7 @@ namespace WorldServer.Logic
 
 				var packet_nfy = new NFY_ChartrEvent(CharEvent.EVT_LEVELUP, Character.Id);
 				this.BroadcastNearby(packet_nfy);
-			} 
+			}
 		}
 
 		internal void Error(string funcName, string message)

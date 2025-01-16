@@ -1,10 +1,5 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 
 namespace WorldServer.Packets.S2C
@@ -42,7 +37,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, _itemOption);
 			PacketWriter.WriteInt32(data, _slot);
 			PacketWriter.WriteUInt16(data, _u0);
-			
+
 		}
 	}
 }

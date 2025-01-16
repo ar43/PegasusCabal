@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.CharData.Skills;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using WorldServer.Logic.CharData.Skills;
 
 namespace WorldServer.Logic.Extra
 {
@@ -39,18 +33,18 @@ namespace WorldServer.Logic.Extra
 
 		public static void Reset(Client client, List<string>? args)
 		{
-			if(args.Count != 2)
+			if (args.Count != 2)
 			{
 				client.SendServerMessage("Invalid args");
 			}
-			if(args.ElementAt(1).ToLower() == "quest")
+			if (args.ElementAt(1).ToLower() == "quest")
 			{
 				client.SendServerMessage("Resetting quests..");
 				client.Character.QuestManager.Reset();
 			}
 			else if (args.ElementAt(1).ToLower() == "lvl")
 			{
-				
+
 			}
 			else if (args.ElementAt(1).ToLower() == "inv")
 			{
@@ -73,7 +67,7 @@ namespace WorldServer.Logic.Extra
 			{
 				client.SendServerMessage("Gave GM skill..");
 				client.Character.Skills.DebugAddSkill(32, new Skill(147, 1));
-				client.Character.Skills.DebugAddSkill(33, new Skill(146,1));
+				client.Character.Skills.DebugAddSkill(33, new Skill(146, 1));
 			}
 			else if (args.ElementAt(1).ToLower() == "exp")
 			{
@@ -93,7 +87,7 @@ namespace WorldServer.Logic.Extra
 			else if (args.ElementAt(1).ToLower() == "qdbg1")
 			{
 				client.SendServerMessage("Setting quests to specific setup..");
-				int[] list = { 3001, 3002, 3003, 3005, 3006, 3007, 3008};
+				int[] list = { 3001, 3002, 3003, 3005, 3006, 3007, 3008 };
 				client.Character.QuestManager.Reset();
 				foreach (var qnum in list)
 				{
@@ -118,7 +112,7 @@ namespace WorldServer.Logic.Extra
 
 		public static void Print(Client client, List<string>? args)
 		{
-			
+
 			if (args.Count != 2)
 			{
 				client.SendServerMessage("Invalid args");
@@ -128,7 +122,7 @@ namespace WorldServer.Logic.Extra
 				var cqList = client.Character.QuestManager.CompletedQuests;
 
 				client.SendServerMessage("Printing completed quests:");
-				for(int i = 0; i < cqList.Count; i++)
+				for (int i = 0; i < cqList.Count; i++)
 				{
 					if (cqList[i] == true)
 						client.SendServerMessage("q" + i.ToString());

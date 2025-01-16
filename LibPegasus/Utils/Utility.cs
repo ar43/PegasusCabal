@@ -1,7 +1,5 @@
 ﻿using Serilog;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace LibPegasus.Utils
@@ -47,7 +45,7 @@ namespace LibPegasus.Utils
 				throw new Exception("expected % 3");
 			(int, int, int)[] newArray = new (int, int, int)[arrayIn.Length / 3];
 			var test = new[] { (1, 2, 3) };
-			for(int i = 0; i < arrayIn.Length; i +=3)
+			for (int i = 0; i < arrayIn.Length; i += 3)
 			{
 				newArray[i / 3] = (arrayIn[i], arrayIn[i + 1], arrayIn[i + 2]);
 			}

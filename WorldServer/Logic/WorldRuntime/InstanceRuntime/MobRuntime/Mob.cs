@@ -1,12 +1,8 @@
 ﻿using LibPegasus.Utils;
-using Microsoft.Extensions.Logging.Abstractions;
-using Serilog;
 using System.Diagnostics;
-using System.Security.Cryptography;
 using WorldServer.Enums.Mob;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.CharData.Items;
-using WorldServer.Logic.CharData.Quests;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
@@ -699,16 +695,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			}
 			else
 			{
-				switch(_data.AttkPattern)
+				switch (_data.AttkPattern)
 				{
 					case MobPattern.PATTERN1:
 					{
-						if(distance > CurrentSkill.ValidDist)
+						if (distance > CurrentSkill.ValidDist)
 						{
 							SetPhaseChase(currentTime);
 							return;
 						}
-						else if(HP <= HP30Breakpoint)
+						else if (HP <= HP30Breakpoint)
 						{
 							CurrentSkill = _data.SpecialSkill;
 							HP30Breakpoint = 0;
@@ -718,7 +714,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 					case MobPattern.PATTERN2:
 					{
 						Debug.Assert(CurrentSkill == _data.DefaultSkill);
-						if(LastAttacker != null && LastAttacker != CurrentDefender)
+						if (LastAttacker != null && LastAttacker != CurrentDefender)
 						{
 							//TODO
 							throw new NotImplementedException("mob pattern 2");
@@ -757,7 +753,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 					}
 					default:
 					{
-						if(distance > CurrentSkill.ValidDist)
+						if (distance > CurrentSkill.ValidDist)
 						{
 							SetPhaseChase(currentTime);
 							return;
@@ -795,7 +791,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		{
 			var val = _rng.Next(10);
 
-			if(val > 5)
+			if (val > 5)
 			{
 				CurrentSkill = _data.DefaultSkill;
 			}
@@ -805,7 +801,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			}
 		}
 
-		private void BattleNeutral(DateTime currentTime) 
+		private void BattleNeutral(DateTime currentTime)
 		{
 			NextBattlePhaseBySkill(currentTime);
 
@@ -817,7 +813,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			var defenderMovement = CurrentDefender.Character.Location.Movement;
 
-			if(CurrentDefender.Character.Status.IsDead || !_instance.CheckTileMobsLayer((UInt16)defenderMovement.X, (UInt16)defenderMovement.Y))
+			if (CurrentDefender.Character.Status.IsDead || !_instance.CheckTileMobsLayer((UInt16)defenderMovement.X, (UInt16)defenderMovement.Y))
 			{
 				_chasePosX = Movement.X;
 				_chasePosY = Movement.Y;
@@ -851,7 +847,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 							return;
 						}
 					}
-					else if(_data.SpecialSkill.Reach > distance)
+					else if (_data.SpecialSkill.Reach > distance)
 					{
 						CurrentSkill = _data.SpecialSkill;
 					}
@@ -867,7 +863,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 						return;
 					}
 				}
-				else if(distance > CurrentSkill.ValidDist)
+				else if (distance > CurrentSkill.ValidDist)
 				{
 					SetPhaseChase(currentTime);
 					return;
@@ -891,7 +887,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			Debug.Assert(skill.SkillGroup == Enums.SkillGroup.SK_GROUP___);
 			var defenderStatus = defender.Character.Status;
 
-			if(defenderStatus.IsDead)
+			if (defenderStatus.IsDead)
 			{
 				Debug.Assert(defenderStatus.Hp <= 0);
 				return;
@@ -901,9 +897,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			var targetPos = defenderMovement.X | (defenderMovement.Y << 16);
 
-			if(!MobSkill.IsValid(Movement.X, Movement.Y, targetPos, _instance))
+			if (!MobSkill.IsValid(Movement.X, Movement.Y, targetPos, _instance))
 			{
-				if(_data.IsMoveless || defender.Dropped)
+				if (_data.IsMoveless || defender.Dropped)
 				{
 					UnselectTarget();
 					SetPhaseFind(currentTime);
@@ -928,12 +924,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 		}
 
-		
+
 
 		private void Battle(DateTime currentTime)
 		{
 			Debug.Assert(_phase == MobPhase.BATTLE);
-			if(IsAttacked)
+			if (IsAttacked)
 			{
 				BattleAttacked(currentTime);
 			}
@@ -1108,7 +1104,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			}
 
 			IsAttacked = false;
-			if(!Movement.IsMoving)
+			if (!Movement.IsMoving)
 			{
 				Debug.Assert(!Movement.IsDeadReckoning);
 				AssertStill();
@@ -1146,7 +1142,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				//TODO QD
 
 				var distance = GetDistance(Movement.X, Movement.Y, defenderMovement.X, defenderMovement.Y);
-				if(distance > _data.AlertRange + AddedAlertRange)
+				if (distance > _data.AlertRange + AddedAlertRange)
 				{
 					_chasePosX = Movement.X;
 					_chasePosY = Movement.Y;
@@ -1248,7 +1244,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			if (lvDiff < -1000)
 				lvDiff = -1000;
-			else if(lvDiff > 1000) 
+			else if (lvDiff > 1000)
 				lvDiff = 1000;
 
 			var criticalRate = 5; //TODO
@@ -1260,22 +1256,22 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			var defenceRate = battleStats.DefenseRate;
 			var evasion = 0; //TODO
 
-			if(roll < criticalRate)
+			if (roll < criticalRate)
 			{
 				//crit
 				var damage = skill.PhyAttMax - defence;
-				if(damage <= 0)
+				if (damage <= 0)
 				{
 					damage = Level / 10 + Level / 30;
 				}
-				if(damage <= 0)
+				if (damage <= 0)
 				{
 					damage = 1;
 				}
 				damage += lvDiffOrg;
 				damage = damage + (criticalDamage >> 1);
 
-				if(damage <= 0)
+				if (damage <= 0)
 				{
 					damage = Level / 10 + Level / 20;
 				}
@@ -1291,10 +1287,10 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			{
 				//normal
 				var attackRateTemp = _data.AttacksR + 16 * lvDiffOrg / 10;
-				if(attackRateTemp <= 0)
+				if (attackRateTemp <= 0)
 					attackRateTemp = 0;
 				int hitRate = 0;
-				if(attackRateTemp + defenceRate == 0)
+				if (attackRateTemp + defenceRate == 0)
 				{
 					hitRate = 0;
 				}
@@ -1306,7 +1302,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				hitRate = (100 - criticalRate) * hitRate / 100 + criticalRate;
 
 
-				if(roll < hitRate)
+				if (roll < hitRate)
 				{
 					var attack = 0;
 					if (skill.PhyAttDff == 0)
@@ -1363,7 +1359,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		{
 			Debug.Assert(_phase == MobPhase.MOVE);
 
-			if(IsAttacked)
+			if (IsAttacked)
 			{
 				MoveAttacked(currentTime);
 			}
@@ -1440,13 +1436,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 			return Math.Min(iDamage, HP);
 		}
-		
+
 		public void Update(DateTime currentTime)
 		{
 			if (currentTime < _nextUpdateTime)
 				return;
 
-			if(!IsSpawned && IsDead)
+			if (!IsSpawned && IsDead)
 			{
 				Serilog.Log.Debug($"Spawning mob {ObjectIndexData.ObjectId}");
 				Spawn(currentTime);
@@ -1457,7 +1453,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				throw new Exception("Not supposed to happen");
 			}
 
-			switch(_phase)
+			switch (_phase)
 			{
 				case MobPhase.FIND:
 				{
@@ -1530,12 +1526,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 		private void DropQuestItem(Client attacker)
 		{
-			foreach(var quest in attacker.Character?.QuestManager.ActiveQuests)
+			foreach (var quest in attacker.Character?.QuestManager.ActiveQuests)
 			{
-				if(quest.Value.ItemProgress?.Count > 0)
+				if (quest.Value.ItemProgress?.Count > 0)
 				{
 					int i = 0;
-					foreach(var itemInfo in quest.Value.QuestInfoMain.MissionItem)
+					foreach (var itemInfo in quest.Value.QuestInfoMain.MissionItem)
 					{
 						var questProgressAtIndex = quest.Value.ItemProgress.ElementAt(i);
 						if (questProgressAtIndex >= itemInfo.Item3)
@@ -1543,11 +1539,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 							i++;
 							continue;
 						}
-							
-						if(_instance.MapData.LocalMissionDropData.TryGetValue((GetSpecies(), itemInfo.Item1, itemInfo.Item2), out var dropData))
+
+						if (_instance.MapData.LocalMissionDropData.TryGetValue((GetSpecies(), itemInfo.Item1, itemInfo.Item2), out var dropData))
 						{
 							int randNum = _rng.Next(100);
-							if(randNum < dropData.DropRate)
+							if (randNum < dropData.DropRate)
 							{
 								var qitem = new Item((UInt32)dropData.ItemKind, (UInt32)dropData.ItemOpt, 0, 0);
 								qitem.ConvertOptionToQuestOption(1);
@@ -1563,7 +1559,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 
 		internal void DeathCheck(Client attacker, int skillId)
 		{
-			if(HP <= 0)
+			if (HP <= 0)
 			{
 				IsSpawned = false;
 				IsDead = true;

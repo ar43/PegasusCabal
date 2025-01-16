@@ -1,7 +1,6 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
 using WorldServer.Enums;
-using WorldServer.Logic.SharedData;
 using WorldServer.Packets.S2C.PacketSpecificData;
 
 namespace WorldServer.Packets.S2C
@@ -30,7 +29,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt16(data, _x);
 			PacketWriter.WriteUInt16(data, _y);
 
-			foreach(var mobResult in _result)
+			foreach (var mobResult in _result)
 			{
 				PacketWriter.WriteUInt16(data, mobResult.ID.ObjectId);
 				PacketWriter.WriteByte(data, mobResult.ID.WorldIndex);
@@ -44,7 +43,7 @@ namespace WorldServer.Packets.S2C
 				PacketWriter.WriteInt32(data, 0); //unknown TODO
 				PacketWriter.WriteByte(data, 0); //unknown TODO
 			}
-			
+
 		}
 	}
 }

@@ -1,23 +1,17 @@
 ﻿using Google.Protobuf;
 using Shared.Protos;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.DbSyncData;
 using WorldServer.Logic.CharData.Items;
-using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.CharData.Quests
 {
-    internal class QuestManager
-    {
+	internal class QuestManager
+	{
 		public DBSyncPriority SyncPending { get; private set; }
 		public Dictionary<int, Quest> ActiveQuests { get; private set; }
 		private BitArray _startedQuests;
@@ -38,10 +32,10 @@ namespace WorldServer.Logic.CharData.Quests
 		private CompletedQuestsData GetCompletedProtobuf()
 		{
 			CompletedQuestsData data = new CompletedQuestsData();
-			byte[] bytes = new byte[(CompletedQuests.Length-1) / 8 + 1];
+			byte[] bytes = new byte[(CompletedQuests.Length - 1) / 8 + 1];
 
 			CompletedQuests.CopyTo(bytes, 0);
-			
+
 
 			data.CompletedQuests = ByteString.CopyFrom(bytes);
 
@@ -58,9 +52,9 @@ namespace WorldServer.Logic.CharData.Quests
 
 		public void OnMobDeath(Client client, ushort mobId, int skillId)
 		{
-			foreach(var quest in ActiveQuests.Values)
+			foreach (var quest in ActiveQuests.Values)
 			{
-				if(quest.OnMobDeath(mobId))
+				if (quest.OnMobDeath(mobId))
 				{
 					NFY_QuestMobKilled success = new(mobId, skillId);
 					client.PacketManager.Send(success);
@@ -72,7 +66,7 @@ namespace WorldServer.Logic.CharData.Quests
 		{
 			ActiveQuestData data = new ActiveQuestData();
 
-			foreach(var it in ActiveQuests)
+			foreach (var it in ActiveQuests)
 			{
 				ByteString progress = ByteString.Empty;
 				List<byte> finalProgress = new List<byte>();
@@ -83,10 +77,10 @@ namespace WorldServer.Logic.CharData.Quests
 				if (it.Value.DungeonProgress?.Count > 0)
 					finalProgress.AddRange(it.Value.DungeonProgress);
 
-				if(finalProgress.Count > 0)
+				if (finalProgress.Count > 0)
 					progress = ByteString.CopyFrom(finalProgress.ToArray());
 
-				data.ActiveQuestData_.Add((uint)it.Key, new ActiveQuestData.Types.ActiveQuestDataItem { Flag = it.Value.Flags, Id = it.Value.Id, IsExpanded = true, IsTracked = true, Progress = progress, ActCounter=it.Value.ActCounter, Slot = (uint)it.Key, Started = it.Value.Started });
+				data.ActiveQuestData_.Add((uint)it.Key, new ActiveQuestData.Types.ActiveQuestDataItem { Flag = it.Value.Flags, Id = it.Value.Id, IsExpanded = true, IsTracked = true, Progress = progress, ActCounter = it.Value.ActCounter, Slot = (uint)it.Key, Started = it.Value.Started });
 			}
 
 			return data;
@@ -121,7 +115,7 @@ namespace WorldServer.Logic.CharData.Quests
 			if (quest.Id != questId)
 				throw new Exception("incorrect quest");
 
-			if(quest.Flags != quest.GetEndFlags())
+			if (quest.Flags != quest.GetEndFlags())
 				throw new Exception("cant complete the quest yet");
 
 			var npcPosX = npcData[quest.GetEndNpcId()].PosX;
@@ -132,17 +126,17 @@ namespace WorldServer.Logic.CharData.Quests
 			if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
 				throw new Exception("char too far away from npc");
 
-			if(quest.ItemProgress != null)
+			if (quest.ItemProgress != null)
 			{
 				int i = 0;
-				foreach(var prog in quest.ItemProgress)
+				foreach (var prog in quest.ItemProgress)
 				{
-                    if (prog != quest.QuestInfoMain.MissionItem[i].Item3)
-                    {
+					if (prog != quest.QuestInfoMain.MissionItem[i].Item3)
+					{
 						throw new Exception("quest item mission not completed");
-                    }
+					}
 					bool success = inv.RemoveAllQuestItemsByKind((UInt32)quest.QuestInfoMain.MissionItem[i].Item1) >= quest.QuestInfoMain.MissionItem[i].Item3;
-					if(!success)
+					if (!success)
 					{
 						throw new Exception("quest item mission not completed (SHOULD NOT HAPPEN)");
 					}
@@ -150,12 +144,12 @@ namespace WorldServer.Logic.CharData.Quests
 				}
 			}
 
-			if(quest.MobProgress != null)
+			if (quest.MobProgress != null)
 			{
 				int i = 0;
-				foreach(var prog in quest.MobProgress)
+				foreach (var prog in quest.MobProgress)
 				{
-					if (prog != quest.QuestInfoMain.MissionMob[i*2+1])
+					if (prog != quest.QuestInfoMain.MissionMob[i * 2 + 1])
 					{
 						throw new Exception("quest mob mission not completed");
 					}
@@ -166,12 +160,12 @@ namespace WorldServer.Logic.CharData.Quests
 
 			Item? itemReward = null;
 
-            if (questReward.RewardItemIdx > 0)
-            {
+			if (questReward.RewardItemIdx > 0)
+			{
 				itemReward = Item.GenerateReward((UInt32)questReward.RewardItemIdx, client.Character.Style.BattleStyleNum, choice);
-            }
+			}
 
-			if(itemReward != null)
+			if (itemReward != null)
 			{
 				if (!inv.AddItem(invSlot, itemReward))
 					throw new Exception("failed to add reward item");
@@ -207,7 +201,7 @@ namespace WorldServer.Logic.CharData.Quests
 		internal Quest ProgressQuest(UInt16 questId, Location posData, Dictionary<Int32, NpcData> npcData, List<QuestAction> questActions, Inventory inv)
 		{
 			Quest? quest = null;
-			foreach(var it in ActiveQuests.Values)
+			foreach (var it in ActiveQuests.Values)
 			{
 				if (it.Id == questId)
 					quest = it;
@@ -215,13 +209,13 @@ namespace WorldServer.Logic.CharData.Quests
 			if (quest == null)
 				throw new Exception("Quest not found");
 
-			if(quest.Started == false)
+			if (quest.Started == false)
 				throw new Exception("Quest not started");
 
 			if (!quest.HasNpcActionSet())
 				throw new Exception("Quest is not progressable that way");
 
-			foreach(var it in questActions)
+			foreach (var it in questActions)
 			{
 				var actionSet = quest.GetActionSet(it.ChoiceId);
 
@@ -232,7 +226,7 @@ namespace WorldServer.Logic.CharData.Quests
 				Debug.Assert(actIdx == it.ChoiceId);
 				var expectedIdx = quest.GetExpectedChoice();
 
-				if(actIdx != expectedIdx)
+				if (actIdx != expectedIdx)
 					throw new Exception("action out of order");
 
 				if (posData.Instance?.MapId != (MapId)actionSet.ActNpc[0])
@@ -243,7 +237,7 @@ namespace WorldServer.Logic.CharData.Quests
 				if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
 					throw new Exception("char too far away from npc");
 
-				if(actionSet.Action == NpcActionType.QACT_GIVE)
+				if (actionSet.Action == NpcActionType.QACT_GIVE)
 				{
 					Serilog.Log.Debug($"it.Unknown: {it.Param}");
 					inv.AddItem(it.Param, new Item((UInt32)actionSet.ItemKindCode, (UInt32)actionSet.ItemOpt, 0, 0));
@@ -255,7 +249,7 @@ namespace WorldServer.Logic.CharData.Quests
 					if (item == null)
 						throw new Exception("item slot empty");
 
-					if(item.Kind == (UInt32)actionSet.ItemKindCode && item.Option == (UInt32)actionSet.ItemOpt)
+					if (item.Kind == (UInt32)actionSet.ItemKindCode && item.Option == (UInt32)actionSet.ItemOpt)
 					{
 						_ = inv.RemoveItem(it.Param);
 					}
@@ -272,13 +266,13 @@ namespace WorldServer.Logic.CharData.Quests
 				quest.AddFlag(actIdx, (ushort)(1 << actionSet.Order));
 			}
 
-			
+
 			return quest;
 		}
 
 		internal void SetCompletedQuests(CompletedQuestsData? questsCompletedProtobuf)
 		{
-			if(questsCompletedProtobuf != null)
+			if (questsCompletedProtobuf != null)
 			{
 				CompletedQuests = new BitArray(questsCompletedProtobuf.CompletedQuests.ToByteArray());
 			}
@@ -286,11 +280,11 @@ namespace WorldServer.Logic.CharData.Quests
 
 		internal void SetActiveQuests(ActiveQuestData? questsActiveProtobuf)
 		{
-			if(questsActiveProtobuf != null)
+			if (questsActiveProtobuf != null)
 			{
 				ActiveQuests = new();
 
-				foreach(var it in questsActiveProtobuf.ActiveQuestData_)
+				foreach (var it in questsActiveProtobuf.ActiveQuestData_)
 				{
 					Quest quest = new((ushort)it.Value.Id, it.Value.Started, (ushort)it.Value.Flag, it.Value.ActCounter, new List<Byte>(it.Value.Progress));
 
@@ -311,7 +305,7 @@ namespace WorldServer.Logic.CharData.Quests
 					bytes.Add(1); //TODO - SAVE ISTRACKED AND ISEXPANDED
 					bytes.Add(1); //TODO - SAVE ISTRACKED AND ISEXPANDED
 					bytes.Add((byte)quest.Key); //TODO - SAVE ISTRACKED AND ISEXPANDED
-					if(quest.Value.MobProgress?.Count > 0)
+					if (quest.Value.MobProgress?.Count > 0)
 						bytes.AddRange(quest.Value.MobProgress);
 					if (quest.Value.ItemProgress?.Count > 0)
 						bytes.AddRange(quest.Value.ItemProgress);
@@ -325,7 +319,7 @@ namespace WorldServer.Logic.CharData.Quests
 		{
 			_startedQuests = new(CompletedQuests);
 
-			foreach(var it in ActiveQuests.Values)
+			foreach (var it in ActiveQuests.Values)
 			{
 				_startedQuests[it.Id] = true;
 			}
@@ -341,16 +335,16 @@ namespace WorldServer.Logic.CharData.Quests
 #endif
 		}
 
-		internal (int,int,int) NeedItem(Item item)
+		internal (int, int, int) NeedItem(Item item)
 		{
 			Debug.Assert(item.IsQuestItem());
 
 			var real_opt = item.GetQuestItemOpt();
 			var real_quant = item.GetQuestItemCount();
 
-			foreach(var quest in ActiveQuests)
+			foreach (var quest in ActiveQuests)
 			{
-				if(quest.Value.ItemProgress != null)
+				if (quest.Value.ItemProgress != null)
 				{
 					int i = 0;
 					foreach (var lootProgress in quest.Value.ItemProgress)
@@ -361,7 +355,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 						var remaining = neededCount - lootProgress;
 
-						if(neededKind == item.Kind && neededOpt == real_opt && remaining > 0 && remaining - real_quant >= 0)
+						if (neededKind == item.Kind && neededOpt == real_opt && remaining > 0 && remaining - real_quant >= 0)
 						{
 							return (quest.Key, i, (int)real_quant);
 						}
@@ -371,7 +365,7 @@ namespace WorldServer.Logic.CharData.Quests
 				}
 			}
 
-			return (0,0,0);
+			return (0, 0, 0);
 		}
 
 		internal void OnQuestItemLoot(int slot, int lootIndex, int lootQuant)

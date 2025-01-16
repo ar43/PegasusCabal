@@ -1,10 +1,5 @@
 ﻿using LibPegasus.Packets;
 using Nito.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WorldServer.Enums;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
 
@@ -27,18 +22,18 @@ namespace WorldServer.Packets.S2C
 		{
 			int i = 0;
 			PacketWriter.WriteByte(data, (byte)_items.Count);
-			foreach(var item in _items)
+			foreach (var item in _items)
 			{
 				if (i == 256)
 					throw new Exception("hit local ent limit, FIXME");
-				if(_fromIdOverride != 0)
+				if (_fromIdOverride != 0)
 				{
 
 				}
-				else if(item.ItemContextType == ItemContextType.ItemFromMobs)
+				else if (item.ItemContextType == ItemContextType.ItemFromMobs)
 				{
 					_fromIdOverride = item.FromId & 0xFFFF;
-					_fromIdOverride |= ((uint)_mapId << 16); 
+					_fromIdOverride |= ((uint)_mapId << 16);
 					_fromIdOverride |= (0x02 << 24); //TODO: figure it out
 				}
 				else

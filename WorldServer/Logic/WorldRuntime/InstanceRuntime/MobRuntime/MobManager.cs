@@ -1,29 +1,29 @@
 ﻿namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 {
-    internal class MobManager
-    {
-        Dictionary<int, Mob> _mobs;
-        private readonly Instance _instance;
-        private UInt16 _mobIdGenerator = 0;
+	internal class MobManager
+	{
+		Dictionary<int, Mob> _mobs;
+		private readonly Instance _instance;
+		private UInt16 _mobIdGenerator = 0;
 
 		public MobManager(Instance instance, bool addMapMobs)
-        {
-            _instance = instance;
-            _mobs = new();
+		{
+			_instance = instance;
+			_mobs = new();
 
-			if(addMapMobs)
+			if (addMapMobs)
 				AddAllMobs();
-        }
+		}
 
-        private UInt16 GetNextMobId()
-        {
-            _mobIdGenerator++;
-            return _mobIdGenerator;
-        }
+		private UInt16 GetNextMobId()
+		{
+			_mobIdGenerator++;
+			return _mobIdGenerator;
+		}
 
 		public Mob GetMob(int id)
 		{
-			if(_mobs.TryGetValue(id, out Mob? mob))
+			if (_mobs.TryGetValue(id, out Mob? mob))
 			{
 				return mob;
 			}
@@ -33,18 +33,18 @@
 			}
 		}
 
-        public void AddAllMobs()
-        {
+		public void AddAllMobs()
+		{
 			var rng = new Random();
 			DateTime time = DateTime.UtcNow;
 			foreach (var mSpawn in _instance.MapData.MobSpawnData.Values)
-            {
-                var mobId = GetNextMobId();
-                Mob mob = new Mob(mSpawn.MobData, mSpawn, _instance, mobId, rng);
-                _mobs.Add(mobId, mob);
-                mob.Spawn(time);
-            }
-        }
+			{
+				var mobId = GetNextMobId();
+				Mob mob = new Mob(mSpawn.MobData, mSpawn, _instance, mobId, rng);
+				_mobs.Add(mobId, mob);
+				mob.Spawn(time);
+			}
+		}
 
 		public void UpdateAll()
 		{
@@ -52,10 +52,10 @@
 				return;
 
 			DateTime time = DateTime.UtcNow;
-			foreach(var mob in _mobs.Values)
+			foreach (var mob in _mobs.Values)
 			{
 				mob.Update(time);
 			}
 		}
-    }
+	}
 }

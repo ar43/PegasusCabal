@@ -1,14 +1,9 @@
 ﻿using LibPegasus.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorldServer.Logic.Delegates;
-using WorldServer.Logic;
-using WorldServer.Enums;
 using System.Diagnostics;
+using WorldServer.Enums;
+using WorldServer.Logic;
 using WorldServer.Logic.CharData.Quests;
+using WorldServer.Logic.Delegates;
 
 namespace WorldServer.Packets.C2S
 {
@@ -32,7 +27,7 @@ namespace WorldServer.Packets.C2S
 				setId = PacketReader.ReadUInt32(_data);
 				maybeSlot = PacketReader.ReadByte(_data);
 				numActions = PacketReader.ReadByte(_data);
-				for(int i = 0; i < numActions; i++)
+				for (int i = 0; i < numActions; i++)
 				{
 					var action = new QuestAction();
 					action.ChoiceId = PacketReader.ReadUInt32(_data);
@@ -40,7 +35,7 @@ namespace WorldServer.Packets.C2S
 					questActions.Add(action);
 				}
 
-				if(questId != setId)
+				if (questId != setId)
 				{
 					Serilog.Log.Error("questId not equal to setId");
 					Debug.Assert(false);

@@ -5,7 +5,7 @@ using WorldServer.Logic.WorldRuntime;
 
 namespace WorldServer.Logic.CharData.Items
 {
-    internal class Item
+	internal class Item
 	{
 		public Item(UInt32 kind, UInt32 option, UInt32 serial, UInt32 duration)
 		{
@@ -82,7 +82,7 @@ namespace WorldServer.Logic.CharData.Items
 
 		public bool TryUse()
 		{
-			switch(_itemInfo.TypeId)
+			switch (_itemInfo.TypeId)
 			{
 				case ItemType.IDT_WSCL:
 				{
@@ -124,7 +124,7 @@ namespace WorldServer.Logic.CharData.Items
 
 		public static Item GenerateReward(uint rewardItemIdx, uint battleStyle, uint order)
 		{
-			if(_itemRewardData.MainData.TryGetValue(new(rewardItemIdx, battleStyle, order), out var reward))
+			if (_itemRewardData.MainData.TryGetValue(new(rewardItemIdx, battleStyle, order), out var reward))
 			{
 				Item item = new(reward.ItemKind, reward.ItemOpt, 0, reward.Duration);
 				return item;
@@ -141,7 +141,7 @@ namespace WorldServer.Logic.CharData.Items
 					throw new Exception("Item could not be generated");
 				}
 			}
-			
+
 		}
 
 		public static void LoadItemRewards(WorldConfig worldConfig)

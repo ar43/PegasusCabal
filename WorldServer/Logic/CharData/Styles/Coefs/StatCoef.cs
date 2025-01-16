@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Logic.CharData.Styles.Coefs
+﻿namespace WorldServer.Logic.CharData.Styles.Coefs
 {
 	internal class StatCoef
 	{
@@ -17,7 +11,7 @@ namespace WorldServer.Logic.CharData.Styles.Coefs
 
 		public StatCoef(int[]? array)
 		{
-			if(array == null) throw new ArgumentNullException("array");
+			if (array == null) throw new ArgumentNullException("array");
 			STR = array[0];
 			DEX = array[1];
 			INT = array[2];

@@ -39,7 +39,7 @@ namespace WorldServer.Logic.Delegates
 			{
 				case (Byte)SpecialWarpIndex.NPCSIDX_RETN:
 				{
-					if(!client.Character.Inventory.UseItem(slot))
+					if (!client.Character.Inventory.UseItem(slot))
 					{
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error while warping (return) - error on item usage");
 						return;

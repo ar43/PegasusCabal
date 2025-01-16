@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Logic.CharData.Styles
+﻿namespace WorldServer.Logic.CharData.Styles
 {
 	internal class StyleEx
 	{
@@ -24,8 +17,8 @@ namespace WorldServer.Logic.CharData.Styles
 		}
 
 		public Byte Debug(Byte dbg)
-		{ 
-			return (Byte)dbg; 
+		{
+			return (Byte)dbg;
 		}
 
 		public Byte Serialize()

@@ -5,7 +5,7 @@ using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 
 namespace WorldServer.Packets.S2C
 {
-    internal class NFY_NewMobsList : PacketS2C
+	internal class NFY_NewMobsList : PacketS2C
 	{
 		List<Mob> _mobs;
 		public NFY_NewMobsList(List<Mob> mobs) : base((UInt16)Opcode.NFY_NEWMOBSLIST)

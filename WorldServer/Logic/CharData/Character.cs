@@ -7,7 +7,7 @@ using WorldServer.Logic.SharedData;
 
 namespace WorldServer.Logic.CharData
 {
-    internal class Character
+	internal class Character
 	{
 		public Character(Style style, string name) //used just in connection, not actually fr
 		{
@@ -163,7 +163,7 @@ namespace WorldServer.Logic.CharData
 				return result;
 			result = TakeDamageResult.DAMAGED;
 			Status.TakeHp(damage);
-			if(Status.Hp == 0)
+			if (Status.Hp == 0)
 			{
 				OnDeath();
 				result = TakeDamageResult.DEAD;

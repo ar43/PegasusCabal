@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorldServer.Enums
+﻿namespace WorldServer.Enums
 {
 	internal enum UpdateType
 	{
@@ -13,19 +7,19 @@ namespace WorldServer.Enums
 		UT_HP,
 		UT_MP,
 		UT_SP,
-		UT_SPINC,           
-		UT_SPDEC,         
+		UT_SPINC,
+		UT_SPDEC,
 		UT_EXP,
 		UT_RANK,
 		UT_LEVEL,
-		UT_SPDECEX,       
-		UT_BUFFPOTION,     
-		UT_REPUTATION,      
+		UT_SPDECEX,
+		UT_BUFFPOTION,
+		UT_REPUTATION,
 		UT_GUIDITEMFX,
-		UT_RESURRECTION,   
-		UT_PENALTYEXP,    
-		UT_DAMAGECELL,   
-		UT_DEFICIENCY,   
-		UT_AUTHHPPOTION,   
+		UT_RESURRECTION,
+		UT_PENALTYEXP,
+		UT_DAMAGECELL,
+		UT_DEFICIENCY,
+		UT_AUTHHPPOTION,
 	}
 }

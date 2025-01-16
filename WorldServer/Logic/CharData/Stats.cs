@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyModel.Resolution;
-using System;
-using WorldServer.Enums;
+﻿using WorldServer.Enums;
 using WorldServer.Logic.CharData.DbSyncData;
 using WorldServer.Logic.CharData.Styles.Coefs;
 using WorldServer.Logic.WorldRuntime;
@@ -54,10 +52,10 @@ namespace WorldServer.Logic.CharData
 			var cfg = worldConfig.GetConfig("[ReqEXP]");
 			_expTable[0] = 0;
 			int i = 0;
-				
-			foreach(var it in cfg.Values)
+
+			foreach (var it in cfg.Values)
 			{
-				if(i == 0)
+				if (i == 0)
 				{
 					i++;
 					continue;
@@ -93,10 +91,10 @@ namespace WorldServer.Logic.CharData
 
 		public void AddExp(ulong exp)
 		{
-			while(exp > 0)
+			while (exp > 0)
 			{
 				var reqToLvl = GetNextLevelXPDiff();
-				if(exp < reqToLvl)
+				if (exp < reqToLvl)
 				{
 					Exp += exp;
 					exp -= exp;
