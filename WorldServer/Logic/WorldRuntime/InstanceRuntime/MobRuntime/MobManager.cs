@@ -6,12 +6,13 @@
         private readonly Instance _instance;
         private UInt16 _mobIdGenerator = 0;
 
-        public MobManager(Instance instance)
+		public MobManager(Instance instance, bool addMapMobs)
         {
             _instance = instance;
             _mobs = new();
 
-            AddAllMobs();
+			if(addMapMobs)
+				AddAllMobs();
         }
 
         private UInt16 GetNextMobId()

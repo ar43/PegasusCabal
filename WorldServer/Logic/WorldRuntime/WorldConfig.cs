@@ -27,6 +27,7 @@ namespace WorldServer.Logic.WorldRuntime
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Quest.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\ItemReward.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Level.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\MissionDungeon.scp");
 
 			Item.LoadConfigs(this);
 			Item.LoadItemRewards(this);

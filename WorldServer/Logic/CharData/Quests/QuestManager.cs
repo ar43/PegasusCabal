@@ -75,10 +75,16 @@ namespace WorldServer.Logic.CharData.Quests
 			foreach(var it in ActiveQuests)
 			{
 				ByteString progress = ByteString.Empty;
-				if(it.Value.ItemProgress?.Count > 0)
-					progress = ByteString.CopyFrom(it.Value.ItemProgress.ToArray());
-				else if(it.Value.MobProgress?.Count > 0)
-					progress = ByteString.CopyFrom(it.Value.MobProgress.ToArray());
+				List<byte> finalProgress = new List<byte>();
+				if (it.Value.MobProgress?.Count > 0)
+					finalProgress.AddRange(it.Value.MobProgress);
+				if (it.Value.ItemProgress?.Count > 0)
+					finalProgress.AddRange(it.Value.ItemProgress);
+				if (it.Value.DungeonProgress?.Count > 0)
+					finalProgress.AddRange(it.Value.DungeonProgress);
+
+				if(finalProgress.Count > 0)
+					progress = ByteString.CopyFrom(finalProgress.ToArray());
 
 				data.ActiveQuestData_.Add((uint)it.Key, new ActiveQuestData.Types.ActiveQuestDataItem { Flag = it.Value.Flags, Id = it.Value.Id, IsExpanded = true, IsTracked = true, Progress = progress, ActCounter=it.Value.ActCounter, Slot = (uint)it.Key, Started = it.Value.Started });
 			}

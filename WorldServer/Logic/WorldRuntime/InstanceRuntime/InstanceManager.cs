@@ -4,6 +4,7 @@ using WorldServer.Logic.CharData;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
+using WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime;
 using WorldServer.Logic.WorldRuntime.WarpsRuntime;
 using WorldServer.Packets.S2C;
 
@@ -17,14 +18,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		private readonly WorldConfig _worldConfig;
 		private readonly WarpManager _warpManager;
 		private readonly MapDataManager _mapDataManager;
+		private readonly MissionDungeonDataManager _missionDungeonDataManager;
 
 		private Random _random;
 
-		public InstanceManager(WorldConfig worldConfig, WarpManager warpManager, MapDataManager mapDataManager)
+		public InstanceManager(WorldConfig worldConfig, WarpManager warpManager, MapDataManager mapDataManager, MissionDungeonDataManager missionDungeonDataManager)
 		{
 			_warpManager = warpManager;
 			_worldConfig = worldConfig;
 			_mapDataManager = mapDataManager;
+			_missionDungeonDataManager = missionDungeonDataManager;
 
 			_instances = new Dictionary<UInt64, Instance>();
 			_tileAttributes = new Dictionary<int, TileAttributeData>();
@@ -117,7 +120,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			return false;
 		}
 
-		public void AddInstance(MapId mapId, InstanceDuration instanceDuration, InstanceType instanceType)
+		public Instance AddInstance(MapId mapId, InstanceDuration instanceDuration, InstanceType instanceType)
 		{
 			Instance instance = new(mapId, instanceDuration, _mapDataManager.Get((Int32)mapId), instanceType);
 
@@ -127,11 +130,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			}
 
 			instance.TileAttributeData = GetTileAttributeData((Int32)instance.MapId);
-			instance.MobManager = new MobManager(instance);
+			instance.MobManager = new MobManager(instance, true);
 			instance.GroundItemManager = new GroundItemManager(instance);
 
 
 			_instances[instance.Id] = instance;
+			return instance;
 		}
 
 		private TileAttributeData GetTileAttributeData(int mapId) //this needs to be async probably

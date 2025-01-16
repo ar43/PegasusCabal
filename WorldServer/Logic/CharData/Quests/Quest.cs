@@ -32,13 +32,20 @@ namespace WorldServer.Logic.CharData.Quests
 			ItemProgress = null;
 			if (questProgress?.Count > 0)
 			{
-				if(QuestInfoMain.MissionMob?.Length > 0)
+				int mobLen = QuestInfoMain.MissionMob == null ? 0 : QuestInfoMain.MissionMob.Length;
+				int itemLen = QuestInfoMain.MissionItem == null ? 0 : QuestInfoMain.MissionItem.Length;
+				int dungeonLen = QuestInfoMain.MissionDungeon == null ? 0 : QuestInfoMain.MissionDungeon.Length;
+				if (mobLen > 0)
 				{
-					MobProgress = questProgress;
+					MobProgress = questProgress.Slice(0, mobLen);
 				}
-				else if (QuestInfoMain.MissionItem?.Length > 0)
+				if (itemLen > 0)
 				{
-					ItemProgress = questProgress;
+					ItemProgress = questProgress.Slice(mobLen, itemLen);
+				}
+				if (dungeonLen > 0)
+				{
+					DungeonProgress = questProgress.Slice(itemLen + mobLen, dungeonLen);
 				}
 			}
 			
@@ -53,6 +60,7 @@ namespace WorldServer.Logic.CharData.Quests
 		public uint ActCounter { get; private set; }
 		public List<byte>? MobProgress;
 		public List<byte>? ItemProgress;
+		public List<byte>? DungeonProgress;
 
 		public void Start()
 		{
@@ -76,7 +84,12 @@ namespace WorldServer.Logic.CharData.Quests
 			if (QuestInfoMain.MissionDungeon?.Length > 0)
 			{
 				debugCountProgressTypes++;
-				throw new NotImplementedException("unimplemented dungeon - " + Id.ToString());
+				DungeonProgress = new List<byte>();
+
+				foreach (var dungId in QuestInfoMain.MissionDungeon)
+				{
+					DungeonProgress.Add(0);
+				}
 			}
 
 			if (QuestInfoMain.MissionMob?.Length > 0)

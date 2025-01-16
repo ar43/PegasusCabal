@@ -1,5 +1,6 @@
 ﻿using WorldServer.Logic.WorldRuntime.InstanceRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
+using WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 using WorldServer.Logic.WorldRuntime.ShopRuntime;
 using WorldServer.Logic.WorldRuntime.WarpsRuntime;
@@ -13,6 +14,7 @@ namespace WorldServer.Logic.WorldRuntime
 		private MapDataManager _mapDataManager;
 		public ShopPoolManager ShopPoolManager { get; private set; }
 		private MobDataManager _mobDataManager;
+		private MissionDungeonDataManager _missionDungeonDataManager;
 
 		public InstanceManager InstanceManager { get; private set; }
 
@@ -23,7 +25,8 @@ namespace WorldServer.Logic.WorldRuntime
 			_mobDataManager = new MobDataManager(_worldConfig);
 			_warpManager = new WarpManager(_worldConfig);
 			_mapDataManager = new MapDataManager(_worldConfig, _mobDataManager);
-			InstanceManager = new InstanceManager(_worldConfig, _warpManager, _mapDataManager);
+			_missionDungeonDataManager = new MissionDungeonDataManager(_worldConfig);
+			InstanceManager = new InstanceManager(_worldConfig, _warpManager, _mapDataManager, _missionDungeonDataManager);
 		}
 
 		internal void Update()
