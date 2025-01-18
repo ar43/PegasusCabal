@@ -25,7 +25,7 @@ namespace WorldServer.Logic.CharData.Quests
 			if (questProgress?.Count > 0)
 			{
 				int mobLen = QuestInfoMain.MissionMob == null ? 0 : QuestInfoMain.MissionMob.Length / 2;
-				int itemLen = QuestInfoMain.MissionItem == null ? 0 : QuestInfoMain.MissionItem.Length / 3;
+				int itemLen = QuestInfoMain.MissionItem == null ? 0 : QuestInfoMain.MissionItem.Length;
 				int dungeonLen = QuestInfoMain.MissionDungeon == null ? 0 : QuestInfoMain.MissionDungeon.Length;
 				if (mobLen > 0)
 				{

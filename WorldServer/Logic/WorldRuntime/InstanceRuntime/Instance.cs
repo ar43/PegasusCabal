@@ -578,7 +578,6 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			var skillCriticalDamage = skill.CalculateCritDamage(battleStats.CriticalDamage);
 			var mobDmgReport = new List<DamageToMobResult>();
 
-			int totalExp = 0;
 			int skillExp = 0;
 
 			foreach (var defenderInfo in defenders)
@@ -655,7 +654,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 					}
 					else
 					{
-						exp = BattleFormula.GetEXP(damage, defender.GetMaxHP(), defender.GetExp(), lvlDiff, 1); //this is about 25% too much, TODO, also skillExp
+						exp = BattleFormula.GetEXP(damage, defender.GetMaxHP(), defender.GetExp(), lvlDiff, 1); //this is 25% too much cuz of EP8 settings
 
 						if (attackResult == AttackResult.SR_CRITICAL)
 						{
@@ -684,13 +683,18 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				mobDmgReport.Add(dmgResult);
 
 				defender.DeathCheck(attacker, skill.Id);
-				totalExp += exp;
+
+				if(exp > 1)
+				{
+					//TODO: recalc Exp for bonuses and blah blah
+					attacker.Character.Stats.AddExp((UInt64)exp);
+				}
 			}
 
-			//TODO: recalc totalExp for bonuses and blah blah
+			
 			//also skill exp
 
-			attacker.Character.Stats.AddExp((UInt64)totalExp);
+			
 			//addSkillExp
 
 			var rsp = new RSP_SkillToMobs(mobDmgReport, skill.Id, (UInt16)attacker.Character.Status.Hp, (UInt16)attacker.Character.Status.Mp,

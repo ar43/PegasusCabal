@@ -1,4 +1,5 @@
 ﻿using Shared.Protos;
+using System.Diagnostics;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData.Items;
 
@@ -140,7 +141,31 @@ namespace WorldServer.Logic.CharData
 				for (int j = 0; j < itemHeight; j++)
 				{
 					if (_occupiedSlots[PosToSlot(slotX + i, slotY + j)])
-						return false;
+					{
+						var currentItem = PeekItem(slot);
+						if (currentItem == null)
+							throw new Exception("what");
+						if(currentItem.IsQuestItem() && item.IsQuestItem())
+						{
+							if(currentItem.GetQuestItemOpt() == item.GetQuestItemOpt() && currentItem.Kind == item.Kind)
+							{
+								Debug.Assert(item.GetQuestItemCount() == 1);
+								currentItem.SetQuestItemCount((Int32)(currentItem.GetQuestItemCount() + 1));
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+						}
+						else
+						{
+							//TODO
+							return false;
+						}
+
+					}
+						
 				}
 			}
 

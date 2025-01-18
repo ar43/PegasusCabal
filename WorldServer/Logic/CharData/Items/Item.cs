@@ -46,6 +46,13 @@ namespace WorldServer.Logic.CharData.Items
 			Option = (uint)((Option << 7) + (quantity & MASK_QITEM_CNT));
 		}
 
+		public void SetQuestItemCount(int quantity)
+		{
+			Debug.Assert(IsQuestItem());
+			Option &= MASK_QITEM_IDX;
+			Option += (UInt32)(quantity & MASK_QITEM_CNT);
+		}
+
 		public uint GetQuestItemOpt()
 		{
 			Debug.Assert(IsQuestItem());

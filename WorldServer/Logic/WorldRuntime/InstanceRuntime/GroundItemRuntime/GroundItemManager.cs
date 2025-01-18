@@ -79,7 +79,10 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 				Item item = groundItem.Item;
 				bool addSuccess = client.Character.Inventory.AddItem(slot, item);
 				if (!addSuccess)
+				{
 					throw new Exception("inventory desync (slot not empty?)");
+				}
+					
 
 				RemoveGroundItem(groundItem);
 
@@ -88,7 +91,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 					client.Character.QuestManager.OnQuestItemLoot(questLootInfo.Item1, questLootInfo.Item2, questLootInfo.Item3);
 				}
 
-				return item;
+				return client.Character.Inventory.PeekItem(slot);
 			}
 			else
 			{

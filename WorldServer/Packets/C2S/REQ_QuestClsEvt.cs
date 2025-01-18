@@ -17,8 +17,8 @@ namespace WorldServer.Packets.C2S
 		{
 			UInt16 questId;
 			UInt16 slot;
-			UInt16 choice;
-			UInt16 invSlot;
+			UInt16 itemRewardChoice;
+			UInt16 itemRewardInvSlot;
 
 
 
@@ -26,24 +26,29 @@ namespace WorldServer.Packets.C2S
 			{
 				questId = PacketReader.ReadUInt16(_data);
 				Quest temp = new Quest(questId);
-				var itemCnt = 0;
+				var itemNeededCnt = 0;
+				bool itemReward = temp.QuestInfoMain.QuestReward?.RewardItemIdx > 0;
 
 				if (temp.QuestInfoMain.MissionItem != null)
-					itemCnt = temp.QuestInfoMain.MissionItem.Length;
+					itemNeededCnt = temp.QuestInfoMain.MissionItem.Length;
 
 				slot = PacketReader.ReadUInt16(_data);
 
-				if(_data.Count > 0)
+				if (itemNeededCnt > 0)
 				{
-					choice = PacketReader.ReadUInt16(_data);
-					for (int i = 0; i < itemCnt; i++)
+					for (int i = 0; i < itemNeededCnt; i++)
 						_ = PacketReader.ReadUInt16(_data); // TODO - slots for various needed items
-					invSlot = PacketReader.ReadUInt16(_data);
+				}
+
+				if(itemReward)
+				{
+					itemRewardChoice = PacketReader.ReadUInt16(_data);
+					itemRewardInvSlot = PacketReader.ReadUInt16(_data);
 				}
 				else
 				{
-					choice = 0;
-					invSlot = 0;
+					itemRewardChoice = 0;
+					itemRewardInvSlot = 0;
 				}
 			}
 			catch (IndexOutOfRangeException)
@@ -51,7 +56,7 @@ namespace WorldServer.Packets.C2S
 				return false;
 			}
 
-			actions.Enqueue((client) => CharQuest.OnQuestEnd(client, questId, slot, choice, invSlot));
+			actions.Enqueue((client) => CharQuest.OnQuestEnd(client, questId, slot, itemRewardChoice, itemRewardInvSlot));
 
 			return true;
 		}
