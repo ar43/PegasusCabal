@@ -78,6 +78,8 @@ namespace WorldServer.Packets
 				Opcode.REQ_MESSAGEEVNT => new REQ_MessageEvnt(data),
 				Opcode.CSC_ITEMDROP => new REQ_ItemDrop(data),
 				Opcode.CSC_ITEMLOOTING => new REQ_ItemLooting(data),
+				Opcode.CSC_ENTERDUNGEON => new REQ_EnterDungeon(data),
+				Opcode.CSC_DUNGEONSTART => new REQ_DungeonStart(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

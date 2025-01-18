@@ -62,7 +62,7 @@ namespace WorldServer.Logic.Delegates
 			{
 				var npcData = client.Character.Location.Instance.MapData.NpcData;
 				var posData = client.Character.Location;
-				quest = client.Character.QuestManager.ProgressQuest(questId, posData, npcData, questActions, client.Character.Inventory);
+				quest = client.Character.QuestManager.OnNpcAction(questId, posData, npcData, questActions, client.Character.Inventory);
 			}
 			catch (Exception e)
 			{

@@ -1,7 +1,10 @@
 ﻿using LibPegasus.Parsers.Mcl;
+using System.Diagnostics;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.Delegates;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime.MissionDungeonRuntime;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime;
@@ -33,10 +36,10 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			_tileAttributes = new Dictionary<int, TileAttributeData>();
 			_random = new Random();
 
-			AddInstance(MapId.BLOODY_ICE, InstanceDuration.PERMANENT, InstanceType.FIELD);
-			AddInstance(MapId.GREEN_DESPAIR, InstanceDuration.PERMANENT, InstanceType.FIELD);
-			AddInstance(MapId.DESERT_SCREAM, InstanceDuration.PERMANENT, InstanceType.FIELD);
-			AddInstance(MapId.WARP_CENTER, InstanceDuration.PERMANENT, InstanceType.FIELD);
+			AddFieldInstance(MapId.BLOODY_ICE, InstanceDuration.PERMANENT);
+			AddFieldInstance(MapId.GREEN_DESPAIR, InstanceDuration.PERMANENT);
+			AddFieldInstance(MapId.DESERT_SCREAM, InstanceDuration.PERMANENT);
+			AddFieldInstance(MapId.WARP_CENTER, InstanceDuration.PERMANENT);
 		}
 
 		private void WarpClient(Client client, Instance newInstance, UInt32 warpType, int newX, int newY)
@@ -60,9 +63,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			client.Character.Location.Movement.SetPosition(newX, newY);
 			client.Character.Location.Movement.UpdateCellPos();
 
+			var dgId = newInstance.Type == InstanceType.FIELD ? 0 : newInstance.MissionDungeonManager.GetDungeonId();
+
 			//todo: send ChargeInfo
 
-			var response = new RSP_WarpCommand(client.Character, warpType, (UInt32)newInstance.MapId, 0);
+			var response = new RSP_WarpCommand(client.Character, warpType, (UInt32)newInstance.MapId, (uint)dgId);
 			client.PacketManager.Send(response);
 
 			AddClient(client, newInstance.Id, AddObjectType.NEWWARP);
@@ -104,25 +109,54 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				return false;
 			if (!npc.NpcWarpData.TryGetValue(0, out var npcWarp))
 				return false;
-			var warpId = npcWarp.TargetId;
-			var warp = _warpManager.Get(warpId);
-			if (warp == null) return false;
+			
 
-			//TODO: Nation checking
-			if (_instances.TryGetValue((UInt64)warp.WorldIdx, out var newInstance))
+			if(npcWarp.Type == 0)
 			{
-				if (newInstance.DurationType != InstanceDuration.PERMANENT)
-					return false;
-				WarpClient(client, newInstance, 8, warp.PosXPnt, warp.PosYPnt);
-				return true;
+				var warpId = npcWarp.TargetId;
+				var warp = _warpManager.Get(warpId);
+				if (warp == null) return false;
+				//TODO: Nation checking
+				if (_instances.TryGetValue((UInt64)warp.WorldIdx, out var newInstance))
+				{
+					if (newInstance.DurationType != InstanceDuration.PERMANENT)
+						return false;
+					WarpClient(client, newInstance, 8, warp.PosXPnt, warp.PosYPnt);
+					return true;
+				}
 			}
+			else
+			{
+				Debug.Assert(npcWarp.Type == 1 || npcWarp.Type == 2);
+				var dgId = client.Character.Location.PendingDungeon.DungeonId;
+				var instanceId = client.Character.Location.PendingDungeon.DungeonInstanceId;
+				var warpDungeon = npcWarp.TargetId;
+
+				if (instanceId == 0 || dgId != warpDungeon)
+					return false;
+
+				
+				if (_instances.TryGetValue((ulong)instanceId, out var newInstance))
+				{
+					if (newInstance.DurationType != InstanceDuration.TEMP || newInstance.Type != InstanceType.DUNGEON)
+						return false;
+
+					var warpId = newInstance.MissionDungeonManager.GetStartWarpId();
+					var warp = _warpManager.Get(warpId);
+
+					WarpClient(client, newInstance, 2, warp.PosXPnt, warp.PosYPnt);
+					client.Character.Location.PendingDungeon.Clear();
+					return true;
+				}
+			}
+			
 
 			return false;
 		}
 
-		public Instance AddInstance(MapId mapId, InstanceDuration instanceDuration, InstanceType instanceType)
+		public Instance AddFieldInstance(MapId mapId, InstanceDuration instanceDuration)
 		{
-			Instance instance = new(mapId, instanceDuration, _mapDataManager.Get((Int32)mapId), instanceType);
+			Instance instance = new(mapId, instanceDuration, _mapDataManager.Get((Int32)mapId), InstanceType.FIELD);
 
 			if (_instances.ContainsKey(instance.Id))
 			{
@@ -138,6 +172,33 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			return instance;
 		}
 
+		public Instance? AddDungeonInstance(MapId mapId, int dungeonId)
+		{
+			Instance instance = new(mapId, InstanceDuration.TEMP, _mapDataManager.Get((Int32)mapId), InstanceType.DUNGEON);
+
+			if (_instances.ContainsKey(instance.Id))
+			{
+				throw new Exception("Instance manager already contains an instance with that id");
+			}
+
+			if(_missionDungeonDataManager.MainData.TryGetValue(dungeonId, out var dungeonData)) 
+			{
+				instance.TileAttributeData = GetTileAttributeData((Int32)instance.MapId);
+				instance.MobManager = new MobManager(instance, false);
+				instance.GroundItemManager = new GroundItemManager(instance);
+				instance.MissionDungeonManager = new MissionDungeonManager(dungeonData);
+
+				_instances[instance.Id] = instance;
+				return instance;
+			}
+			else
+			{
+				return null;
+			}
+
+			
+		}
+
 		private TileAttributeData GetTileAttributeData(int mapId) //this needs to be async probably
 		{
 			if (_tileAttributes.ContainsKey(mapId))
@@ -146,7 +207,10 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			}
 			else
 			{
-				var mapIdString = mapId.ToString("00");
+				var mapIdString = MapDataManager.MapIdToMcl[(MapId)mapId].ToString("00");
+				if(mapIdString == null)
+					throw new Exception($"{mapId} not defined in dictionary.");
+
 				string workingDirectory = Environment.CurrentDirectory;
 				string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.Parent.FullName;
 				var path = $"{projectDirectory}\\LibPegasus\\Data\\Maps\\mcl\\world_{mapIdString}.mcl";

@@ -1,9 +1,54 @@
-﻿using WorldServer.Enums;
+﻿using System.Diagnostics;
+using WorldServer.Enums;
+using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
 {
 	internal static class Warping
 	{
+		internal static void OnEnterDungeon(Client client, Int32 dungeonId, Int32 warpType, Int32 npcId, Int32 u2, Int32 u3, Int32 mapId)
+		{
+			var character = client.Character;
+			var instance = client.Character.Location.Instance;
+			var movement = client.Character.Location.Movement;
+
+			if (character == null || instance == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "character or instance is null");
+				return;
+			}
+
+			foreach (var quest in character.QuestManager.ActiveQuests.Values)
+			{
+				if(quest.QuestInfoMain.MissionDungeon != null && quest.QuestInfoMain.MissionDungeon[0] == dungeonId && quest.StoredInstanceId == 0)
+				{
+					var dungeon = client.World.InstanceManager.AddDungeonInstance((MapId)mapId, dungeonId);
+
+					if (dungeon == null)
+					{
+						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "dungeon does not exist");
+						return;
+					}
+
+					var id = dungeon.Id;
+					quest.StoreInstanceId(id);
+					client.Character.Location.PendingDungeon.Set(id, dungeonId);
+					client.Character.Location.LastFieldLocInfo = new(movement.X, movement.Y, (int)instance.MapId);
+
+					Debug.Assert(dungeon.MapId == (MapId)mapId);
+					
+
+					//TODO stuff with npc
+
+					var rsp = new RSP_EnterDungeon(1, dungeonId, warpType, npcId, u2, u3, (int)dungeon.MapId);
+					client.PacketManager.Send(rsp);
+					return;
+				}
+			}
+
+			client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "could not start the requested dungeon");
+		}
+
 		internal static void OnWarpCommand(Client client, Byte npcId, UInt16 slot, UInt32 worldType, UInt32 target)
 		{
 			/*

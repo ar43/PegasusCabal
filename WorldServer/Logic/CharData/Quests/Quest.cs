@@ -53,6 +53,14 @@ namespace WorldServer.Logic.CharData.Quests
 		public List<byte>? MobProgress;
 		public List<byte>? ItemProgress;
 		public List<byte>? DungeonProgress;
+		public ulong StoredInstanceId { get; private set; }
+
+		public void StoreInstanceId(ulong id)
+		{
+			if (StoredInstanceId != 0)
+				throw new Exception("Already set instance id");
+			StoredInstanceId = id;
+		}
 
 		public void Start()
 		{

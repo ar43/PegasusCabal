@@ -1,4 +1,5 @@
-﻿using WorldServer.Logic.WorldRuntime.MobDataRuntime;
+﻿using WorldServer.Enums;
+using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 
 namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 {
@@ -7,6 +8,16 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 		Dictionary<int, MapData> _maps;
 		WorldConfig _config;
 		MobDataManager _mobDataManager;
+
+		public static readonly Dictionary<MapId, int> MapIdToMcl = new Dictionary<MapId, int>
+		{
+			{ MapId.BLOODY_ICE_EX, 1 },
+			{ MapId.BLOODY_ICE, 1 },
+			{ MapId.DESERT_SCREAM, 2 },
+			{ MapId.GREEN_DESPAIR, 3 },
+			{ MapId.WARP_CENTER, 30 },
+			{ MapId.PORT_LUX, 4 }
+		};
 
 		public MapDataManager(WorldConfig config, MobDataManager mobDataManager)
 		{

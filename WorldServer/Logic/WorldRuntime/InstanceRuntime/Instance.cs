@@ -4,8 +4,10 @@ using LibPegasus.Utils;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime.MissionDungeonRuntime;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
+using WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime;
 using WorldServer.Packets.C2S.PacketSpecificData;
 using WorldServer.Packets.S2C;
 using WorldServer.Packets.S2C.PacketSpecificData;
@@ -49,6 +51,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		public readonly MapData MapData;
 		public MobManager? MobManager = null;
 		public GroundItemManager? GroundItemManager = null;
+		public MissionDungeonManager? MissionDungeonManager = null;
 		public Random Rng { get; private set; }
 
 		public TileAttributeData? TileAttributeData { get; set; }

@@ -198,7 +198,7 @@ namespace WorldServer.Logic.CharData.Quests
 			return exp;
 		}
 
-		internal Quest ProgressQuest(UInt16 questId, Location posData, Dictionary<Int32, NpcData> npcData, List<QuestAction> questActions, Inventory inv)
+		internal Quest OnNpcAction(UInt16 questId, Location posData, Dictionary<Int32, NpcData> npcData, List<QuestAction> questActions, Inventory inv)
 		{
 			Quest? quest = null;
 			foreach (var it in ActiveQuests.Values)

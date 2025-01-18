@@ -35,7 +35,19 @@ namespace WorldServer.Logic.Delegates
 			if (option == 2 && client.ConnectionInfo.RequestedBackToCharLobby)
 			{
 				client.ConnectionInfo.RequestedBackToCharLobby = false;
-				client.Character.Location.LastMapId = (Int32)client.Character.Location.Instance.MapId;
+				if (client.Character.Location.Instance.Type == Enums.InstanceType.FIELD)
+				{
+					client.Character.Location.DisconnectFieldInfo.MapId = (Int32)client.Character.Location.Instance.MapId;
+					client.Character.Location.DisconnectFieldInfo.X = client.Character.Location.Movement.X;
+					client.Character.Location.DisconnectFieldInfo.Y = client.Character.Location.Movement.Y;
+				}
+				else
+				{
+					client.Character.Location.DisconnectFieldInfo.MapId = client.Character.Location.LastFieldLocInfo.MapId;
+					client.Character.Location.DisconnectFieldInfo.X = client.Character.Location.LastFieldLocInfo.X;
+					client.Character.Location.DisconnectFieldInfo.Y = client.Character.Location.LastFieldLocInfo.Y;
+				}
+					
 				client.Character.Location.Instance.RemoveClient(client, Enums.DelObjectType.LOGOUT);
 				client.Character.Sync(Enums.DBSyncPriority.HIGH, true);
 			}
