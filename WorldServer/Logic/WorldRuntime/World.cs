@@ -25,7 +25,7 @@ namespace WorldServer.Logic.WorldRuntime
 			_mobDataManager = new MobDataManager(_worldConfig);
 			_warpManager = new WarpManager(_worldConfig);
 			_mapDataManager = new MapDataManager(_worldConfig, _mobDataManager);
-			_missionDungeonDataManager = new MissionDungeonDataManager(_worldConfig);
+			_missionDungeonDataManager = new MissionDungeonDataManager(_worldConfig, _mobDataManager);
 			InstanceManager = new InstanceManager(_worldConfig, _warpManager, _mapDataManager, _missionDungeonDataManager);
 		}
 

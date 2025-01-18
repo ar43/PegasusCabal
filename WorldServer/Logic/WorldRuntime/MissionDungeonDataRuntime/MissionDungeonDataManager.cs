@@ -1,14 +1,19 @@
 ﻿using LibPegasus.Utils;
+using System.Diagnostics;
+using WorldServer.Logic.WorldRuntime.MapDataRuntime;
+using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 
 namespace WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime
 {
 	internal class MissionDungeonDataManager
 	{
 		private readonly WorldConfig _config;
-		public MissionDungeonDataManager(WorldConfig worldConfig)
+		private readonly MobDataManager _mobDataManager;
+		public MissionDungeonDataManager(WorldConfig worldConfig, MobDataManager mobDataManager)
 		{
 			MainData = new();
 			_config = worldConfig;
+			_mobDataManager = mobDataManager;
 			LoadConfig();
 		}
 
@@ -86,10 +91,11 @@ namespace WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime
 				int Authority = Convert.ToInt32(it["Authority"]);
 				int Server_Mob = Convert.ToInt32(it["Server_Mob"]);
 				int Loot_Delay = Convert.ToInt32(it["Loot_Delay"]);
+				MobData mobData = _mobDataManager.Get(SpeciesIdx);
 
-				var mmap = new MissionDungeonMMap(MobIdx, PPIdx, SpeciesIdx, PosX, PosY, Width, Height, SpwnInterval,
+				var mmap = new MissionDungeonMMapEntry(MobIdx, PPIdx, SpeciesIdx, PosX, PosY, Width, Height, SpwnInterval,
 					SpwnCount, SpawnDefault, EvtProperty, EvtMobs, EvtInterval, Grade, Lv, MissionGate,
-					PerfectDrop, TrgIdxSpawn, TrgIdxKill, Type, Min, Max, Authority, Server_Mob, Loot_Delay);
+					PerfectDrop, TrgIdxSpawn, TrgIdxKill, Type, Min, Max, Authority, Server_Mob, Loot_Delay, mobData);
 
 				AddMMap(PPIdx, mmap);
 			}
@@ -137,14 +143,16 @@ namespace WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime
 
 		}
 
-		private void AddMMap(int ppidx, MissionDungeonMMap mmap)
+		private void AddMMap(int ppidx, MissionDungeonMMapEntry mmap)
 		{
 			if (!MainData.ContainsKey(ppidx))
 				throw new Exception();
 
 			var mmapList = MainData[ppidx].MissionDungeonMMap;
+			if (mmapList.ContainsKey(mmap.ExtraMobInfo.MobIdx))
+				throw new Exception("duplicate mmap entry");
 
-			mmapList.Add(mmap);
+			mmapList.Add(mmap.ExtraMobInfo.MobIdx, mmap);
 		}
 
 		private void AddPP(int ppidx, MissionDungeonPP pp)
@@ -164,8 +172,20 @@ namespace WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime
 				throw new Exception();
 
 			var triggerList = MainData[qDungeonIdx].MissionDungeonTriggers;
+			if (triggerList.ContainsKey(trigger.TrgIdx))
+				Serilog.Log.Warning("duplicate trigger for quest dungeon" + trigger.QDungeonIdx);
 
-			triggerList.Add(trigger);
+			/*
+				FIXME
+				[17:19:16 WRN] duplicate trigger for 4096
+				[17:19:16 WRN] duplicate trigger for 4097
+				[17:19:16 WRN] duplicate trigger for 4097
+				[17:19:16 WRN] duplicate trigger for 4097
+				[17:19:16 WRN] duplicate trigger for 4099
+				[17:19:16 WRN] duplicate trigger for 4099
+			 */
+
+			triggerList.TryAdd(trigger.TrgIdx, trigger);
 		}
 
 		private void AddActGroup(int qDungeonIdx, MissionDungeonActGroup actGroup)
@@ -198,8 +218,8 @@ namespace WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime
 		}
 
 		public MissionDungeonInfo MissionDungeonInfo { get; private set; }
-		public List<MissionDungeonMMap> MissionDungeonMMap { get; private set; }
-		public List<MissionDungeonTrigger> MissionDungeonTriggers { get; private set; }
+		public Dictionary<int, MissionDungeonMMapEntry> MissionDungeonMMap { get; private set; }
+		public Dictionary<int, MissionDungeonTrigger> MissionDungeonTriggers { get; private set; }
 		public MissionDungeonPP? MissionDungeonPP { get; set; }
 		public List<MissionDungeonActGroup> MissionDungeonActGroup { get; private set; }
 
@@ -262,63 +282,39 @@ namespace WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime
 		public int DungeonType { get; private set; }
 	}
 
-	internal class MissionDungeonMMap
+	internal class MissionDungeonMMapEntry
 	{
-		public MissionDungeonMMap(Int32 mobIdx, Int32 pPIdx, Int32 speciesIdx, Int32 posX, Int32 posY, Int32 width, Int32 height, Int32 spwnInterval, Int32 spwnCount, Int32 spawnDefault, Int32[]? evtProperty, Int32[]? evtMobs, Int32[]? evtInterval, Int32 grade, Int32 lv, Int32 missionGate, Int32 perfectDrop, Int32 trgIdxSpawn, Int32 trgIdxKill, Int32 type, Int32 min, Int32 max, Int32 authority, Int32 server_Mob, Int32 loot_Delay)
+		public MissionDungeonMMapEntry(Int32 mobIdx, Int32 pPIdx, Int32 speciesIdx, Int32 posX, Int32 posY, Int32 width, Int32 height, Int32 spwnInterval, Int32 spwnCount, Int32 spawnDefault, Int32[]? evtProperty, Int32[]? evtMobs, Int32[]? evtInterval, Int32 grade, Int32 lv, Int32 missionGate, Int32 perfectDrop, Int32 trgIdxSpawn, Int32 trgIdxKill, Int32 type, Int32 min, Int32 max, Int32 authority, Int32 server_Mob, Int32 loot_Delay, MobData mobData)
+		{
+			MobSpawnData = new(speciesIdx, mobData, posX, posY, width, height, spwnInterval, spawnDefault, evtProperty, evtMobs, evtInterval, missionGate, perfectDrop, type, min, max, authority, server_Mob, loot_Delay);
+			ExtraMobInfo = new(mobIdx, pPIdx, spwnCount, grade, lv, trgIdxSpawn, trgIdxKill);
+		}
+
+		public MobSpawnData MobSpawnData { get; private set; }
+		public ExtraMobInfo ExtraMobInfo { get; private set; }
+
+	}
+
+	internal class ExtraMobInfo
+	{
+		public ExtraMobInfo(Int32 mobIdx, Int32 pPIdx, Int32 spwnCount, Int32 grade, Int32 lv, Int32 trgIdxSpawn, Int32 trgIdxKill)
 		{
 			MobIdx = mobIdx;
 			PPIdx = pPIdx;
-			SpeciesIdx = speciesIdx;
-			PosX = posX;
-			PosY = posY;
-			Width = width;
-			Height = height;
-			SpwnInterval = spwnInterval;
 			SpwnCount = spwnCount;
-			SpawnDefault = spawnDefault;
-			EvtProperty = evtProperty;
-			EvtMobs = evtMobs;
-			EvtInterval = evtInterval;
 			Grade = grade;
 			Lv = lv;
-			MissionGate = missionGate;
-			PerfectDrop = perfectDrop;
 			TrgIdxSpawn = trgIdxSpawn;
 			TrgIdxKill = trgIdxKill;
-			Type = type;
-			Min = min;
-			Max = max;
-			Authority = authority;
-			Server_Mob = server_Mob;
-			Loot_Delay = loot_Delay;
 		}
 
 		public int MobIdx { get; private set; }
 		public int PPIdx { get; private set; }
-		public int SpeciesIdx { get; private set; }
-		public int PosX { get; private set; }
-		public int PosY { get; private set; }
-		public int Width { get; private set; }
-		public int Height { get; private set; }
-		public int SpwnInterval { get; private set; }
 		public int SpwnCount { get; private set; }
-		public int SpawnDefault { get; private set; }
-		public int[]? EvtProperty { get; private set; }
-		public int[]? EvtMobs { get; private set; }
-		public int[]? EvtInterval { get; private set; }
 		public int Grade { get; private set; }
 		public int Lv { get; private set; }
-		public int MissionGate { get; private set; }
-		public int PerfectDrop { get; private set; }
 		public int TrgIdxSpawn { get; private set; }
 		public int TrgIdxKill { get; private set; }
-		public int Type { get; private set; }
-		public int Min { get; private set; }
-		public int Max { get; private set; }
-		public int Authority { get; private set; }
-		public int Server_Mob { get; private set; }
-		public int Loot_Delay { get; private set; }
-
 	}
 
 	internal class MissionDungeonTrigger

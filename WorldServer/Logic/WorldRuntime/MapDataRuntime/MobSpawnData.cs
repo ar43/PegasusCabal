@@ -4,7 +4,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 {
 	internal class MobSpawnData
 	{
-		public MobSpawnData(Int32 speciesIdx, MobData mobData, Int32 posX, Int32 posY, Int32 width, Int32 height, Int32 spwnInterval, Int32 spawnDefault, String evtProperty, String evtMobs, String evtInterval, Int32 missionGate, Int32 perfectDrop, Int32 type, Int32 min, Int32 max, Int32 authority, Int32 server_Mob, Int32 loot_Delay)
+		public MobSpawnData(Int32 speciesIdx, MobData mobData, Int32 posX, Int32 posY, Int32 width, Int32 height, Int32 spwnInterval, Int32 spawnDefault, int[]? evtProperty, int[]? evtMobs, int[]? evtInterval, Int32 missionGate, Int32 perfectDrop, Int32 type, Int32 min, Int32 max, Int32 authority, Int32 server_Mob, Int32 loot_Delay)
 		{
 			SpeciesIdx = speciesIdx;
 			MobData = mobData;
@@ -35,9 +35,9 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 		public int Height { get; private set; }
 		public int SpwnInterval { get; private set; }
 		public int SpawnDefault { get; private set; }
-		public string EvtProperty { get; private set; }
-		public string EvtMobs { get; private set; }
-		public string EvtInterval { get; private set; }
+		public int[]? EvtProperty { get; private set; }
+		public int[]? EvtMobs { get; private set; }
+		public int[]? EvtInterval { get; private set; }
 		public int MissionGate { get; private set; }
 		public int PerfectDrop { get; private set; }
 		public int Type { get; private set; }

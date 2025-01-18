@@ -234,7 +234,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 				var npcPosX = npcData[actionSet.ActNpc[1]].PosX;
 				var npcPosY = npcData[actionSet.ActNpc[1]].PosY;
-				if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
+				if (npcData[actionSet.ActNpc[1]].IsRangeCheck && !posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
 					throw new Exception("char too far away from npc");
 
 				if (actionSet.Action == NpcActionType.QACT_GIVE)
@@ -257,6 +257,15 @@ namespace WorldServer.Logic.CharData.Quests
 					{
 						throw new Exception("invalid item");
 					}
+				}
+				else if(actionSet.Action == NpcActionType.QACT_CTRG)
+				{
+					if(posData.Instance == null || posData.Instance.Id != quest.StoredInstanceId || posData.Instance.MissionDungeonManager == null)
+					{
+						throw new NotImplementedException("wrong instance");
+					}
+
+					posData.Instance.MissionDungeonManager.NpcTrigger(it.Param, actionSet.ActNpc[1]);
 				}
 				else if (actionSet.Action != NpcActionType.QACT_TALK)
 				{

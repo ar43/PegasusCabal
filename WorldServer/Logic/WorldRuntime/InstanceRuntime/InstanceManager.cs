@@ -186,7 +186,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				instance.TileAttributeData = GetTileAttributeData((Int32)instance.MapId);
 				instance.MobManager = new MobManager(instance, false);
 				instance.GroundItemManager = new GroundItemManager(instance);
-				instance.MissionDungeonManager = new MissionDungeonManager(dungeonData);
+				instance.MissionDungeonManager = new MissionDungeonManager(dungeonData, instance.MobManager);
 
 				_instances[instance.Id] = instance;
 				return instance;
@@ -256,11 +256,24 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 		internal void Update()
 		{
+			var instanceKillList = new List<ulong>();
 			foreach (var instance in _instances.Values)
 			{
 				if (instance == null)
 					continue;
+
 				instance.Update();
+
+				if(instance.MarkForDeletion)
+				{
+					Debug.Assert(instance.Type == InstanceType.DUNGEON && instance.DurationType == InstanceDuration.TEMP && instance.NumClients == 0);
+					instanceKillList.Add(instance.Id);
+				}
+			}
+
+			foreach(var instanceId in instanceKillList)
+			{
+				_instances.Remove(instanceId);
 			}
 		}
 	}

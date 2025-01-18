@@ -28,6 +28,7 @@ namespace LibPegasus.Parsers.Scp
 			{
 				bool fileMapData = IsFileMapData(path, out var fileName);
 				Serilog.Log.Information($"Loading {path}...");
+				int uniqueNum = 0;
 				string[]? section = null;
 				Dictionary<string, Dictionary<string, string>>? sectDict = null;
 				foreach (var line in File.ReadLines(path))
@@ -55,6 +56,7 @@ namespace LibPegasus.Parsers.Scp
 								section[0] = section[0] + Regex.Match(fileName, @"\d+").Value + "]";
 							}
 							sectDict = new();
+							uniqueNum = 0;
 						}
 						else
 						{
@@ -83,6 +85,11 @@ namespace LibPegasus.Parsers.Scp
 							{
 								throw new NullReferenceException();
 							}
+							if (sectDict.ContainsKey(key))
+								key = key + "." + uniqueNum.ToString();
+							if (sectDict.ContainsKey(key))
+								throw new Exception(key);
+							uniqueNum++;
 							sectDict[key] = dict;
 						}
 					}

@@ -1,4 +1,5 @@
-﻿using WorldServer.Enums;
+﻿using LibPegasus.Utils;
+using WorldServer.Enums;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 
 namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
@@ -69,9 +70,9 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							int Height = Convert.ToInt32(entry.Value["Height"]);
 							int SpwnInterval = Convert.ToInt32(entry.Value["SpwnInterval"]);
 							int SpawnDefault = Convert.ToInt32(entry.Value["SpawnDefault"]);
-							string EvtProperty = new(entry.Value["EvtProperty"]);
-							string EvtMobs = new(entry.Value["EvtMobs"]);
-							string EvtInterval = new(entry.Value["EvtInterval"]);
+							int[]? EvtProperty = Utility.StringToIntArrayComplex(entry.Value["EvtProperty"]);
+							int[]? EvtMobs = Utility.StringToIntArrayComplex(entry.Value["EvtMobs"]);
+							int[]? EvtInterval = Utility.StringToIntArrayComplex(entry.Value["EvtInterval"]);
 							int MissionGate = Convert.ToInt32(entry.Value["MissionGate"]);
 							int PerfectDrop = Convert.ToInt32(entry.Value["PerfectDrop"]);
 							int Type = Convert.ToInt32(entry.Value["Type"]);

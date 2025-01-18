@@ -23,6 +23,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			MapData = mapData;
 			DurationType = durationType;
 			NumClients = 0;
+			MarkForDeletion = false;
+			_lastInactiveTime = DateTime.UtcNow;
 			Type = type;
 
 			for (int i = 0; i < _cells.GetLength(0); i++)
@@ -61,9 +63,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		public InstanceType Type { get; }
 
 		private static UInt64 InstanceIdGenerator = 1000;
+		public static double INSTANCE_KILL_TIME = 500;
 
 		public static readonly int NUM_CELL_X = 16;
 		public static readonly int NUM_CELL_Y = 16;
+
+		public bool MarkForDeletion { get; private set;}
+		DateTime _lastInactiveTime;
 
 		public int NumClients { get; private set; }
 
@@ -144,6 +150,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				{
 					client.Character.Location.Instance = null;
 					NumClients--;
+					if(NumClients == 0)
+						_lastInactiveTime = DateTime.UtcNow;
 					if (NumClients < 0)
 						throw new Exception("negative NumClients");
 					return;
@@ -465,6 +473,14 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 
 		internal void Update()
 		{
+			if(NumClients == 0 && DurationType == InstanceDuration.TEMP)
+			{
+				DateTime time = DateTime.UtcNow;
+				var diff = time - _lastInactiveTime;
+				if (diff.TotalSeconds > INSTANCE_KILL_TIME)
+					MarkForDeletion = true;
+			}
+
 			MobManager.UpdateAll();
 		}
 

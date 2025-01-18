@@ -1,11 +1,13 @@
 ﻿using LibPegasus.Utils;
 using System.Diagnostics;
+using WorldServer.Enums;
 using WorldServer.Enums.Mob;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
+using WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 using WorldServer.Packets.S2C;
 using WorldServer.Packets.S2C.PacketSpecificData;
@@ -44,6 +46,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		public bool IsAttacked { get; private set; }
 
 		public MobSkill CurrentSkill { get; private set; }
+		public ExtraMobInfo? ExtraMobInfo { get; private set; }
 
 
 		private int evasion = 0;
@@ -53,7 +56,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		private int HP30Breakpoint;
 		private int HP50Breakpoint;
 
-		public Mob(MobData data, MobSpawnData spawnData, Instance instance, UInt16 id, Random rng)
+		public Mob(MobData data, MobSpawnData spawnData, Instance instance, UInt16 id, Random rng, ExtraMobInfo? extraMobInfo)
 		{
 			_data = data;
 			_spawnData = spawnData;
@@ -1557,17 +1560,27 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			}
 		}
 
-		internal void DeathCheck(Client attacker, int skillId)
+		internal void Kill(DelObjectType delObjectType = DelObjectType.DEAD, Client? attacker = null, int skillId = 0)
+		{
+			HP = 0;
+			DeathCheck(attacker, skillId, true, delObjectType);
+		}
+
+		internal void DeathCheck(Client? attacker, int skillId, bool notifyAround = false, DelObjectType delObjectType = DelObjectType.WARP)
 		{
 			if (HP <= 0)
 			{
 				IsSpawned = false;
 				IsDead = true;
-				_instance.RemoveMobFromCell(this, false);
+				_instance.RemoveMobFromCell(this, notifyAround, delObjectType);
 				SetNextUpdateTime(DateTime.UtcNow, _spawnData.SpwnInterval);
 
-				attacker.Character.QuestManager.OnMobDeath(attacker, (UInt16)_data.Id, skillId);
-				DropQuestItem(attacker);
+				if(attacker != null)
+				{
+					attacker.Character.QuestManager.OnMobDeath(attacker, (UInt16)_data.Id, skillId);
+					DropQuestItem(attacker);
+				}
+				
 			}
 		}
 	}
