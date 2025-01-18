@@ -96,6 +96,15 @@ namespace WorldServer.Logic.Delegates
 					}
 					break;
 				}
+				case (Byte)SpecialWarpIndex.NPCSIDX_QDEX:
+				{
+					if (!client.World.InstanceManager.WarpClientExitDungeon(client))
+					{
+						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error while warping (exit dungeon)");
+						return;
+					}
+					break;
+				}
 				case (Byte)SpecialWarpIndex.NPCSIDX_GM:
 				{
 					if (!client.isGm())

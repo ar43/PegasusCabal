@@ -73,6 +73,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			CurrentDefender = null;
 			IsAttacked = false;
 			CurrentSkill = _data.DefaultSkill;
+			ExtraMobInfo = extraMobInfo;
 
 			if (_instance.Type == Enums.InstanceType.FIELD)
 				AddedAlertRange = 2;
@@ -1566,6 +1567,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			DeathCheck(attacker, skillId, true, delObjectType);
 		}
 
+		internal void Delete(DelObjectType delObjectType = DelObjectType.DEAD, Client? attacker = null, int skillId = 0)
+		{
+			HP = 0;
+			_nextUpdateTime = DateTime.MaxValue;
+			DeathCheck(attacker, skillId, true, delObjectType);
+		}
+
 		internal void DeathCheck(Client? attacker, int skillId, bool notifyAround = false, DelObjectType delObjectType = DelObjectType.WARP)
 		{
 			if (HP <= 0)
@@ -1579,6 +1587,16 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				{
 					attacker.Character.QuestManager.OnMobDeath(attacker, (UInt16)_data.Id, skillId);
 					DropQuestItem(attacker);
+				}
+
+				if(ExtraMobInfo != null)
+				{
+					if(_instance.MissionDungeonManager != null && _instance.Type == InstanceType.DUNGEON) 
+					{
+						if(ExtraMobInfo.TrgIdxKill > 0)
+							_instance.MissionDungeonManager.MobTrigger(ExtraMobInfo.TrgIdxKill);
+						_instance.MissionDungeonManager.OnMobDeath(GetSpecies());
+					}
 				}
 				
 			}

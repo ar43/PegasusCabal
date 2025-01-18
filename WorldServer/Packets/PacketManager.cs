@@ -81,6 +81,7 @@ namespace WorldServer.Packets
 				Opcode.CSC_ENTERDUNGEON => new REQ_EnterDungeon(data),
 				Opcode.CSC_DUNGEONSTART => new REQ_DungeonStart(data),
 				Opcode.REQ_QUESTDUNGEONMOBSACTIVE => new REQ_QuestDungeonMobsActive(data),
+				Opcode.CSC_QUESTDUNGEONEND => new REQ_QuestDungeonEnd(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

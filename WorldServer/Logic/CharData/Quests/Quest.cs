@@ -24,8 +24,8 @@ namespace WorldServer.Logic.CharData.Quests
 			ItemProgress = null;
 			if (questProgress?.Count > 0)
 			{
-				int mobLen = QuestInfoMain.MissionMob == null ? 0 : QuestInfoMain.MissionMob.Length;
-				int itemLen = QuestInfoMain.MissionItem == null ? 0 : QuestInfoMain.MissionItem.Length;
+				int mobLen = QuestInfoMain.MissionMob == null ? 0 : QuestInfoMain.MissionMob.Length / 2;
+				int itemLen = QuestInfoMain.MissionItem == null ? 0 : QuestInfoMain.MissionItem.Length / 3;
 				int dungeonLen = QuestInfoMain.MissionDungeon == null ? 0 : QuestInfoMain.MissionDungeon.Length;
 				if (mobLen > 0)
 				{
@@ -83,6 +83,7 @@ namespace WorldServer.Logic.CharData.Quests
 			}
 			if (QuestInfoMain.MissionDungeon?.Length > 0)
 			{
+				Debug.Assert(QuestInfoMain.MissionDungeon.Length == 1);
 				debugCountProgressTypes++;
 				DungeonProgress = new List<byte>();
 

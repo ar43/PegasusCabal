@@ -153,6 +153,18 @@ namespace WorldServer.Logic.CharData.Quests
 					{
 						throw new Exception("quest mob mission not completed");
 					}
+					i++;
+				}
+			}
+
+			if (quest.DungeonProgress != null)
+			{
+				foreach (var prog in quest.DungeonProgress)
+				{
+					if (prog < 1)
+					{
+						throw new Exception("quest mission dungeon not completed");
+					}
 				}
 			}
 
@@ -381,6 +393,17 @@ namespace WorldServer.Logic.CharData.Quests
 		{
 			var quest = ActiveQuests[slot];
 			quest.ItemProgress[lootIndex] += (Byte)lootQuant;
+		}
+
+		internal void OnDungeonCompleted(int dungeonId)
+		{
+			foreach(var quest in ActiveQuests.Values)
+			{
+				if(quest.QuestInfoMain.MissionDungeon != null && quest.QuestInfoMain.MissionDungeon[0] == dungeonId)
+				{
+					quest.DungeonProgress[0] = 1;
+				}
+			}
 		}
 	}
 }

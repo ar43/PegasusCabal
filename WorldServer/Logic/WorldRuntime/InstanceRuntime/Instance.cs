@@ -1,8 +1,10 @@
 ﻿using LibPegasus.Packets;
 using LibPegasus.Parsers.Mcl;
 using LibPegasus.Utils;
+using System.Net.Sockets;
 using WorldServer.Enums;
 using WorldServer.Logic.CharData;
+using WorldServer.Logic.Delegates;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MissionDungeonRuntime;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
@@ -72,6 +74,31 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 		DateTime _lastInactiveTime;
 
 		public int NumClients { get; private set; }
+
+		public void Broadcast(PacketS2C packet)
+		{
+			foreach (var cell in _cells)
+			{
+				foreach(var client in cell.LocalClients)
+				{
+					client.PacketManager.Send(packet);
+				}
+			}
+		}
+
+		public void NotifyAllDungeonEnd(byte success, DungeonEndCause cause)
+		{
+			foreach (var cell in _cells)
+			{
+				foreach (var client in cell.LocalClients)
+				{
+					var nfy = new NFY_QuestDungeonEnd(client.Character.Id, success, cause);
+					client.PacketManager.Send(nfy);
+
+					client.Character.QuestManager.OnDungeonCompleted(MissionDungeonManager.GetDungeonId());
+				}
+			}
+		}
 
 		public void AddNewClient(Client client, UInt16 cellX, UInt16 cellY)
 		{
@@ -482,6 +509,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			}
 
 			MobManager.UpdateAll();
+			MissionDungeonManager?.Update();
 		}
 
 		internal bool OnUserSkillAttacksMob(Client attacker, List<MobTarget> defenders, int x, int y, int skillSlot)

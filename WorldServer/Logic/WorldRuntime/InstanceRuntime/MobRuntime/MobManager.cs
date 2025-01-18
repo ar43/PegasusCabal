@@ -32,6 +32,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			_mobs[mobId].Kill(delObjectType, attacker, skillId);
 		}
 
+		internal void DeleteMob(int mobId, DelObjectType delObjectType = DelObjectType.DEAD, Client? attacker = null, int skillId = 0)
+		{
+			if (!_mobs.ContainsKey(mobId))
+				throw new Exception("mob does not exist");
+			_mobs[mobId].Delete(delObjectType, attacker, skillId);
+		}
+
 		public Mob GetMob(int id)
 		{
 			if (_mobs.TryGetValue(id, out Mob? mob))

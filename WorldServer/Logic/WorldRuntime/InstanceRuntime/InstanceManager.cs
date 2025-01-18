@@ -101,6 +101,32 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			return true;
 		}
 
+		public bool WarpClientExitDungeon(Client client)
+		{
+			var instance = client.Character.Location.Instance;
+
+			if (instance == null || instance.Type != InstanceType.DUNGEON)
+				return false;
+
+			if (instance.MissionDungeonManager.MissionDungeonStatus != MissionDungeonStatus.READY_TO_EXIT)
+				return false;
+
+			var warpId = instance.MissionDungeonManager.GetEndWarpIdForSuccess();
+			var warp = _warpManager.Get(warpId);
+
+			if (warp == null) return false;
+			//TODO: Nation checking
+			if (_instances.TryGetValue((UInt64)warp.WorldIdx, out var newInstance))
+			{
+				if (newInstance.DurationType != InstanceDuration.PERMANENT)
+					throw new NotImplementedException();
+				WarpClient(client, newInstance, 8, warp.PosXPnt, warp.PosYPnt);
+				return true;
+			}
+
+			return true;
+		}
+
 		public bool WarpClientByNpcId(Client client, int npcId)
 		{
 			var instance = client.Character.Location.Instance;
@@ -186,7 +212,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				instance.TileAttributeData = GetTileAttributeData((Int32)instance.MapId);
 				instance.MobManager = new MobManager(instance, false);
 				instance.GroundItemManager = new GroundItemManager(instance);
-				instance.MissionDungeonManager = new MissionDungeonManager(dungeonData, instance.MobManager);
+				instance.MissionDungeonManager = new MissionDungeonManager(dungeonData, instance.MobManager, instance);
 
 				_instances[instance.Id] = instance;
 				return instance;

@@ -26,15 +26,25 @@ namespace WorldServer.Packets.C2S
 			{
 				questId = PacketReader.ReadUInt16(_data);
 				Quest temp = new Quest(questId);
-				var itemCnt = temp.QuestInfoMain.MissionItem.Length;
+				var itemCnt = 0;
 
-
+				if (temp.QuestInfoMain.MissionItem != null)
+					itemCnt = temp.QuestInfoMain.MissionItem.Length;
 
 				slot = PacketReader.ReadUInt16(_data);
-				choice = PacketReader.ReadUInt16(_data);
-				for (int i = 0; i < itemCnt; i++)
-					_ = PacketReader.ReadUInt16(_data); // TODO - slots for various needed items
-				invSlot = PacketReader.ReadUInt16(_data);
+
+				if(_data.Count > 0)
+				{
+					choice = PacketReader.ReadUInt16(_data);
+					for (int i = 0; i < itemCnt; i++)
+						_ = PacketReader.ReadUInt16(_data); // TODO - slots for various needed items
+					invSlot = PacketReader.ReadUInt16(_data);
+				}
+				else
+				{
+					choice = 0;
+					invSlot = 0;
+				}
 			}
 			catch (IndexOutOfRangeException)
 			{
