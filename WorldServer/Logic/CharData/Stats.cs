@@ -79,7 +79,17 @@ namespace WorldServer.Logic.CharData
 
 		private ulong GetNextLevelXPDiff()
 		{
-			return _expTable[Level] - Exp;
+			ulong breakpointXp = 0;
+			if(Level > 1)
+			{
+				for (int i = 1; i < Level; i++)
+				{
+					breakpointXp += _expTable[i];
+				}
+
+			}
+			
+			return (_expTable[Level] + breakpointXp) - Exp;
 		}
 
 		private void LevelUp()

@@ -7,7 +7,7 @@ namespace WorldServer.Logic.CharData.Styles
 	internal class Style
 	{
 		public byte BattleStyleNum { get; private set; }
-		public byte Rank { get; private set; }
+		public byte MasteryLevel { get; private set; }
 		public byte Face { get; private set; }
 		public byte HairColor { get; private set; }
 		public byte HairStyle { get; private set; }
@@ -18,23 +18,22 @@ namespace WorldServer.Logic.CharData.Styles
 		public BattleStyle BattleStyle { get; private set; }
 		public StyleEx StyleEx { get; private set; }
 		private static Dictionary<int, BattleStyle>? _battleStyleData;
-		public int MasteryLevel { get; private set; } //TODO
 
-		public Style(Byte battleStyle, Byte rank, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet)
+		public Style(Byte battleStyle, Byte masteryLevel, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet)
 		{
 			if (_battleStyleData == null)
 				throw new Exception("Data not yet loaded");
 
 			BattleStyleNum = battleStyle; //3
 			BattleStyle = _battleStyleData[BattleStyleNum];
-			StyleEx = new();
-			Rank = rank; //5
+			MasteryLevel = masteryLevel; //5
 			Face = face; //5
 			HairColor = hairColor; //4
 			HairStyle = hairStyle; ///5
 			Aura = aura; //4
 			Gender = gender; //1
 			ShowHelmet = showHelmet; //1
+			StyleEx = new();
 		}
 
 		public Style(UInt32 serial)
@@ -43,7 +42,7 @@ namespace WorldServer.Logic.CharData.Styles
 				throw new Exception("Data not yet loaded");
 
 			BattleStyleNum = (Byte)(serial & 0b111);
-			Rank = (Byte)(serial >> 3 & 0b11111);
+			MasteryLevel = (Byte)(serial >> 3 & 0b11111);
 			Face = (Byte)(serial >> 8 & 0b11111);
 			HairColor = (Byte)(serial >> 13 & 0b1111);
 			HairStyle = (Byte)(serial >> 17 & 0b11111);
@@ -54,14 +53,13 @@ namespace WorldServer.Logic.CharData.Styles
 			StyleEx = new();
 
 			BattleStyle = _battleStyleData[BattleStyleNum];
-			MasteryLevel = 1; //todo
 		}
 
 		public UInt32 Serialize()
 		{
 			UInt32 result = 0;
 			result |= BattleStyleNum;
-			result |= (UInt32)Rank << 3;
+			result |= (UInt32)MasteryLevel << 3;
 			result |= (UInt32)Face << 8;
 			result |= (UInt32)HairColor << 13;
 			result |= (UInt32)HairStyle << 17;

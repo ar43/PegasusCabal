@@ -68,8 +68,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, (UInt32)_character.Stats.Dex);
 			PacketWriter.WriteUInt32(data, (UInt32)_character.Stats.Int);
 			PacketWriter.WriteUInt32(data, _character.Stats.Pnt);
-			PacketWriter.WriteByte(data, 1); //todo magic rank
-			PacketWriter.WriteByte(data, 1); //todo sword rank
+			PacketWriter.WriteUInt16(data, (UInt16)_character.Stats.Rank); //magic and sword skill rank
 			PacketWriter.WriteUInt16(data, 0); //unknown
 			PacketWriter.WriteUInt32(data, 0); //unknown
 			PacketWriter.WriteUInt16(data, (UInt16)_character.Status.MaxHp);
