@@ -10,6 +10,7 @@
 		STATS,
 		STATUS,
 		QUEST,
+		STYLE,
 		NUM_FLAGS,
 	}
 }

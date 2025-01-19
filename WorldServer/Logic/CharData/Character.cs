@@ -88,6 +88,7 @@ namespace WorldServer.Logic.CharData
 			Skills.Sync(DBSyncPriority.NONE);
 			QuickSlotBar.Sync(DBSyncPriority.NONE);
 			QuestManager.Sync(DBSyncPriority.NONE);
+			Style.Sync(DBSyncPriority.NONE);
 		}
 
 		public BattleStats CalculateBattleStats()

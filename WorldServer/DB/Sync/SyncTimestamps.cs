@@ -10,6 +10,7 @@
 		public DateTime Stats;
 		public DateTime Status;
 		public DateTime Quest;
+		public DateTime Style;
 
 		public SyncTimestamps()
 		{
@@ -21,6 +22,7 @@
 			Stats = DateTime.MinValue;
 			Status = DateTime.MinValue;
 			Quest = DateTime.MinValue;
+			Style = DateTime.MinValue;
 		}
 	}
 }

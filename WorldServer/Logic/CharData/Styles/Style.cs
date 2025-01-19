@@ -1,4 +1,6 @@
 ﻿using LibPegasus.Utils;
+using WorldServer.Enums;
+using WorldServer.Logic.CharData.DbSyncData;
 using WorldServer.Logic.CharData.Styles.Coefs;
 using WorldServer.Logic.WorldRuntime;
 
@@ -18,6 +20,7 @@ namespace WorldServer.Logic.CharData.Styles
 		public BattleStyle BattleStyle { get; private set; }
 		public StyleEx StyleEx { get; private set; }
 		private static Dictionary<int, BattleStyle>? _battleStyleData;
+		public DBSyncPriority SyncPending { get; private set; }
 
 		public Style(Byte battleStyle, Byte masteryLevel, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet)
 		{
@@ -34,6 +37,8 @@ namespace WorldServer.Logic.CharData.Styles
 			Gender = gender; //1
 			ShowHelmet = showHelmet; //1
 			StyleEx = new();
+
+			SyncPending = DBSyncPriority.NONE;
 		}
 
 		public Style(UInt32 serial)
@@ -53,6 +58,22 @@ namespace WorldServer.Logic.CharData.Styles
 			StyleEx = new();
 
 			BattleStyle = _battleStyleData[BattleStyleNum];
+
+			SyncPending = DBSyncPriority.NONE;
+		}
+
+		public void Sync(DBSyncPriority prio)
+		{
+			if (SyncPending < prio)
+				SyncPending = prio;
+			if (prio == DBSyncPriority.NONE)
+				SyncPending = DBSyncPriority.NONE;
+		}
+
+		public DbSyncStyle GetDB()
+		{
+			DbSyncStyle style = new DbSyncStyle(Serialize());
+			return style;
 		}
 
 		public void SetAura(byte auraCode)

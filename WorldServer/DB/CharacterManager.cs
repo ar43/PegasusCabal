@@ -209,6 +209,26 @@ namespace WorldServer.DB
 			}
 		}
 
+		public async Task<int> SyncStyle(int charId, DbSyncStyle styleData)
+		{
+			using var conn = await _dataSource.OpenConnectionAsync();
+
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET style = @a WHERE char_id = @b", conn))
+			{
+				try
+				{
+					cmd.Parameters.AddWithValue("b", charId);
+					cmd.Parameters.AddWithValue("a", (int)styleData.StyleSerial);
+					var result = await cmd.ExecuteNonQueryAsync();
+					return result;
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
 		public async Task<(Character?, int)> GetCharacter(UInt32 charId)
 		{
 			using var conn = await _dataSource.OpenConnectionAsync();
