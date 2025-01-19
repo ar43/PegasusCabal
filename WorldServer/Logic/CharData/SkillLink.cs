@@ -2,11 +2,11 @@
 {
 	internal class SkillLink
 	{
-		public UInt16 Id;
+		public UInt16 SkillSlotId;
 
 		public SkillLink(UInt16 id)
 		{
-			Id = id;
+			SkillSlotId = id;
 		}
 	}
 }

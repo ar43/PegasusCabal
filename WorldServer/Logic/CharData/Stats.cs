@@ -14,7 +14,7 @@ namespace WorldServer.Logic.CharData
 			Str = str;
 			Dex = dex;
 			Int = @int;
-			Pnt = pnt;
+			Pnt = (int)pnt;
 			Rank = rank;
 			Axp = 0;
 			SyncPending = DBSyncPriority.NONE;
@@ -28,7 +28,7 @@ namespace WorldServer.Logic.CharData
 		public int Str { get; private set; }
 		public int Dex { get; private set; }
 		public int Int { get; private set; }
-		public UInt32 Pnt { get; private set; }
+		public int Pnt { get; private set; }
 		public UInt32 Rank { get; private set; }
 		private static UInt64[]? _expTable;
 		public Queue<int> LvlUpEventQueue { get; private set; }
@@ -42,6 +42,52 @@ namespace WorldServer.Logic.CharData
 				SyncPending = prio;
 			if (prio == DBSyncPriority.NONE)
 				SyncPending = DBSyncPriority.NONE;
+		}
+
+		public void SetAbsoluteStats(int str, int dex, int intelligence, int pnt)
+		{
+			Dex = dex;
+			Str = str;
+			Int = intelligence;
+			Pnt = pnt;
+		}
+
+		public bool SpendStatPoint(StatType stat, int value = 1)
+		{
+			if (value <= 0)
+				return true;
+
+			if(Pnt >= value)
+			{
+				switch (stat)
+				{
+					case StatType.STAT_STR:
+					{
+						Pnt -= value;
+						Str += value;
+						break;
+					}
+					case StatType.STAT_DEX:
+					{
+						Pnt -= value;
+						Dex += value;
+						break;
+					}
+					case StatType.STAT_INT:
+					{
+						Pnt -= value;
+						Int += value;
+						break;
+					}
+					default:
+						return false;
+				}
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		public static void LoadExpTable(WorldConfig worldConfig)

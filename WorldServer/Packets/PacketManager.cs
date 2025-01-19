@@ -84,6 +84,8 @@ namespace WorldServer.Packets
 				Opcode.CSC_QUESTDUNGEONEND => new REQ_QuestDungeonEnd(data),
 				Opcode.CSC_USESTATBONS => new REQ_UseStatBons(data),
 				Opcode.CSC_AUTOSTAT => new REQ_AutoStat(data),
+				Opcode.CSC_QUICKLNKSET => new REQ_QuickLnkSet(data),
+				Opcode.CSC_QUICKLNKSWITCH => new REQ_QuickLnkSwitch(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

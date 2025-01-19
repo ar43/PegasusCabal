@@ -22,6 +22,31 @@ namespace WorldServer.Logic.CharData
 			}
 		}
 
+		public void Set(Int16 quickSlot, Int16 skillSlotId)
+		{
+			//TODO: verify
+			if(skillSlotId == -1)
+			{
+				if (!_links.Remove((ushort)quickSlot))
+					throw new Exception("quick slot was already empty");
+			}
+			else
+			{
+				_links[(ushort)quickSlot] = new SkillLink((ushort)skillSlotId);
+			}
+		}
+
+		public void Swap(Int16 quickSlot1, Int16 quickSlot2)
+		{
+			//TODO: verify
+			var temp1 = _links[(ushort)quickSlot1];
+			var temp2 = _links[(ushort)quickSlot1];
+			if (temp1 == null || temp2 == null)
+				throw new Exception("quickSlot1 is empty");
+			_links[(ushort)quickSlot1] = _links[(ushort)quickSlot2];
+			_links[(ushort)quickSlot2] = temp1;
+		}
+
 		public void Sync(DBSyncPriority prio)
 		{
 			if (SyncPending < prio)
@@ -37,7 +62,7 @@ namespace WorldServer.Logic.CharData
 			{
 				var slot = linkKeyPar.Key;
 				var link = linkKeyPar.Value;
-				data.QuickSlotData_.Add(slot, new QuickSlotData.Types.QuickSlotDataItem { Id = link.Id });
+				data.QuickSlotData_.Add(slot, new QuickSlotData.Types.QuickSlotDataItem { Id = link.SkillSlotId });
 			}
 			return data;
 		}
@@ -49,7 +74,7 @@ namespace WorldServer.Logic.CharData
 			{
 				if (link.Value != null)
 				{
-					bytes.AddRange(BitConverter.GetBytes(link.Value.Id));
+					bytes.AddRange(BitConverter.GetBytes(link.Value.SkillSlotId));
 					bytes.AddRange(BitConverter.GetBytes(link.Key));
 				}
 			}
