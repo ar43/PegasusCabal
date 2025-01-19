@@ -86,7 +86,8 @@ namespace WorldServer.Logic.Delegates
 			{
 				var npcData = client.Character.Location.Instance.MapData.NpcData;
 				var posData = client.Character.Location;
-				client.Character.QuestManager.StartQuest(questId, slot, posData, npcData);
+				var character = client.Character;
+				client.Character.QuestManager.StartQuest(questId, slot, posData, npcData, character);
 			}
 			catch (Exception e)
 			{

@@ -72,8 +72,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			ushort mobId = (UInt16)spawnInfo.ExtraMobInfo.MobIdx;
 			Mob mob = new Mob(spawnInfo.MobSpawnData.MobData, spawnInfo.MobSpawnData, _instance, mobId, _instance.Rng, spawnInfo.ExtraMobInfo);
 
-			if (_mobs.ContainsKey(mobId))
-				throw new Exception("unexpected mobId");
+			if (_mobs.ContainsKey(mobId)) //TODO: figure out if overwrite or ignore
+				return;
 
 			_mobs.Add(mobId, mob);
 			mob.Spawn(DateTime.UtcNow);

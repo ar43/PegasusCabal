@@ -86,19 +86,27 @@ namespace WorldServer.Logic.CharData.Quests
 			return data;
 		}
 
-		public void StartQuest(int questId, int slot, Location posData, Dictionary<Int32, WorldRuntime.MapDataRuntime.NpcData> npcData)
+		public void StartQuest(int questId, int slot, Location posData, Dictionary<Int32, WorldRuntime.MapDataRuntime.NpcData> npcData, Character character)
 		{
 			if (ActiveQuests.ContainsKey(slot) || _startedQuests[questId] == true)
 				throw new Exception("Either the slot is full or quest is already started");
 
+			Debug.Assert(character.Style.BattleStyleNum > 0);
 			var quest = new Quest((UInt16)questId);
 			var npcPosX = npcData[quest.GetStartNpcId()].PosX;
 			var npcPosY = npcData[quest.GetStartNpcId()].PosY;
+			var bStyle = 1 << (character.Style.BattleStyleNum - 1);
 
 			if (posData.Instance?.MapId != (MapId)quest.GetStartMapId())
 				throw new Exception("char not in correct instance");
 			if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
 				throw new Exception("char too far away from npc");
+			if(quest.QuestInfoMain.Level > character.Stats.Level)
+				throw new Exception("level too low");
+			if ((quest.QuestInfoMain.BattleStyle[0] & bStyle) != bStyle)
+				throw new Exception("incorrect battle style");
+			if (quest.QuestInfoMain.BattleStyle[1] > character.Style.MasteryLevel)
+				throw new Exception("incorrect battle style mastery level");
 
 			quest.Start();
 			_startedQuests[questId] = true;
@@ -206,6 +214,15 @@ namespace WorldServer.Logic.CharData.Quests
 
 			ActiveQuests.Remove(slot);
 			CompletedQuests[questId] = true;
+
+			if(quest.Type() == 4) //BSLVUP
+			{
+				var newMasteryLevel = quest.QuestInfoMain.BattleStyle[1] + 1;
+				client.Character.Style.SetMasteryLevel((byte)newMasteryLevel);
+
+				var nfyMslvup = new NFY_SMastUpEvnt(client.Character.Style.MasteryLevel);
+				client.PacketManager.Send(nfyMslvup);
+			}
 
 			return exp;
 		}

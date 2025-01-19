@@ -55,6 +55,11 @@ namespace WorldServer.Logic.CharData.Styles
 			BattleStyle = _battleStyleData[BattleStyleNum];
 		}
 
+		public void SetAura(byte auraCode)
+		{
+			Aura = auraCode;
+		}
+
 		public UInt32 Serialize()
 		{
 			UInt32 result = 0;
@@ -79,6 +84,11 @@ namespace WorldServer.Logic.CharData.Styles
 		public void ToggleHelmet(byte newVal)
 		{
 			ShowHelmet = newVal;
+		}
+
+		public void SetMasteryLevel(byte value)
+		{
+			MasteryLevel = value;
 		}
 
 		public int CalculateValueFromCoef(StyleCoef coef)

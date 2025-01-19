@@ -62,6 +62,11 @@ namespace WorldServer.Logic.CharData.Quests
 			StoredInstanceId = id;
 		}
 
+		public int Type()
+		{
+			return QuestInfoMain.QuestType;
+		}
+
 		public void Start()
 		{
 			int debugCountProgressTypes = 0;
