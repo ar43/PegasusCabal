@@ -107,7 +107,27 @@ namespace WorldServer.Logic.Extra
 			else if (args.ElementAt(1).ToLower() == "qdbg3")
 			{
 				client.SendServerMessage("Setting quests to specific setup..");
-				int[] list = { 765, 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3049 };
+				int[] list = { 765, 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3049, 3050 };
+				client.Character.QuestManager.Reset();
+				foreach (var qnum in list)
+				{
+					client.Character.QuestManager.CompletedQuests[qnum] = true;
+				}
+			}
+			else if (args.ElementAt(1).ToLower() == "qdbg4")
+			{
+				client.SendServerMessage("Setting quests to specific setup..");
+				int[] list = { 765, 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3049, 3050, 3051 };
+				client.Character.QuestManager.Reset();
+				foreach (var qnum in list)
+				{
+					client.Character.QuestManager.CompletedQuests[qnum] = true;
+				}
+			}
+			else if (args.ElementAt(1).ToLower() == "qdbg5")
+			{
+				client.SendServerMessage("Setting quests to specific setup..");
+				int[] list = { 765, 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3049, 3050, 3051, 3052 };
 				client.Character.QuestManager.Reset();
 				foreach (var qnum in list)
 				{

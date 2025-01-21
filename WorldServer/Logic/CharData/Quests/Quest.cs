@@ -253,6 +253,15 @@ namespace WorldServer.Logic.CharData.Quests
 					CloseNpcs, QuestType, PartyQuest, DeleteType, DailyCount, Nation_Type,
 					ExclusiveCraft, CommonCraftLevel, MissionPlayer);
 				_questConfig.Add(QuestIdx, data);
+
+				if (UseDungeon != 0 && UseDungeon != QuestIdx)
+					throw new Exception("unexpected");
+			}
+
+			cfg = worldConfig.GetConfig("[QuestIdToDungeonMap]");
+			foreach (var it in cfg)
+			{
+				_questConfig.SetDungeonId(Convert.ToInt32(it.Key.Split('.')[0]), Convert.ToInt32(it.Value["DungeonId"]));
 			}
 
 			cfg = worldConfig.GetConfig("[QuestReward]");

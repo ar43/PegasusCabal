@@ -26,7 +26,7 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
-			if (slotId != 0xFFFF || success != 1 || cause != DungeonEndCause.Success || npcId != 255)
+			if (slotId != 0xFFFF || success != 1 || cause != DungeonEndCause.Success)
 			{
 				throw new NotImplementedException();
 			}

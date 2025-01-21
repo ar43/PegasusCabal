@@ -64,6 +64,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			client.Character.Location.Movement.UpdateCellPos();
 
 			var dgId = newInstance.Type == InstanceType.FIELD ? 0 : newInstance.MissionDungeonManager.GetDungeonId();
+			warpType = (UInt32)(newInstance.Type == InstanceType.FIELD ? 8 : 2);
 
 			//todo: send ChargeInfo
 
@@ -127,13 +128,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 			return true;
 		}
 
-		public bool WarpClientByNpcId(Client client, int npcId)
+		public bool WarpClientByNpcId(Client client, int npcId, uint extraParams)
 		{
 			var instance = client.Character.Location.Instance;
 
 			if (!instance.MapData.NpcData.TryGetValue(npcId, out var npc))
 				return false;
-			if (!npc.NpcWarpData.TryGetValue(0, out var npcWarp))
+			if (!npc.NpcWarpData.TryGetValue((Int32)extraParams, out var npcWarp))
 				return false;
 			
 
@@ -148,6 +149,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 					if (newInstance.DurationType != InstanceDuration.PERMANENT)
 						return false;
 					WarpClient(client, newInstance, 8, warp.PosXPnt, warp.PosYPnt);
+					return true;
+				}
+				else if (warp.WorldIdx == (int)instance.MapId)
+				{
+					WarpClient(client, instance, 8, warp.PosXPnt, warp.PosYPnt);
 					return true;
 				}
 			}

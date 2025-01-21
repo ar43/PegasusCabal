@@ -16,6 +16,11 @@ namespace WorldServer.Logic.CharData.Quests
 			MainData.Add(id, mainInfo);
 		}
 
+		public void SetDungeonId(int qid, int dId)
+		{
+			MainData[qid].ExtraDungeonInfo.Add(dId);
+		}
+
 		public void AddNpcActionSet(int questId, QuestNpcActionSet set)
 		{
 			if (MainData[questId].NpcActionSet.ContainsKey((uint)set.ActIdx))
@@ -120,6 +125,7 @@ namespace WorldServer.Logic.CharData.Quests
 			NpcActionSet = new();
 			QuestReward = null;
 			CompletedFlags = 0;
+			ExtraDungeonInfo = new();
 		}
 
 		public int QuestIdx { get; private set; }
@@ -150,6 +156,7 @@ namespace WorldServer.Logic.CharData.Quests
 		public int[]? ExclusiveCraft { get; private set; }
 		public int CommonCraftLevel { get; private set; }
 		public int Mission_Player { get; private set; }
+		public List<int> ExtraDungeonInfo { get; private set; }
 		public QuestReward? QuestReward { get; private set; }
 		public Dictionary<uint, QuestNpcActionSet> NpcActionSet { get; private set; }
 		public UInt16 CompletedFlags { get; set; }

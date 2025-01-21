@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldServer.Enums;
+using WorldServer.Logic.CharData.Quests;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
 using WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime;
+using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 using WorldServer.Packets.S2C;
 using Timer = LibPegasus.Utils.Timer;
 
@@ -178,7 +180,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MissionDungeonRuntime
 			CheckDungeonEnd();
 		}
 
-		private void End()
+		private void End(bool sendPacket = true)
 		{
 			if (MissionDungeonStatus != MissionDungeonStatus.IN_PROGRESS)
 				throw new Exception("unexpected End");
@@ -186,27 +188,49 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MissionDungeonRuntime
 
 			//TODO: kill all mobs
 			
-
-			var nfy = new NFY_QdppComplet(0);
-			_instance.Broadcast(nfy); // TODO: questionable
+			if(sendPacket)
+			{
+				var nfy = new NFY_QdppComplet(0);
+				_instance.Broadcast(nfy); // TODO: questionable, maybe it has to depend on quest Slot, figure it out
+			}
 		}
 
-		private void CheckDungeonEnd()
+		private void CheckDungeonEnd(Client? client = null)
 		{
 			var missionMobs = MissionDungeonData.MissionDungeonPP.MissionMobs;
 			var missionNpc = MissionDungeonData.MissionDungeonPP.MissionNPC;
-			if (missionMobs == null || missionMobs.Length > 2)
-				throw new NotImplementedException();
-			if(missionNpc != 0)
+			if(missionMobs != null && missionNpc != 0)
 				throw new NotImplementedException();
 
-			var endSpecies = missionMobs[0];
-			var endKillCount = missionMobs[1];
-
-			if(_mobDeathCounter.ContainsKey(endSpecies) && _mobDeathCounter[endSpecies] == endKillCount)
+			if (missionMobs != null && missionMobs.Length == 2)
 			{
-				End();
+				var endSpecies = missionMobs[0];
+				var endKillCount = missionMobs[1];
+
+				if (_mobDeathCounter.ContainsKey(endSpecies) && _mobDeathCounter[endSpecies] == endKillCount)
+				{
+					End();
+				}
 			}
+			else if(missionNpc != 0 && client != null)
+			{
+				var npcData = _instance.MapData.NpcData;
+				var npcPosX = npcData[missionNpc].PosX;
+				var npcPosY = npcData[missionNpc].PosY;
+				var posData = client.Character.Location;
+
+				if (npcPosX != 0 && npcPosY != 0 && !posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
+					throw new Exception("char too far away from npc");
+
+				End(false);
+			}
+			else if(missionMobs != null && missionNpc != 0)
+			{
+				throw new NotImplementedException();
+			}
+				
+
+			
 		}
 
 		public void Update()
@@ -225,12 +249,13 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MissionDungeonRuntime
 
 		internal void RequestFinishDungeon(Client client, UInt16 slotId, Byte success, DungeonEndCause cause, Byte npcId)
 		{
-			if(success == 1 && cause == DungeonEndCause.Success && MissionDungeonStatus == MissionDungeonStatus.FINISHED)
+			CheckDungeonEnd(client);
+
+			if (success == 1 && cause == DungeonEndCause.Success && MissionDungeonStatus == MissionDungeonStatus.FINISHED)
 			{
 				MissionDungeonStatus = MissionDungeonStatus.READY_TO_EXIT;
 				var rsp = new RSP_QuestDungeonEnd(0, 1);
 				client.PacketManager.Send(rsp);
-
 				
 				_instance.NotifyAllDungeonEnd(success, cause);
 			}

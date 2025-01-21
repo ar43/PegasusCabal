@@ -20,7 +20,9 @@ namespace WorldServer.Logic.Delegates
 
 			foreach (var quest in character.QuestManager.ActiveQuests.Values)
 			{
-				if(quest.QuestInfoMain.MissionDungeon != null && quest.QuestInfoMain.MissionDungeon[0] == dungeonId && quest.StoredInstanceId == 0)
+				bool hasMissionDungeon = quest.QuestInfoMain.MissionDungeon != null && quest.QuestInfoMain.MissionDungeon[0] == dungeonId && quest.StoredInstanceId == 0;
+				bool hasExtraDungeon = quest.QuestInfoMain.ExtraDungeonInfo.Contains(dungeonId);
+				if (hasMissionDungeon || hasExtraDungeon)
 				{
 					var dungeon = client.World.InstanceManager.AddDungeonInstance((MapId)mapId, dungeonId);
 
@@ -31,7 +33,8 @@ namespace WorldServer.Logic.Delegates
 					}
 
 					var id = dungeon.Id;
-					quest.StoreInstanceId(id);
+					if(hasMissionDungeon)
+						quest.StoreInstanceId(id);
 					client.Character.Location.PendingDungeon.Set(id, dungeonId);
 					client.Character.Location.LastFieldLocInfo = new(movement.X, movement.Y, (int)instance.MapId);
 
@@ -49,7 +52,7 @@ namespace WorldServer.Logic.Delegates
 			client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "could not start the requested dungeon");
 		}
 
-		internal static void OnWarpCommand(Client client, Byte npcId, UInt16 slot, UInt32 worldType, UInt32 target)
+		internal static void OnWarpCommand(Client client, Byte npcId, UInt16 slot, UInt32 extraParams, UInt32 target)
 		{
 			/*
 			#define NPCSIDX_IWAR_FORT   68 
@@ -112,8 +115,8 @@ namespace WorldServer.Logic.Delegates
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "tried to gm warp without gm nation");
 						return;
 					}
-					var targetY = worldType & 0xFF;
-					var targetX = (worldType >> 8) & 0xFF;
+					var targetY = extraParams & 0xFF;
+					var targetX = (extraParams >> 8) & 0xFF;
 					if (!client.World.InstanceManager.WarpClientAbsolute(client, (Int32)targetX, (Int32)targetY))
 					{
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "gm warp error");
@@ -128,7 +131,7 @@ namespace WorldServer.Logic.Delegates
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, $"unimplemented custom npcId {npcId}");
 						return;
 					}
-					if (!client.World.InstanceManager.WarpClientByNpcId(client, npcId))
+					if (!client.World.InstanceManager.WarpClientByNpcId(client, npcId, extraParams))
 					{
 						//todo: Distance check
 						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error while warping (npcId)");
