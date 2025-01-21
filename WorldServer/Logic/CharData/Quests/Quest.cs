@@ -111,7 +111,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 			if (debugCountProgressTypes >= 2)
 			{
-				throw new NotImplementedException("unimplemented combo quest - " + Id.ToString());
+				//throw new NotImplementedException("unimplemented combo quest - " + Id.ToString());
 			}
 		}
 

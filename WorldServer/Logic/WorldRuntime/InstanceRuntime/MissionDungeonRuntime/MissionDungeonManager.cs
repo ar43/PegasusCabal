@@ -182,6 +182,8 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MissionDungeonRuntime
 
 		private void End(bool sendPacket = true)
 		{
+			if (MissionDungeonStatus == MissionDungeonStatus.FINISHED)
+				return;
 			if (MissionDungeonStatus != MissionDungeonStatus.IN_PROGRESS)
 				throw new Exception("unexpected End");
 			MissionDungeonStatus = MissionDungeonStatus.FINISHED;

@@ -60,4 +60,5 @@ message ActiveQuestData
 message CompletedQuestsData
 {
 	bytes completedQuests = 1;
+	bytes completedDungeons = 2;
 }

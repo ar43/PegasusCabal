@@ -18,7 +18,10 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 			{ MapId.GREEN_DESPAIR, 3 },
 			{ MapId.WARP_CENTER, 30 },
 			{ MapId.PORT_LUX, 4 },
-			{ MapId.DUNGEON_WORLD_1, 29 }
+			{ MapId.DUNGEON_WORLD_1, 29 },
+			{ MapId.DUNGEON_WORLD_2, 28 },
+			{ MapId.DUNGEON_WORLD_3, 27 },
+			{ MapId.WARP_CENTER_EX, 30 },
 		};
 
 		public MapDataManager(WorldConfig config, MobDataManager mobDataManager)

@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Microsoft.VisualBasic;
 using Shared.Protos;
 using System.Collections;
 using System.Diagnostics;
@@ -16,11 +17,13 @@ namespace WorldServer.Logic.CharData.Quests
 		public Dictionary<int, Quest> ActiveQuests { get; private set; }
 		private BitArray _startedQuests;
 		public BitArray CompletedQuests { get; private set; }
+		public BitArray CompletedDungeons { get; private set; }
 
 		public QuestManager()
 		{
 			_startedQuests = new(1023 * 8);
 			CompletedQuests = new(1023 * 8);
+			CompletedDungeons = new(128 * 8);
 			ActiveQuests = new();
 		}
 
@@ -33,11 +36,14 @@ namespace WorldServer.Logic.CharData.Quests
 		{
 			CompletedQuestsData data = new CompletedQuestsData();
 			byte[] bytes = new byte[(CompletedQuests.Length - 1) / 8 + 1];
+			byte[] bytes2 = new byte[(CompletedDungeons.Length - 1) / 8 + 1];
 
 			CompletedQuests.CopyTo(bytes, 0);
+			CompletedDungeons.CopyTo(bytes2, 0);
 
 
 			data.CompletedQuests = ByteString.CopyFrom(bytes);
+			data.CompletedDungeons = ByteString.CopyFrom(bytes2);
 
 			return data;
 		}
@@ -128,10 +134,11 @@ namespace WorldServer.Logic.CharData.Quests
 
 			var npcPosX = npcData[quest.GetEndNpcId()].PosX;
 			var npcPosY = npcData[quest.GetEndNpcId()].PosY;
+			bool isRangeCheck = npcData[quest.GetEndNpcId()].IsRangeCheck;
 
 			if (posData.Instance?.MapId != (MapId)quest.GetEndMapId())
 				throw new Exception("char not in correct instance");
-			if (!posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
+			if (isRangeCheck && !posData.Movement.VerifyDistanceToNpc(npcPosX, npcPosY))
 				throw new Exception("char too far away from npc");
 
 			if (quest.ItemProgress != null)
@@ -289,7 +296,8 @@ namespace WorldServer.Logic.CharData.Quests
 				}
 				else if(actionSet.Action == NpcActionType.QACT_CTRG)
 				{
-					if(posData.Instance == null || posData.Instance.Id != quest.StoredInstanceId || posData.Instance.MissionDungeonManager == null)
+					if(posData.Instance == null || (posData.Instance.Id != quest.StoredInstanceId && quest.StoredInstanceId > 0) || posData.Instance.MissionDungeonManager == null ||
+						(quest.QuestInfoMain.ExtraDungeonInfo.Count > 0 && !quest.QuestInfoMain.ExtraDungeonInfo.Contains(posData.Instance.MissionDungeonManager.GetDungeonId())))
 					{
 						throw new NotImplementedException("wrong instance");
 					}
@@ -313,6 +321,8 @@ namespace WorldServer.Logic.CharData.Quests
 			if (questsCompletedProtobuf != null)
 			{
 				CompletedQuests = new BitArray(questsCompletedProtobuf.CompletedQuests.ToByteArray());
+				if(questsCompletedProtobuf.CompletedDungeons.ToByteArray().Length > 0)
+					CompletedDungeons = new BitArray(questsCompletedProtobuf.CompletedDungeons.ToByteArray());
 			}
 		}
 
@@ -347,6 +357,8 @@ namespace WorldServer.Logic.CharData.Quests
 						bytes.AddRange(quest.Value.MobProgress);
 					if (quest.Value.ItemProgress?.Count > 0)
 						bytes.AddRange(quest.Value.ItemProgress);
+					//if (quest.Value.DungeonProgress?.Count > 0)
+					//	bytes.AddRange(quest.Value.DungeonProgress);
 					//TODO - add progress for other quests
 				}
 			}
@@ -364,11 +376,15 @@ namespace WorldServer.Logic.CharData.Quests
 		}
 
 		//debug only
-		internal void Reset()
+		internal void Reset(bool activeOnly = false)
 		{
 #if DEBUG
-			_startedQuests = new(1023 * 8);
-			CompletedQuests = new(1023 * 8);
+			if(!activeOnly)
+			{
+				_startedQuests = new(1023 * 8);
+				CompletedQuests = new(1023 * 8);
+				CompletedDungeons = new(128 * 8);
+			}
 			ActiveQuests = new();
 #endif
 		}
@@ -419,6 +435,10 @@ namespace WorldServer.Logic.CharData.Quests
 				if(quest.QuestInfoMain.MissionDungeon != null && quest.QuestInfoMain.MissionDungeon[0] == dungeonId)
 				{
 					quest.DungeonProgress[0] = 1;
+					if (dungeonId < 4096)
+						throw new Exception("dungeonId < 4096");
+					dungeonId -= 4096;
+					CompletedDungeons[dungeonId] = true;
 				}
 			}
 		}

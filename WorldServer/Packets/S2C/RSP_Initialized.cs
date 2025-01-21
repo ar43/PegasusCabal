@@ -32,9 +32,12 @@ namespace WorldServer.Packets.S2C
 			var chatIp = BitConverter.ToUInt32(_chatServerIp.GetAddressBytes(), 0);
 			UInt32 channelType = 0; //fixme
 			byte[] completedQuests = new byte[1023];
+			byte[] completedDungeons = new byte[128];
 			_character.QuestManager.CompletedQuests.RightShift(8); //hackerman
 			_character.QuestManager.CompletedQuests.CopyTo(completedQuests, 0);
 			_character.QuestManager.CompletedQuests.LeftShift(8);
+
+			_character.QuestManager.CompletedDungeons.CopyTo(completedDungeons, 0);
 
 			PacketWriter.WriteNull(data, 57); //unknown
 			PacketWriter.WriteByte(data, 0); //unknown
@@ -125,7 +128,7 @@ namespace WorldServer.Packets.S2C
 
 			PacketWriter.WriteArray(data, completedQuests); // quests completed - bitfield
 			PacketWriter.WriteNull(data, 128); //quest dung flag
-			PacketWriter.WriteNull(data, 128); //mission dung flag
+			PacketWriter.WriteArray(data, completedDungeons); // mission dungeons completed - bitfield
 
 			PacketWriter.WriteByte(data, 1); //clvl0
 			PacketWriter.WriteByte(data, 1); //clvl1

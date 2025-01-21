@@ -31,6 +31,15 @@ namespace WorldServer.Logic.Extra
 			client.SendServerMessage("hello world");
 		}
 
+		public static void Goto(Client client, List<string>? args)
+		{
+			if (args.Count != 2)
+			{
+				client.SendServerMessage("Invalid args");
+			}
+			
+		}
+
 		public static void Reset(Client client, List<string>? args)
 		{
 			if (args.Count != 2)
@@ -45,6 +54,11 @@ namespace WorldServer.Logic.Extra
 			else if (args.ElementAt(1).ToLower() == "lvl")
 			{
 
+			}
+			else if (args.ElementAt(1).ToLower() == "activequest")
+			{
+				client.SendServerMessage("Resetting active quest..");
+				client.Character.QuestManager.Reset(true);
 			}
 			else if (args.ElementAt(1).ToLower() == "inv")
 			{
@@ -71,8 +85,8 @@ namespace WorldServer.Logic.Extra
 			}
 			else if (args.ElementAt(1).ToLower() == "exp")
 			{
-				client.SendServerMessage("Giving 10K XP");
-				client.Character.Stats.AddExp(10000);
+				client.SendServerMessage("Giving 70K XP");
+				client.Character.Stats.AddExp(70000);
 			}
 			else if (args.ElementAt(1).ToLower() == "qdbg0")
 			{
@@ -87,48 +101,9 @@ namespace WorldServer.Logic.Extra
 			else if (args.ElementAt(1).ToLower() == "qdbg1")
 			{
 				client.SendServerMessage("Setting quests to specific setup..");
-				int[] list = { 3001, 3002, 3003, 3005, 3006, 3007, 3008 };
+				int[] list = { 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3049, 3050, 3051, 3052, 3053, 3054, 3055, 3056, 3057, 3159, 3153 };
 				client.Character.QuestManager.Reset();
-				foreach (var qnum in list)
-				{
-					client.Character.QuestManager.CompletedQuests[qnum] = true;
-				}
-			}
-			else if (args.ElementAt(1).ToLower() == "qdbg2")
-			{
-				client.SendServerMessage("Setting quests to specific setup..");
-				int[] list = { 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011 };
-				client.Character.QuestManager.Reset();
-				foreach (var qnum in list)
-				{
-					client.Character.QuestManager.CompletedQuests[qnum] = true;
-				}
-			}
-			else if (args.ElementAt(1).ToLower() == "qdbg3")
-			{
-				client.SendServerMessage("Setting quests to specific setup..");
-				int[] list = { 765, 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3049, 3050 };
-				client.Character.QuestManager.Reset();
-				foreach (var qnum in list)
-				{
-					client.Character.QuestManager.CompletedQuests[qnum] = true;
-				}
-			}
-			else if (args.ElementAt(1).ToLower() == "qdbg4")
-			{
-				client.SendServerMessage("Setting quests to specific setup..");
-				int[] list = { 765, 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3049, 3050, 3051 };
-				client.Character.QuestManager.Reset();
-				foreach (var qnum in list)
-				{
-					client.Character.QuestManager.CompletedQuests[qnum] = true;
-				}
-			}
-			else if (args.ElementAt(1).ToLower() == "qdbg5")
-			{
-				client.SendServerMessage("Setting quests to specific setup..");
-				int[] list = { 765, 3001, 3002, 3003, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3049, 3050, 3051, 3052 };
-				client.Character.QuestManager.Reset();
+				client.Character.Style.SetMasteryLevel(2);
 				foreach (var qnum in list)
 				{
 					client.Character.QuestManager.CompletedQuests[qnum] = true;
@@ -161,6 +136,16 @@ namespace WorldServer.Logic.Extra
 			else if (args.ElementAt(1).ToLower() == "exp")
 			{
 				client.SendServerMessage($"Printing exp: {client.Character.Stats.Exp}");
+			}
+			else if (args.ElementAt(1).ToLower() == "dungeon")
+			{
+				client.SendServerMessage($"Printing dungeon: {client.Character.Location.Instance.MissionDungeonManager.GetDungeonId()}");
+			}
+			else if (args.ElementAt(1).ToLower() == "objective")
+			{
+				client.SendServerMessage($"Printing stuff: {client.Character.QuestManager.ActiveQuests[0].Flags}/{client.Character.QuestManager.ActiveQuests[0].GetEndFlags()}");
+				client.SendServerMessage($"Printing stuff2: {client.Character.QuestManager.ActiveQuests[0].DungeonProgress.Count}/");
+				client.SendServerMessage("brkpoint");
 			}
 			else
 			{
