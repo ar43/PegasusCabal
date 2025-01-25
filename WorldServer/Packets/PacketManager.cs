@@ -87,6 +87,7 @@ namespace WorldServer.Packets
 				Opcode.CSC_QUICKLNKSET => new REQ_QuickLnkSet(data),
 				Opcode.CSC_QUICKLNKSWITCH => new REQ_QuickLnkSwitch(data),
 				Opcode.CSC_AURAEXCHANG => new REQ_AuraExchang(data),
+				Opcode.CSC_DURATIONSVCDATA => new REQ_DurationSvcData(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

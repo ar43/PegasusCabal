@@ -108,6 +108,16 @@ namespace WorldServer.Logic.Delegates
 					}
 					break;
 				}
+				case (Byte)SpecialWarpIndex.NPCSIDX_NAVI:
+				{
+					//TODO: verify premium
+					if (!client.World.InstanceManager.WarpClientGPS(client, slot, extraParams))
+					{
+						client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "error while warping (exit dungeon)");
+						return;
+					}
+					break;
+				}
 				case (Byte)SpecialWarpIndex.NPCSIDX_GM:
 				{
 					if (!client.isGm())

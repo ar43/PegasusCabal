@@ -180,7 +180,7 @@ namespace WorldServer.Logic.Delegates
 			var worldId = character.Item2;
 			if (client.Character != null)
 			{
-				var packet = new NFY_ChargeInfo(0, 0, 0); //TODO: premium service
+				var packet = new NFY_ChargeInfo(0, 1799444383, 1); //TODO: premium service
 				client.PacketManager.Send(packet);
 
 				var reply = client.RequestChatServerInfo();
@@ -201,6 +201,16 @@ namespace WorldServer.Logic.Delegates
 
 				var packet_994 = new NFY_Unk994();
 				client.PacketManager.Send(packet_994);
+
+				//TEMP TODO
+				var premiumServices = new List<PremiumService>();
+				premiumServices.Add(new PremiumService());
+				premiumServices[0].GPS = 1;
+				premiumServices[0].Index = 1;
+				premiumServices[0].AtDummy = 1;
+				premiumServices[0].EfDummy = 1;
+				var packet_duration = new NFY_DurationSvcData(premiumServices);
+				client.PacketManager.Send(packet_duration);
 
 				client.Account = new Account(client.ConnectionInfo.AccountId); //TODO: actually load the account data, like premium
 

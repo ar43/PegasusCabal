@@ -308,5 +308,37 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				_instances.Remove(instanceId);
 			}
 		}
+
+		Instance? GetFieldInstance(ulong id)
+		{
+			var instance = _instances[id];
+			if (instance == null || instance.Type != InstanceType.FIELD || instance.DurationType != InstanceDuration.PERMANENT)
+				return null;
+			else
+				return instance;
+		}
+
+		internal Boolean WarpClientGPS(Client client, UInt16 slot, UInt32 extraParams)
+		{
+			if (slot != 9) // what is this
+				throw new NotImplementedException();
+
+			var warpId = extraParams;
+			var warp = _warpManager.Get((Int32)warpId);
+			if (warp == null)
+			{
+				return false;
+			}
+
+			var instance = GetFieldInstance((UInt64)warp.WorldIdx);
+			if (instance == null)
+				return false;
+
+			
+
+			//TODO: Nation checking
+			WarpClient(client, instance, 8, warp.PosXPnt, warp.PosYPnt);
+			return true;
+		}
 	}
 }

@@ -17,8 +17,8 @@ namespace WorldServer.Packets.S2C
 		public override void WritePayload(Deque<byte> data)
 		{
 			PacketWriter.WriteInt32(data, _payMode);
-			PacketWriter.WriteInt32(data, _remainingTime);
 			PacketWriter.WriteInt32(data, _serviceKind);
+			PacketWriter.WriteInt32(data, _remainingTime);
 		}
 	}
 }

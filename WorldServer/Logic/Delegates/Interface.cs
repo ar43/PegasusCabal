@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using WorldServer.Enums;
+using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
 using WorldServer.Packets.S2C;
 
@@ -33,6 +34,25 @@ namespace WorldServer.Logic.Delegates
 				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "autostat error");
 				return;
 			}
+		}
+
+		internal static void OnPremiumDataRequest(Client client)
+		{
+			if (client.Character == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "character not yet loaded");
+				return;
+			}
+
+			//TEMP TODO
+			var premiumServices = new List<PremiumService>();
+			premiumServices.Add(new PremiumService());
+			premiumServices[0].GPS = 1;
+			premiumServices[0].Index = 1;
+			premiumServices[0].AtDummy = 1;
+			premiumServices[0].EfDummy = 1;
+			var packet_duration = new NFY_DurationSvcData(premiumServices);
+			client.PacketManager.Send(packet_duration);
 		}
 
 		internal static void OnQuickLinkSet(Client client, Int16 quickSlot, Int16 skillSlot)
