@@ -27,6 +27,7 @@ namespace WorldServer.Logic.WorldRuntime
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\ItemReward.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Level.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\MissionDungeon.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\World_drop.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_Custom\\QuestToDungeon.scp");
 
 			Item.LoadConfigs(this);
@@ -34,6 +35,7 @@ namespace WorldServer.Logic.WorldRuntime
 			Skill.LoadConfigs(this);
 			Style.LoadConfigs(this);
 			Quest.LoadConfigs(this);
+			World.LoadConfig(this);
 			Stats.LoadExpTable(this);
 
 			CommandManager.Init();

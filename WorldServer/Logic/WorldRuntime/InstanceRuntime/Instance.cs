@@ -46,7 +46,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime
 				Id = InstanceIdGenerator;
 				InstanceIdGenerator++;
 			}
-			Rng = new Random(Guid.NewGuid().GetHashCode() + (int)Id);
+			var rngSeed = Guid.NewGuid().GetHashCode() + (int)Id + (int)DateTime.UtcNow.Ticks;
+			//Serilog.Log.Debug(rngSeed.ToString());
+			Rng = new Random(rngSeed);
 		}
 
 		public Instance(MapId mapId, InstanceDuration durationType, MapData mapData, InstanceType type) : this((UInt16)mapId, durationType, mapData, type) { }

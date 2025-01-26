@@ -1,11 +1,13 @@
 ﻿using LibPegasus.Utils;
 using System.Diagnostics;
+using System.Numerics;
 using WorldServer.Enums;
 using WorldServer.Enums.Mob;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.SharedData;
+using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
@@ -1528,6 +1530,37 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			HP -= damage;
 		}
 
+		private void DropItem(Client attacker)
+		{
+			int dropGroup = (_data.LEV + 5) / 13 + 1;
+			int dungeonId = _instance.MissionDungeonManager != null ? _instance.MissionDungeonManager.GetDungeonId() : 0;
+
+			_instance.MapData.LocalDropTable.TryGetValue(dropGroup, out var localDropTable);
+			_instance.MapData.LocalDropTable.TryGetValue(0, out var localDropTableZero);
+			_instance.MapData.MobDropTable.TryGetValue(GetSpecies(), out var mobDropData);
+			World.WorldDropTable.TryGetValue(((int)_instance.MapId, dungeonId, GetSpecies()), out var worldDropData);
+
+			int roll = _rng.Next();
+			
+			if (localDropTableZero == null || localDropTable == null)
+				throw new Exception("Figure it out");
+			if (_instance.GroundItemManager == null)
+				throw new Exception("fixme");
+
+			if (mobDropData != null && LootGen.GenerateDropFromMob(mobDropData, _instance.GroundItemManager, this, ref roll))
+				return;
+
+			if (LootGen.GenerateDropFromMob(localDropTable, _instance.GroundItemManager, this, ref roll))
+				return;
+
+			if (worldDropData != null && LootGen.GenerateDropFromMob(worldDropData, _instance.GroundItemManager, this, ref roll))
+				return;
+
+			if (LootGen.GenerateDropFromMob(localDropTableZero, _instance.GroundItemManager, this, ref roll))
+				return;
+
+		}
+
 		private void DropQuestItem(Client attacker)
 		{
 			foreach (var quest in attacker.Character?.QuestManager.ActiveQuests)
@@ -1587,6 +1620,21 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				{
 					attacker.Character.QuestManager.OnMobDeath(attacker, (UInt16)_data.Id, skillId);
 					DropQuestItem(attacker);
+
+					if(_spawnData.Type == 1)
+					{
+						int dropCnt = _spawnData.Max > 0 ? _rng.Next(_spawnData.Max) : 0;
+						if (dropCnt < _spawnData.Min)
+							dropCnt = _spawnData.Min;
+
+						for(int i = 0; i < dropCnt; i++)
+							DropItem(attacker);
+					}
+					else
+					{
+						DropItem(attacker);
+					}
+					
 				}
 
 				if(ExtraMobInfo != null)

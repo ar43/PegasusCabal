@@ -54,12 +54,12 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		public void AddAllMobs()
 		{
 			Debug.Assert(_instance.Type == Enums.InstanceType.FIELD);
-			var rng = new Random();
+			//var rng = new Random();
 			DateTime time = DateTime.UtcNow;
 			foreach (var mSpawn in _instance.MapData.MobSpawnData.Values)
 			{
 				var mobId = GetNextMobId();
-				Mob mob = new Mob(mSpawn.MobData, mSpawn, _instance, mobId, rng, null);
+				Mob mob = new Mob(mSpawn.MobData, mSpawn, _instance, mobId, _instance.Rng, null);
 				_mobs.Add(mobId, mob);
 				mob.Spawn(time);
 			}

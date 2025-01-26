@@ -1,4 +1,6 @@
 ﻿using LibPegasus.Utils;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using WorldServer.Enums;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
 
@@ -104,6 +106,56 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							localMissionDropData.Add((SpeciesIdx, ItemKind, ItemOpt), new(TerrainIdx, SpeciesIdx, ItemKind, ItemOpt, DropRate, MaxDropCnt));
 						}
 
+						Dictionary<int, List<LocalDropData>> localDropTable = new();
+						configStr = "[CommDrop" + Convert.ToString(mapId) + "]";
+						subConfig = _config.GetConfig(configStr);
+						foreach (var localDrop in subConfig.Values)
+						{
+							int TerrainIdx = Convert.ToInt32(localDrop["TerrainIdx"]);
+							int ItemKind = Convert.ToInt32(localDrop["ItemKind"]);
+							int ItemOpt = Convert.ToInt32(localDrop["ItemOpt"]);
+							int DropRate = (int)((Convert.ToDouble(localDrop["DropRate"].Insert(0, "0"), new CultureInfo("en-US")) / 100.0) * Int32.MaxValue);
+							if (DropRate <= 0)
+								throw new Exception("unexpected DropRate");
+							int MinLv = Convert.ToInt32(localDrop["MinLv"]);
+							int MaxLv = Convert.ToInt32(localDrop["MaxLv"]);
+							int Group = Convert.ToInt32(localDrop["Group"]);
+							int MaxDropCnt = Convert.ToInt32(localDrop["MaxDropCnt"]);
+							int OptPoolIdx = Convert.ToInt32(localDrop["OptPoolIdx"]);
+							int DurationIdx = Convert.ToInt32(localDrop["DurationIdx"]);
+
+							if (Group != 0 && Group != ((MinLv + 5) / 13) + 1)
+							{
+								throw new Exception("unexpected group");
+							}
+
+							if (!localDropTable.ContainsKey(Group))
+								localDropTable[Group] = new();
+							localDropTable[Group].Add(new(TerrainIdx, ItemKind, ItemOpt, DropRate, MinLv, MaxLv, Group, MaxDropCnt, OptPoolIdx, DurationIdx));
+						}
+
+						Dictionary<int, List<MobDropData>> mobDropTable = new();
+						configStr = "[MobsDrop" + Convert.ToString(mapId) + "]";
+						subConfig = _config.GetConfig(configStr);
+						foreach (var mobDrop in subConfig.Values)
+						{
+							int TerrainIdx = Convert.ToInt32(mobDrop["TerrainIdx"]);
+							int SpeciesIdx = Convert.ToInt32(mobDrop["SpeciesIdx"]);
+							int ItemKind = Convert.ToInt32(mobDrop["ItemKind"]);
+							int ItemOpt = Convert.ToInt32(mobDrop["ItemOpt"]);
+							int DropRate = (int)((Convert.ToDouble(mobDrop["DropRate"].Insert(0, "0"), new CultureInfo("en-US")) / 100.0) * Int32.MaxValue);
+							if (DropRate <= 0)
+								throw new Exception("unexpected DropRate");
+							int MinLv = Convert.ToInt32(mobDrop["MinLv"]);
+							int MaxDropCnt = Convert.ToInt32(mobDrop["MaxDropCnt"]);
+							int OptPoolIdx = Convert.ToInt32(mobDrop["OptPoolIdx"]);
+							int DurationIdx = Convert.ToInt32(mobDrop["DurationIdx"]);
+
+							if (!mobDropTable.ContainsKey(SpeciesIdx))
+								mobDropTable[SpeciesIdx] = new();
+							mobDropTable[SpeciesIdx].Add(new(TerrainIdx, SpeciesIdx, ItemKind, ItemOpt, DropRate, MinLv, MaxDropCnt, OptPoolIdx, DurationIdx));
+						}
+
 						Dictionary<int, NpcData> npcData = new();
 						configStr = "[NpcPos" + Convert.ToString(mapId) + "]";
 						subConfig = _config.GetConfig(configStr);
@@ -153,7 +205,7 @@ namespace WorldServer.Logic.WorldRuntime.MapDataRuntime
 							}
 						}
 
-						var mapData = new MapData(mapId, terrainInfo, npcData, mobSpawnData, localMissionDropData);
+						var mapData = new MapData(mapId, terrainInfo, npcData, mobSpawnData, localMissionDropData, localDropTable, mobDropTable);
 						if (!_maps.TryAdd(mapId, mapData))
 							throw new Exception($"Map {mapId} already exists");
 						return mapData;
