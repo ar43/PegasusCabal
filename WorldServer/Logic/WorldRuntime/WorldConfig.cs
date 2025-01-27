@@ -6,6 +6,7 @@ using WorldServer.Logic.CharData.Quests;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.Extra;
+using WorldServer.Logic.WorldRuntime.LootDataRuntime;
 
 namespace WorldServer.Logic.WorldRuntime
 {
@@ -28,6 +29,7 @@ namespace WorldServer.Logic.WorldRuntime
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Level.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\MissionDungeon.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\World_drop.scp");
+			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\OptionPool.scp");
 			ScpParser.Parse(_config, $"{projectDirectory}\\LibPegasus\\Data\\Raw\\Data\\Data_Custom\\QuestToDungeon.scp");
 
 			Item.LoadConfigs(this);
@@ -35,7 +37,7 @@ namespace WorldServer.Logic.WorldRuntime
 			Skill.LoadConfigs(this);
 			Style.LoadConfigs(this);
 			Quest.LoadConfigs(this);
-			World.LoadConfig(this);
+			Loot.LoadConfig(this);
 			Stats.LoadExpTable(this);
 
 			CommandManager.Init();

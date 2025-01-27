@@ -7,6 +7,7 @@ using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.Delegates;
 using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime;
+using WorldServer.Logic.WorldRuntime.LootDataRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 
 namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
@@ -25,6 +26,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 						throw new NotImplementedException();
 
 					var item = new Item((UInt32)drop.ItemKind, (UInt32)drop.ItemOpt, 0, 0);
+
+					item.GenerateOption(mob.GetRNG(), drop.OptPoolIdx);
+
 					groundItemManager.AddGroundItem(item, mob.ObjectIndexData.ObjectId, (UInt16)mob.Movement.X, (UInt16)mob.Movement.Y, Enums.ItemContextType.ItemFromMobs);
 					return true;
 				}
@@ -44,6 +48,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 						throw new NotImplementedException();
 
 					var item = new Item((UInt32)drop.ItemKind, (UInt32)drop.ItemOpt, 0, 0);
+
+					item.GenerateOption(mob.GetRNG(), drop.OptPoolIdx);
+					
 					groundItemManager.AddGroundItem(item, mob.ObjectIndexData.ObjectId, (UInt16)mob.Movement.X, (UInt16)mob.Movement.Y, Enums.ItemContextType.ItemFromMobs);
 					return true;
 				}
@@ -63,6 +70,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 						throw new NotImplementedException();
 
 					var item = new Item((UInt32)drop.ItemKind, (UInt32)drop.ItemOpt, 0, 0);
+
+					item.GenerateOption(mob.GetRNG(), drop.OptPoolIdx);
+
 					groundItemManager.AddGroundItem(item, mob.ObjectIndexData.ObjectId, (UInt16)mob.Movement.X, (UInt16)mob.Movement.Y, Enums.ItemContextType.ItemFromMobs);
 					return true;
 				}

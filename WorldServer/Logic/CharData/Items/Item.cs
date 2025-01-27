@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using WorldServer.Enums;
 using WorldServer.Logic.WorldRuntime;
+using WorldServer.Logic.WorldRuntime.LootDataRuntime;
 
 namespace WorldServer.Logic.CharData.Items
 {
@@ -30,6 +31,50 @@ namespace WorldServer.Logic.CharData.Items
 
 		public readonly uint MASK_QITEM_CNT = 0x7f;
 		public readonly uint MASK_QITEM_IDX = 0xFFF80;
+		public readonly uint MASK_ITEMKINDINDEX = 0x00000FFF;
+		public readonly uint MASK_ITEMKOWNERSHIP = 0x00001000;
+
+		public readonly uint SHF_UPGRADECORE = 13;
+		public readonly uint SHF_MAXOPTSCORE = 28;
+		public readonly uint SHF_OPTCORENUMB = 4;
+		public readonly uint SHF_OWNERSHIP = 12;
+
+		public bool IsItemOpt()
+		{
+			return (GetItemType() == ItemType.IDT_QSTS || GetItemType() == ItemType.IDT_SPOS) ? true : false;
+		}
+
+		public void GenerateOption(Random rng, int optionPoolId)
+		{
+			if (IsItemOpt() || _itemInfo.MaxCore <= 0 || optionPoolId == 0)
+			{
+				Serilog.Log.Debug($"Refused option: {IsItemOpt()}, {_itemInfo.MaxCore}, {optionPoolId}");
+				return;
+			}
+				
+
+			//TODO: serial
+			int roll = rng.Next();
+
+			Loot.OptionPoolLevel.TryGetValue(optionPoolId, out var optionPool);
+			if (optionPool == null)
+				return;
+
+			Debug.Assert(optionPool.Length == 6);
+
+			for (uint i = 0; i < optionPool.Length; i++)
+			{
+				if(roll < optionPool[i])
+				{
+					if (i > 0)
+						SetKind((Kind & MASK_ITEMKINDINDEX) | (i << (int)SHF_UPGRADECORE));
+					break;
+				}
+
+			}
+
+		}
+
 		public bool IsQuestItem()
 		{
 			return GetItemType() == ItemType.IDT_QSTS;

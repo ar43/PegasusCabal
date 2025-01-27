@@ -41,7 +41,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 				}
 				else
 				{
-					Debug.Assert(currentDefender != null);
+					//Debug.Assert(currentDefender != null);
 					MaxAggroChar = currentDefender;
 				}
 				MaxAggro = SecondAggro;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorldServer.Logic.WorldRuntime
+namespace WorldServer.Logic.WorldRuntime.LootDataRuntime
 {
 	internal class WorldDropData
 	{

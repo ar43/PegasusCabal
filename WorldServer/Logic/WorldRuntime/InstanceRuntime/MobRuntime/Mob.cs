@@ -8,6 +8,7 @@ using WorldServer.Logic.CharData.Items;
 using WorldServer.Logic.CharData.Skills;
 using WorldServer.Logic.SharedData;
 using WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime;
+using WorldServer.Logic.WorldRuntime.LootDataRuntime;
 using WorldServer.Logic.WorldRuntime.MapDataRuntime;
 using WorldServer.Logic.WorldRuntime.MissionDungeonDataRuntime;
 using WorldServer.Logic.WorldRuntime.MobDataRuntime;
@@ -142,6 +143,11 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 		public int GetMaxHP()
 		{
 			return _data.HP;
+		}
+
+		public Random GetRNG()
+		{
+			return _rng;
 		}
 
 		public int GetExp()
@@ -1538,7 +1544,7 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			_instance.MapData.LocalDropTable.TryGetValue(dropGroup, out var localDropTable);
 			_instance.MapData.LocalDropTable.TryGetValue(0, out var localDropTableZero);
 			_instance.MapData.MobDropTable.TryGetValue(GetSpecies(), out var mobDropData);
-			World.WorldDropTable.TryGetValue(((int)_instance.MapId, dungeonId, GetSpecies()), out var worldDropData);
+			Loot.WorldDropTable.TryGetValue(((int)_instance.MapId, dungeonId, GetSpecies()), out var worldDropData);
 
 			int roll = _rng.Next();
 			
