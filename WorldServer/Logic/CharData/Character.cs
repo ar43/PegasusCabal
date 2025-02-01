@@ -19,6 +19,7 @@ namespace WorldServer.Logic.CharData
 			ActionFlag = new ActionFlag(0);
 			Id = 0;
 			QuestManager = new();
+			DebugFlags = new();
 		}
 
 		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, LearnedSkills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id, int nation, QuestManager questManager)
@@ -38,6 +39,7 @@ namespace WorldServer.Logic.CharData
 			Id = id;
 			Nation = (NationCode)nation;
 			QuestManager = questManager;
+			DebugFlags = new();
 		}
 
 		public bool Verify()
@@ -60,7 +62,7 @@ namespace WorldServer.Logic.CharData
 		public Status? Status { get; set; }
 		public BuffManager BuffManager { get; private set; }
 		public QuestManager QuestManager { get; private set; }
-
+		public DebugFlags DebugFlags { get; private set; }
 		public LiveStyle LiveStyle { get; private set; }
 		public ActionFlag ActionFlag { get; private set; }
 		public DBSyncPriority SyncPending { get; private set; }

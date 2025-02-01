@@ -88,6 +88,11 @@ namespace WorldServer.Logic.Extra
 				client.SendServerMessage("Giving 70K XP");
 				client.Character.Stats.AddExp(70000);
 			}
+			else if (args.ElementAt(1).ToLower() == "perfectdrop")
+			{
+				client.Character.DebugFlags.PerfectDrop = !client.Character.DebugFlags.PerfectDrop;
+				client.SendServerMessage($"Perfect drop: {client.Character.DebugFlags.PerfectDrop}");
+			}
 			else if (args.ElementAt(1).ToLower() == "qdbg0")
 			{
 				client.SendServerMessage("Setting quests to specific setup..");

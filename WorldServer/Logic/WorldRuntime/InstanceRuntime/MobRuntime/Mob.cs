@@ -1556,6 +1556,9 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.MobRuntime
 			if (mobDropData != null && LootGen.GenerateDropFromMob(mobDropData, _instance.GroundItemManager, this, ref roll))
 				return;
 
+			if (attacker.Character.DebugFlags.PerfectDrop)
+				roll = _rng.Next(LootGen.GetDropSum(localDropTable));
+
 			if (LootGen.GenerateDropFromMob(localDropTable, _instance.GroundItemManager, this, ref roll))
 				return;
 

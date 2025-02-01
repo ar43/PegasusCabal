@@ -14,6 +14,15 @@ namespace WorldServer.Logic.WorldRuntime.InstanceRuntime.GroundItemRuntime
 {
 	internal static class LootGen
 	{
+		public static int GetDropSum(List<LocalDropData> localDropTable)
+		{
+			int sum = 0;
+			foreach (var drop in localDropTable)
+			{
+				sum += drop.DropRate;
+			}
+			return sum;
+		}
 		public static bool GenerateDropFromMob(List<LocalDropData> localDropTable, GroundItemManager groundItemManager, Mob mob, ref int roll)
 		{
 			foreach (var drop in localDropTable)

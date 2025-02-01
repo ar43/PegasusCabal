@@ -44,6 +44,115 @@ namespace WorldServer.Logic.CharData.Items
 			return (GetItemType() == ItemType.IDT_QSTS || GetItemType() == ItemType.IDT_SPOS) ? true : false;
 		}
 
+		private bool SelectSlot(Random rng, int optionPoolId)
+		{
+			int roll = rng.Next();
+			int slotNum = 0, forceCode = 0;
+
+			if (optionPoolId == 24)
+				throw new NotImplementedException();
+
+			Loot.OptionPoolSlot.TryGetValue(optionPoolId, out var optionPoolSlot);
+			if (optionPoolSlot == null)
+				return false;
+
+			//TODO: bonus slot chance
+
+			for (int i = 0; i < Loot.MAX_SLOTNUM; i++)
+			{
+				int slotRate = optionPoolSlot[i];
+				int slotRate0 = optionPoolSlot[0];
+				int slotRate1 = optionPoolSlot[1];
+
+				if(roll < slotRate)
+				{
+					if(i > 0)
+					{
+						Option |= (UInt32)(i << (int)SHF_MAXOPTSCORE);
+						roll = rng.Next();
+
+						for(int nx = 0; nx <= Loot.MAX_FORCE; nx++)
+						{
+							if (Loot.ForceRates.TryGetValue((optionPoolId, nx, (int)GetItemType()), out var forceRate))
+							{
+								if(roll < forceRate.Rate)
+								{
+									if (forceRate.ForceCode > 0)
+									{
+										slotNum = i;
+										forceCode = forceRate.ForceCode;
+										if ((Option & 0x80) > 0)
+										{
+											Option |= (UInt32)((forceCode | (1 << (int)SHF_OPTCORENUMB)) << 8);
+										}
+										else
+										{
+											Option |= (UInt32)(forceCode | (1 << (int)SHF_OPTCORENUMB));
+										}
+									}
+									break;
+								}
+							}
+							else
+							{
+								throw new NotImplementedException();
+							}
+						}
+					}
+					break;
+				}
+			}
+
+			return (slotNum > 0) ? true : false;
+		}
+
+		private bool SelectRare(Random rng, int optionPoolId)
+		{
+			int roll = rng.Next();
+			int rareNum = 0;
+			int forceCode = 0;
+			Loot.OptionPoolRareNum.TryGetValue(optionPoolId, out var optionPoolRareNum);
+			if (optionPoolRareNum == null)
+				return false;
+
+			for (int i = 0; i < optionPoolRareNum.Length; i++)
+			{
+				if (roll < optionPoolRareNum[i])
+				{
+					if(i > 0)
+					{
+						roll = rng.Next();
+
+						for(int nx = 0; nx <= Loot.MAX_RARE_FORCE; nx++)
+						{
+							if(Loot.RareCodeRates.TryGetValue((optionPoolId, nx, (int)GetItemType(), i), out var rareCodeRate))
+							{
+								if(roll < rareCodeRate.Rate)
+								{
+									if(rareCodeRate.RareNum > 0)
+									{
+										rareNum = rareCodeRate.RareNum;
+										forceCode = rareCodeRate.ForceCode;
+										Option |= 0x80;
+										Option |= (UInt32)(rareNum << (int)SHF_OPTCORENUMB);
+										Option |= (UInt32)forceCode;
+									}
+									break;
+								}
+							}
+							else
+							{
+								throw new NotImplementedException();
+							}
+						}
+					}
+					break;
+				}
+			}
+
+			return (rareNum > 0) ? true : false;
+		}
+
 		public void GenerateOption(Random rng, int optionPoolId)
 		{
 			if (IsItemOpt() || _itemInfo.MaxCore <= 0 || optionPoolId == 0)
@@ -55,22 +164,60 @@ namespace WorldServer.Logic.CharData.Items
 
 			//TODO: serial
 			int roll = rng.Next();
+			uint i;
 
-			Loot.OptionPoolLevel.TryGetValue(optionPoolId, out var optionPool);
-			if (optionPool == null)
+			Loot.OptionPoolLevel.TryGetValue(optionPoolId, out var optionPoolLevel);
+			if (optionPoolLevel == null)
 				return;
 
-			Debug.Assert(optionPool.Length == 6);
+			Debug.Assert(optionPoolLevel.Length == 6);
 
-			for (uint i = 0; i < optionPool.Length; i++)
+			for (i = 0; i < optionPoolLevel.Length; i++)
 			{
-				if(roll < optionPool[i])
+				if(roll < optionPoolLevel[i])
 				{
 					if (i > 0)
 						SetKind((Kind & MASK_ITEMKINDINDEX) | (i << (int)SHF_UPGRADECORE));
 					break;
 				}
+			}
 
+			Loot.OptionPoolFlags.TryGetValue(optionPoolId, out var optionPoolFlag);
+			if (optionPoolFlag == null)
+				return;
+
+			if (i > 0)
+			{
+				if(optionPoolFlag.LR)
+				{
+					if(SelectRare(rng, optionPoolId))
+					{
+						if (optionPoolFlag.LRS)
+							SelectSlot(rng, optionPoolId);
+					}
+					else
+					{
+						if(optionPoolFlag.LS)
+							SelectSlot(rng, optionPoolId);
+					}
+				}
+				else
+				{
+					if(optionPoolFlag.LS)
+						SelectSlot(rng, optionPoolId);
+				}
+			}
+			else
+			{
+				if(SelectRare(rng, optionPoolId))
+				{
+					if(optionPoolFlag.RS)
+						SelectSlot(rng, optionPoolId);
+				}
+				else
+				{
+					SelectSlot(rng, optionPoolId);
+				}
 			}
 
 		}
