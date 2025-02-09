@@ -59,6 +59,9 @@ namespace WorldServer.Logic.CharData.Styles
 
 			BattleStyle = _battleStyleData[BattleStyleNum];
 
+			if (MasteryLevel == 0)
+				throw new Exception("Not supposed to be 0");
+
 			SyncPending = DBSyncPriority.NONE;
 		}
 

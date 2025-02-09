@@ -13,6 +13,9 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
+			var inv = client.Character.Inventory;
+			var eq = client.Character.Equipment;
+
 			ItemMoveType fromMoveType;
 			ItemMoveType toMoveType;
 			try
@@ -39,6 +42,55 @@ namespace WorldServer.Logic.Delegates
 					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed inv move");
 					return;
 				}
+			}
+			else if (fromMoveType == ItemMoveType.INVENTORY && toMoveType == ItemMoveType.EQUIPMENT)
+			{
+				var item = inv.RemoveItem((ushort)fromSlot);
+				if (item == null)
+				{
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed to equip item - could not remove item from inv");
+					return;
+				}
+
+				bool success = eq.EquipItem(client.Character, item, (ushort)toSlot);
+				if (success)
+				{
+					var nfy = new NFY_ItemEquips0(client.Character.Id, item.Kind, (ushort)toSlot);
+					var rsp = new RSP_ItemMove(1);
+					client.BroadcastNearby(nfy);
+					client.PacketManager.Send(rsp);
+				}
+				else
+				{
+					inv.AddItem((ushort)fromSlot, item); //add the item back in case of failure
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed item equip");
+					return;
+				}
+			}
+			else if (fromMoveType == ItemMoveType.EQUIPMENT && toMoveType == ItemMoveType.INVENTORY)
+			{
+				var item = eq.UnequipItem((ushort)fromSlot);
+				if (item == null)
+				{
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed to unequip item - could not remove item from eq");
+					return;
+				}
+
+				bool success = inv.AddItem((ushort)toSlot, item);
+				if (success)
+				{
+					var nfy = new NFY_ItemUnequip(client.Character.Id, (ushort)toSlot);
+					var rsp = new RSP_ItemMove(1);
+					client.BroadcastNearby(nfy);
+					client.PacketManager.Send(rsp);
+				}
+				else
+				{
+					eq.EquipItem(client.Character, item, (ushort)fromSlot);
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed to unequip item");
+					return;
+				}
+
 			}
 			else
 			{
