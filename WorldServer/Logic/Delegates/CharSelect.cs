@@ -49,13 +49,13 @@ namespace WorldServer.Logic.Delegates
 			client.PacketManager.Send(packet);
 		}
 
-		internal static async void OnCreate(Client client, Byte battleStyle, Byte rank, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet, Boolean joinNoviceGuild, Byte slot, string name)
+		internal static async void OnCreate(Client client, UInt32 styleSerial, Boolean joinNoviceGuild, Byte slot, string name)
 		{
-			var character = new Character(new Style(battleStyle, rank, face, hairColor, hairStyle, aura, gender, showHelmet), name);
+			var style = new Style(styleSerial);
 
-			if (character.Verify())
+			if (style.VerifyOnCreate())
 			{
-				var reply = await client.SendCharCreationRequest(character, slot);
+				var reply = await client.SendCharCreationRequest(style, name, slot);
 
 				var packet = new RSP_NewMyChartr(reply.CharId, (CharCreateResult)reply.Result);
 				client.PacketManager.Send(packet);

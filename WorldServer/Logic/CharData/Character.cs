@@ -9,19 +9,6 @@ namespace WorldServer.Logic.CharData
 {
 	internal class Character
 	{
-		public Character(Style style, string name) //used just in connection, not actually fr
-		{
-			Style = style;
-			Name = name;
-			Location = new Location(0, 0);
-			LiveStyle = new LiveStyle(0);
-			BuffManager = new();
-			ActionFlag = new ActionFlag(0);
-			Id = 0;
-			QuestManager = new();
-			DebugFlags = new();
-		}
-
 		public Character(Style style, String name, Equipment? equipment, Inventory? inventory, LearnedSkills? skills, QuickSlotBar? quickSlotBar, Location location, Stats? stats, Status? status, int id, int nation, QuestManager questManager)
 		{
 			Equipment = equipment;

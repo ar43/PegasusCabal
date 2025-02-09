@@ -173,7 +173,7 @@ namespace WorldServer.Logic.CharData
 				}
 				case EquipmentIndex.NUM_EQUIPMENT:
 				{
-					throw new NotImplementedException(type.ToString());
+					break;
 				}
 				default:
 					// Handle unexpected values

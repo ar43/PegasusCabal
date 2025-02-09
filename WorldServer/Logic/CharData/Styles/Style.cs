@@ -105,6 +105,14 @@ namespace WorldServer.Logic.CharData.Styles
 			return true;
 		}
 
+		public bool VerifyOnCreate()
+		{
+			if (MasteryLevel != 1)
+				return false;
+
+			return true;
+		}
+
 		public void ToggleHelmet(byte newVal)
 		{
 			ShowHelmet = newVal;

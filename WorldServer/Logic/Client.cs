@@ -11,6 +11,7 @@ using WorldServer.Enums;
 using WorldServer.Logic.AccountData;
 using WorldServer.Logic.CharData;
 using WorldServer.Logic.CharData.DbSyncData;
+using WorldServer.Logic.CharData.Styles;
 using WorldServer.Logic.ClientData;
 using WorldServer.Logic.WorldRuntime;
 using WorldServer.Packets;
@@ -324,11 +325,11 @@ namespace WorldServer.Logic
 			return reply;
 		}
 
-		internal async Task<CreateCharacterReply> SendCharCreationRequest(Character chr, byte slot)
+		internal async Task<CreateCharacterReply> SendCharCreationRequest(Style style, string name, byte slot)
 		{
 			var client = new CharacterMaster.CharacterMasterClient(_masterRpcChannel);
 			var serverId = ServerConfig.Get().GeneralSettings.ServerId;
-			var reply = await client.CreateCharacterAsync(new CreateCharacterRequest { Style = chr.Style.Serialize(), Slot = slot, AccountId = ConnectionInfo.AccountId, ServerId = (UInt32)serverId, JoinNoviceGuild = false, Name = chr.Name });
+			var reply = await client.CreateCharacterAsync(new CreateCharacterRequest { Style = style.Serialize(), Slot = slot, AccountId = ConnectionInfo.AccountId, ServerId = (UInt32)serverId, JoinNoviceGuild = false, Name = name });
 			return reply;
 		}
 

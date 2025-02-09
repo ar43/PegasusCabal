@@ -17,22 +17,12 @@ namespace WorldServer.Packets.C2S
 		{
 			UInt32 style;
 
-			byte battleStyle, rank, face, hairColor, hairStyle, aura, gender, showHelmet;
-
 			bool joinNoviceGuild;
 			byte slot, nameLength;
 			string name;
 			try
 			{
 				style = PacketReader.ReadUInt32(_data);
-				battleStyle = (byte)Utility.ReadBits(style, 0, 3);
-				rank = (byte)Utility.ReadBits(style, 3, 5);
-				face = (byte)Utility.ReadBits(style, 8, 5);
-				hairColor = (byte)Utility.ReadBits(style, 13, 4);
-				hairStyle = (byte)Utility.ReadBits(style, 17, 5);
-				aura = (byte)Utility.ReadBits(style, 22, 4);
-				gender = (byte)Utility.ReadBits(style, 26, 1);
-				showHelmet = (byte)Utility.ReadBits(style, 27, 1);
 
 				joinNoviceGuild = Convert.ToBoolean(PacketReader.ReadByte(_data));
 				slot = PacketReader.ReadByte(_data);
@@ -44,7 +34,7 @@ namespace WorldServer.Packets.C2S
 				return false;
 			}
 
-			actions.Enqueue((x) => CharSelect.OnCreate(x, battleStyle, rank, face, hairColor, hairStyle, aura, gender, showHelmet, joinNoviceGuild, slot, name));
+			actions.Enqueue((x) => CharSelect.OnCreate(x, style, joinNoviceGuild, slot, name));
 
 			return true;
 		}
