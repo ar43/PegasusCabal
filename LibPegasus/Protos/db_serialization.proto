@@ -20,6 +20,7 @@ message EquipmentData
 message InventoryData
 {
 	map<uint32, ItemData> inventoryData = 1;
+	int64 alz = 2;
 }
 
 message QuickSlotData

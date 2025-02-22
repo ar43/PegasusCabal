@@ -57,12 +57,13 @@ namespace WorldServer.DB
 		{
 			using var conn = await _dataSource.OpenConnectionAsync();
 
-			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET inv_data = @a WHERE char_id = @b", conn))
+			await using (var cmd = new NpgsqlCommand("UPDATE main.characters SET inv_data = @a, alz = @c WHERE char_id = @b", conn))
 			{
 				try
 				{
 					cmd.Parameters.AddWithValue("b", charId);
 					cmd.Parameters.AddWithValue("a", inventoryData.ToByteArray());
+					cmd.Parameters.AddWithValue("c", inventoryData.Alz);
 					var result = await cmd.ExecuteNonQueryAsync();
 					return result;
 				}

@@ -45,6 +45,13 @@ namespace WorldServer.Logic.CharData
 			Alz += amt;
 		}
 
+		public void RemoveAlz(UInt64 amt)
+		{
+			if (amt < 0)
+				throw new Exception("expected amt > 0");
+			Alz -= amt;
+		}
+
 		public InventoryData GetProtobuf()
 		{
 			InventoryData data = new InventoryData();
@@ -53,6 +60,7 @@ namespace WorldServer.Logic.CharData
 				var slot = item.Key;
 				data.InventoryData_.Add(slot, item.Value.GetProtobuf());
 			}
+			data.Alz = (long)Alz;
 			return data;
 		}
 

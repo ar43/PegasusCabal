@@ -38,24 +38,25 @@ namespace WorldServer.DB.Sync
 
 		private void Run()
 		{
-			while (_running || _requestQueue[(Int32)DBSyncPriority.HIGH].Count > 0)
+			while (_running || _requestQueue[(Int32)DBSyncPriority.HIGH].Count > 0 || _requestQueue[(Int32)DBSyncPriority.NORMAL].Count > 0 ||
+				   _requestQueue[(Int32)DBSyncPriority.LOW].Count > 0)
 			{
 				DbSyncRequest? request;
-				_ = _requestQueue[(Int32)DBSyncPriority.HIGH].TryDequeue(out request);
-				if (request == null)
+				var newRequest = _requestQueue[(Int32)DBSyncPriority.HIGH].TryDequeue(out request);
+				if (newRequest == false)
 				{
-					_ = _requestQueue[(Int32)DBSyncPriority.NORMAL].TryDequeue(out request);
+					newRequest = _requestQueue[(Int32)DBSyncPriority.NORMAL].TryDequeue(out request);
+					if (newRequest == false)
+					{
+						newRequest = _requestQueue[(Int32)DBSyncPriority.LOW].TryDequeue(out request);
+						if (newRequest == false)
+						{
+							Thread.Sleep(1);
+							continue;
+						}
+					}
 				}
-				if (request == null)
-				{
-					_ = _requestQueue[(Int32)DBSyncPriority.LOW].TryDequeue(out request);
-				}
-				if (request == null)
-				{
-					Thread.Sleep(1);
-					continue;
-				}
-
+				
 				var charId = request.CharId;
 				var isFinal = request.Final;
 				var newTimestamps = request.Timestamp;
@@ -167,6 +168,17 @@ namespace WorldServer.DB.Sync
 						var reply = await client.SetCharacterSyncStatusAsync(new SetCharacterSyncStatusRequest { CharId = (UInt32)charId, ServerId = (UInt32)serverId, SyncFlags = (UInt32)flag });
 						if (reply.Status != 1)
 							throw new Exception("Problem in syncing");
+						Serilog.Log.Information($"(FINAL) {flag} synced for char id {charId}");
+					}
+					else
+					{
+						throw new Exception("failed sql??");
+					}
+				}
+				else
+				{
+					if (result == 1)
+					{
 						Serilog.Log.Information($"{flag} synced for char id {charId}");
 					}
 					else

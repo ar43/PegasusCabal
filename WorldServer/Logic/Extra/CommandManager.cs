@@ -15,6 +15,7 @@ namespace WorldServer.Logic.Extra
 			CommandList["testmsg"] = CommandDelegates.TestMsg;
 			CommandList["give"] = CommandDelegates.Give;
 			CommandList["print"] = CommandDelegates.Print;
+			CommandList["sync"] = CommandDelegates.Sync;
 		}
 	}
 
@@ -29,6 +30,12 @@ namespace WorldServer.Logic.Extra
 		{
 			Serilog.Log.Debug("hello world");
 			client.SendServerMessage("hello world");
+		}
+		public static void Sync(Client client, List<string>? args)
+		{
+			client.SendServerMessage("Synced char");
+
+			client.Character.Sync(Enums.DBSyncPriority.NORMAL);
 		}
 
 		public static void Goto(Client client, List<string>? args)
@@ -73,7 +80,7 @@ namespace WorldServer.Logic.Extra
 
 		public static void Give(Client client, List<string>? args)
 		{
-			if (args.Count != 2)
+			if (args.Count < 2)
 			{
 				client.SendServerMessage("Invalid args");
 			}
@@ -87,6 +94,15 @@ namespace WorldServer.Logic.Extra
 			{
 				client.SendServerMessage("Giving 70K XP");
 				client.Character.Stats.AddExp(70000);
+			}
+			else if (args.ElementAt(1).ToLower() == "alz")
+			{
+				if (args.Count < 3)
+				{
+					client.SendServerMessage("Invalid args");
+				}
+				client.SendServerMessage("Giving Alz");
+				client.Character.Inventory.GiveAlz(Convert.ToUInt64(args.ElementAt(2)));
 			}
 			else if (args.ElementAt(1).ToLower() == "perfectdrop")
 			{

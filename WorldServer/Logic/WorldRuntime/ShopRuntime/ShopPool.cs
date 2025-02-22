@@ -22,9 +22,10 @@
 			Items.Add(slot, item);
 		}
 
-		public ShopEntry GetItem(int slot)
+		public ShopEntry? GetItem(int slot)
 		{
-			return Items[slot];
+			if (Items.ContainsKey(slot)) return Items[slot];
+			else return null;
 		}
 
 		public int Count()

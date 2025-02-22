@@ -12,7 +12,7 @@ namespace WorldServer.Packets
 		private Queue<Tuple<UInt16, Queue<byte>>> _decryptedInboundPackets = new();
 		private Queue<Deque<byte>> _decryptedOutboundPackets = new();
 		public DanglingPacket? DanglingPacket = null;
-		// Start is called before the first frame update
+
 		public PacketManager()
 		{
 		}
@@ -88,6 +88,7 @@ namespace WorldServer.Packets
 				Opcode.CSC_QUICKLNKSWITCH => new REQ_QuickLnkSwitch(data),
 				Opcode.CSC_AURAEXCHANG => new REQ_AuraExchang(data),
 				Opcode.CSC_DURATIONSVCDATA => new REQ_DurationSvcData(data),
+				Opcode.CSC_ITEMBUYINGS => new REQ_ItemBuyings(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;
 		}

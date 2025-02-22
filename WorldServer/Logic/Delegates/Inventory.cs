@@ -1,4 +1,5 @@
 ﻿using WorldServer.Enums;
+using WorldServer.Logic.CharData.Items;
 using WorldServer.Packets.S2C;
 
 namespace WorldServer.Logic.Delegates
@@ -107,6 +108,9 @@ namespace WorldServer.Logic.Delegates
 				return;
 			}
 
+			var inv = client.Character.Inventory;
+			var eq = client.Character.Equipment;
+
 			ItemMoveType fromMoveType1;
 			ItemMoveType toMoveType1;
 			ItemMoveType fromMoveType2;
@@ -137,6 +141,57 @@ namespace WorldServer.Logic.Delegates
 					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed inv move");
 					return;
 				}
+			}
+			else if (fromMoveType1 == ItemMoveType.INVENTORY && toMoveType1 == ItemMoveType.EQUIPMENT && fromMoveType2 == ItemMoveType.EQUIPMENT && toMoveType2 == ItemMoveType.INVENTORY)
+			{
+				var itemUnequip = eq.UnequipItem((ushort)fromSlot2);
+				if (itemUnequip == null)
+				{
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed to unequip item - could not remove item from eq");
+					return;
+				}
+
+				var itemEquip = inv.RemoveItem((ushort)fromSlot1);
+				if (itemEquip == null)
+				{
+					eq.EquipItem(client.Character, itemUnequip, (ushort)fromSlot2); //revert
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "failed to equip item - could not remove item from inv");
+					return;
+				}
+
+				bool success = inv.AddItem((ushort)toSlot2, itemUnequip);
+				if (success)
+				{
+					var nfy = new NFY_ItemUnequip(client.Character.Id, (ushort)toSlot2);
+					client.BroadcastNearby(nfy);
+				}
+				else
+				{
+					inv.AddItem((ushort)fromSlot1, itemEquip); //revert
+					eq.EquipItem(client.Character, itemUnequip, (ushort)fromSlot2); //revert
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "on swap - failed to unequip item");
+					return;
+				}
+
+				success = eq.EquipItem(client.Character, itemEquip, (ushort)toSlot1);
+				if (success)
+				{
+					var nfy = new NFY_ItemEquips0(client.Character.Id, itemEquip.Kind, (ushort)toSlot1);
+					var rsp = new RSP_ItemSwap(1);
+					client.BroadcastNearby(nfy);
+					client.PacketManager.Send(rsp);
+				}
+				else
+				{
+					inv.RemoveItem((ushort)toSlot2); //revert
+					inv.AddItem((ushort)fromSlot1, itemEquip); //revert
+					eq.EquipItem(client.Character, itemUnequip, (ushort)fromSlot2); //revert
+					client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "on swap - failed item equip");
+					return;
+				}
+
+
+
 			}
 			else
 			{
