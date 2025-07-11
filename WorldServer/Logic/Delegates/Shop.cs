@@ -81,6 +81,19 @@ namespace WorldServer.Logic.Delegates
 			client.PacketManager.Send(rsp);
 		}
 
+		internal static void OnItemSell(Client client, Byte shopId, Int32 u0, Int32 u1, Int32 inventorySlot)
+		{
+			if (client.Character == null)
+			{
+				client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "null Character");
+				return;
+			}
+
+			var pool = client.World.ShopPoolManager.GetPool(shopId);
+
+			client.Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "unimplemented");
+		}
+
 		internal static void OnPoolRequest(Client client, UInt16 poolId)
 		{
 			if (client.Character == null)
