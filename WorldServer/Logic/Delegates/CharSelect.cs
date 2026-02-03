@@ -37,7 +37,7 @@ namespace WorldServer.Logic.Delegates
 		internal static void OnGetSvrTime(Client client)
 		{
 			var time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-			var offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalSeconds / 60;
+			var offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
 
 			var packet = new RSP_GetSvrTime(time, (short)offset);
 			client.PacketManager.Send(packet);

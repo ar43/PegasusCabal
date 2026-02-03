@@ -8,12 +8,13 @@ namespace WorldServer.Logic.CharData.Styles
 {
 	internal class Style
 	{
-		public byte BattleStyleNum { get; private set; }
+		public byte ClassLow { get; private set; }
 		public byte MasteryLevel { get; private set; }
 		public byte Face { get; private set; }
 		public byte HairColor { get; private set; }
 		public byte HairStyle { get; private set; }
 		public byte Aura { get; private set; }
+		public byte ClassHigh { get; private set; }
 		public byte Gender { get; private set; }
 		public byte ShowHelmet { get; private set; }
 
@@ -22,42 +23,45 @@ namespace WorldServer.Logic.CharData.Styles
 		private static Dictionary<int, BattleStyle>? _battleStyleData;
 		public DBSyncPriority SyncPending { get; private set; }
 
-		public Style(Byte battleStyle, Byte masteryLevel, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet)
-		{
-			if (_battleStyleData == null)
-				throw new Exception("Data not yet loaded");
+		//public Style(Byte battleStyle, Byte masteryLevel, Byte face, Byte hairColor, Byte hairStyle, Byte aura, Byte gender, Byte showHelmet)
+		//{
+		//	if (_battleStyleData == null)
+		//		throw new Exception("Data not yet loaded");
 
-			BattleStyleNum = battleStyle; //3
-			BattleStyle = _battleStyleData[BattleStyleNum];
-			MasteryLevel = masteryLevel; //5
-			Face = face; //5
-			HairColor = hairColor; //4
-			HairStyle = hairStyle; ///5
-			Aura = aura; //4
-			Gender = gender; //1
-			ShowHelmet = showHelmet; //1
-			StyleEx = new();
+		//	ClassLow = (Byte)(battleStyle & 0b111); //3
+		//	BattleStyle = _battleStyleData[ClassLow];
+		//	MasteryLevel = masteryLevel; //5
+		//	Face = face; //5
+		//	HairColor = hairColor; //4
+		//	HairStyle = hairStyle; ///5
+		//	Aura = aura; //1
+		//	ClassHigh = (Byte)((battleStyle >> 3) & 0b1); //1
+		//	Gender = gender; //1
+		//	ShowHelmet = showHelmet; //1
+		//	StyleEx = new();
 
-			SyncPending = DBSyncPriority.NONE;
-		}
+		//	SyncPending = DBSyncPriority.NONE;
+		//}
 
 		public Style(UInt32 serial)
 		{
 			if (_battleStyleData == null)
 				throw new Exception("Data not yet loaded");
 
-			BattleStyleNum = (Byte)(serial & 0b111);
+			ClassLow = (Byte)(serial & 0b111);
 			MasteryLevel = (Byte)(serial >> 3 & 0b11111);
 			Face = (Byte)(serial >> 8 & 0b11111);
 			HairColor = (Byte)(serial >> 13 & 0b1111);
 			HairStyle = (Byte)(serial >> 17 & 0b11111);
-			Aura = (Byte)(serial >> 22 & 0b1111);
+			Aura = (Byte)(serial >> 22 & 0b1);
+			ClassHigh = (Byte)(serial >> 23 & 0b1);
+			_ = (Byte)(serial >> 24 & 0b11); // reserved
 			Gender = (Byte)(serial >> 26 & 0b1);
 			ShowHelmet = (Byte)(serial >> 27 & 0b1);
 
 			StyleEx = new();
 
-			BattleStyle = _battleStyleData[BattleStyleNum];
+			BattleStyle = _battleStyleData[ClassLow | (ClassHigh << 3)];
 
 			if (MasteryLevel == 0)
 				throw new Exception("Not supposed to be 0");
@@ -87,14 +91,15 @@ namespace WorldServer.Logic.CharData.Styles
 		public UInt32 Serialize()
 		{
 			UInt32 result = 0;
-			result |= BattleStyleNum;
-			result |= (UInt32)MasteryLevel << 3;
-			result |= (UInt32)Face << 8;
-			result |= (UInt32)HairColor << 13;
-			result |= (UInt32)HairStyle << 17;
-			result |= (UInt32)Aura << 22;
-			result |= (UInt32)Gender << 26;
-			result |= (UInt32)ShowHelmet << 27;
+			result |= (UInt32)(ClassLow & 0b111);
+			result |= ((UInt32)MasteryLevel & 0b11111) << 3;
+			result |= ((UInt32)Face & 0b11111) << 8;
+			result |= ((UInt32)HairColor & 0b1111) << 13;
+			result |= ((UInt32)HairStyle & 0b11111) << 17;
+			result |= ((UInt32)Aura & 0b1) << 22;
+			result |= ((UInt32)ClassHigh & 0b1) << 23;
+			result |= ((UInt32)Gender & 0b1) << 26;
+			result |= ((UInt32)ShowHelmet & 0b1) << 27;
 
 			return result;
 		}

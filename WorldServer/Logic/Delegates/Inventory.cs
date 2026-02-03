@@ -56,7 +56,7 @@ namespace WorldServer.Logic.Delegates
 				bool success = eq.EquipItem(client.Character, item, (ushort)toSlot);
 				if (success)
 				{
-					var nfy = new NFY_ItemEquips0(client.Character.Id, item.Kind, (ushort)toSlot);
+					var nfy = new NFY_ItemEquips0(client.Character.Id, item.Kind, item.Option, (ushort)toSlot);
 					var rsp = new RSP_ItemMove(1);
 					client.BroadcastNearby(nfy);
 					client.PacketManager.Send(rsp);
@@ -176,7 +176,7 @@ namespace WorldServer.Logic.Delegates
 				success = eq.EquipItem(client.Character, itemEquip, (ushort)toSlot1);
 				if (success)
 				{
-					var nfy = new NFY_ItemEquips0(client.Character.Id, itemEquip.Kind, (ushort)toSlot1);
+					var nfy = new NFY_ItemEquips0(client.Character.Id, itemEquip.Kind, itemEquip.Option, (ushort)toSlot1);
 					var rsp = new RSP_ItemSwap(1);
 					client.BroadcastNearby(nfy);
 					client.PacketManager.Send(rsp);

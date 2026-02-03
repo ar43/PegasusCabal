@@ -18,7 +18,8 @@ namespace LoginServer.Packets.C2S
 
 			try
 			{
-				username = PacketReader.ReadString(_data, 33);
+				username = PacketReader.ReadString(_data, 65);
+				PacketReader.ReadDiscard(_data, 64);
 			}
 			catch (IndexOutOfRangeException)
 			{

@@ -3,6 +3,8 @@ using LibPegasus.Enums;
 using LibPegasus.JSON;
 using Npgsql;
 using Shared.Protos;
+using System;
+using System.Xml.Linq;
 
 namespace MasterServer.DB
 {
@@ -126,22 +128,23 @@ namespace MasterServer.DB
 						}
 
 						var eqData = ToProtoObject<EquipmentData>(eqDataBytes, (int)t);
+						uint eqCount = (UInt32)eqData.EquipmentData_.Count;
 
-						UInt32[] equipmentData = new uint[20];
-						for (int i = 0; i < 20; i++)
-						{
-							if (eqData != null && eqData.EquipmentData_.TryGetValue((uint)i, out var data))
-							{
-								equipmentData[i] = data.Kind;
-							}
-						}
+						//UInt32[] equipmentData = new uint[20];
+						//for (int i = 0; i < 20; i++)
+						//{
+						//	if (eqData != null && eqData.EquipmentData_.TryGetValue((uint)i, out var data))
+						//	{
+						//		equipmentData[i] = data.Kind;
+						//	}
+						//}
 
 						GetMyCharactersReplySingle character = new GetMyCharactersReplySingle
 						{
 							Alz = (UInt64)reader.GetInt64(alz),
 							CharacterId = (UInt32)reader.GetInt32(charId),
 							CreationDate = ((DateTimeOffset)reader.GetDateTime(creationDate)).ToUnixTimeSeconds(),
-							Equipment = { equipmentData },
+							Equipment = eqData,
 							Level = (UInt32)reader.GetInt32(level),
 							Name = reader.GetString(name),
 							Rank = (UInt32)reader.GetInt32(rank),
@@ -149,12 +152,14 @@ namespace MasterServer.DB
 							U2 = 0,
 							WorldId = (UInt32)reader.GetInt32(worldId),
 							X = (UInt32)reader.GetInt32(x),
-							Y = (UInt32)reader.GetInt32(y)
+							Y = (UInt32)reader.GetInt32(y),
+							EqCount = eqCount
 						};
 						reply.Characters.Add(character);
 					}
 				}
 			}
+
 			reply.CharacterOrder = 0;
 			reply.LastCharId = 0;
 			reply.IsPinSet = false;

@@ -4,6 +4,7 @@ using LibPegasus.Utils;
 using LoginServer.Packets.S2C;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace LoginServer.Logic.Delegates
@@ -89,9 +90,9 @@ namespace LoginServer.Logic.Delegates
 			client.PacketManager.Send(packet);
 		}
 
-		public static async void OnAuthAccount(Client client, byte[] rsaData)
+		public static async void OnLogin(Client client, byte[] rsaData)
 		{
-			if (client.ClientInfo.ConnState != Enums.ConnState.PUBLIC_KEY_REQUESTED)
+			if (client.ClientInfo.ConnState != Enums.ConnState.PREAUTH)
 			{
 				//TODO: Close connection
 				throw new NotImplementedException();
@@ -127,14 +128,26 @@ namespace LoginServer.Logic.Delegates
 				Debug.Assert(reply.AuthKey.Length == 32);
 				var replyServerState = await client.GetServerState(isLocalhost);
 
-				var packetServerState = new NFY_ServerState(replyServerState);
-				client.PacketManager.Send(packetServerState);
+				var packetFirstAuth = new RSP_Login(reply, false);
+				client.PacketManager.Send(packetFirstAuth);
+
+				var packetAutoLogOutTimer = new NFY_AutoLogOutTimer(120000);
+				client.PacketManager.Send(packetAutoLogOutTimer);
 
 				var packetUrlToClient = new NFY_UrlToClient();
 				client.PacketManager.Send(packetUrlToClient);
 
-				var packetAuth = new RSP_AuthAccount(reply);
+				var packetAuth = new RSP_Login(reply, true);
 				client.PacketManager.Send(packetAuth);
+
+				var packetAutoLogOutTimer2 = new NFY_AutoLogOutTimer(120000);
+				client.PacketManager.Send(packetAutoLogOutTimer2);
+
+				var packetServerState = new NFY_ServerState(replyServerState);
+				client.PacketManager.Send(packetServerState);
+
+				var packetUnknown = new NFY_Unk124();
+				client.PacketManager.Send(packetUnknown);
 
 				var packetMsg = new NFY_SystemMessg(Enums.MessageType.Normal2, "");
 				client.PacketManager.Send(packetMsg);
@@ -144,7 +157,7 @@ namespace LoginServer.Logic.Delegates
 			}
 			else
 			{
-				var packet = new RSP_AuthAccount(reply);
+				var packet = new RSP_Login(reply, false);
 				client.PacketManager.Send(packet);
 				client.Disconnect("bad auth");
 			}
@@ -183,6 +196,36 @@ namespace LoginServer.Logic.Delegates
 				client.Disconnect("Linked - fail");
 			}
 
+		}
+
+		//this is now just a way to check if server is online? anyways this used to be OnLogin
+		internal static void OnAuthAccount(Client client)
+		{
+			if (client.ClientInfo.ConnState != Enums.ConnState.PUBLIC_KEY_REQUESTED)
+			{
+				//TODO: Close connection
+				throw new NotImplementedException();
+			}
+
+			client.ClientInfo.ConnState = Enums.ConnState.PREAUTH;
+
+			var packet = new RSP_AuthAccount(0);
+			client.PacketManager.Send(packet);
+
+			var packet2 = new NFY_DisconnectTimer(120000);
+			client.PacketManager.Send(packet2);
+		}
+
+		internal static void OnUnk3383(Client client)
+		{
+			if (client.ClientInfo.ConnState != Enums.ConnState.AUTH_ACCOUNT)
+			{
+				//TODO: Close connection
+				throw new NotImplementedException();
+			}
+
+			var packet = new RSP_Unk3383();
+			client.PacketManager.Send(packet);
 		}
 	}
 }

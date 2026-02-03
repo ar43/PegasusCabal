@@ -18,7 +18,7 @@ namespace WorldServer.Logic.Delegates
 
 			if (serverId != cfg.GeneralSettings.ServerId || channelId != cfg.GeneralSettings.ChannelId)
 			{
-				client.Disconnect("invalid handshake (bad serverId or clientId)", ConnState.ERROR);
+				client.Disconnect("invalid handshake (bad serverId or channelId)", ConnState.ERROR);
 				return;
 			}
 

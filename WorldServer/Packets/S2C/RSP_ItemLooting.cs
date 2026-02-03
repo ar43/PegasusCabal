@@ -7,12 +7,12 @@ namespace WorldServer.Packets.S2C
 	internal class RSP_ItemLooting : PacketS2C
 	{
 		byte _result;
-		uint _itemKind;
-		uint _itemOption;
+		UInt64 _itemKind;
+		UInt64 _itemOption;
 		int _slot;
 		UInt16 _u0;
 
-		public RSP_ItemLooting(Byte result, UInt32 itemKind, UInt32 itemOption, Int32 slot) : base((UInt16)Opcode.CSC_ITEMLOOTING)
+		public RSP_ItemLooting(Byte result, UInt64 itemKind, UInt64 itemOption, Int32 slot) : base((UInt16)Opcode.CSC_ITEMLOOTING)
 		{
 			_result = result;
 			_itemKind = itemKind;
@@ -33,8 +33,8 @@ namespace WorldServer.Packets.S2C
 		public override void WritePayload(Deque<byte> data)
 		{
 			PacketWriter.WriteByte(data, _result);
-			PacketWriter.WriteUInt32(data, _itemKind);
-			PacketWriter.WriteUInt32(data, _itemOption);
+			PacketWriter.WriteUInt64(data, _itemKind);
+			PacketWriter.WriteUInt64(data, _itemOption);
 			PacketWriter.WriteInt32(data, _slot);
 			PacketWriter.WriteUInt16(data, _u0);
 

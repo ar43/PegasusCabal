@@ -12,7 +12,7 @@ namespace LoginServer.Packets.S2C
 
 		public override void WritePayload(Deque<byte> data)
 		{
-			PacketWriter.WriteNull(data, 4113);
+			PacketWriter.WriteNull(data, 4108);
 		}
 	}
 }

@@ -28,7 +28,7 @@ namespace WorldServer.Logic.Delegates
 
 			if (skill.GetExclusive() != 0)
 			{
-				if (skill.GetExclusive() != character.Style.BattleStyleNum)
+				if (skill.GetExclusive() != character.Style.ClassLow)
 					return false;
 			}
 

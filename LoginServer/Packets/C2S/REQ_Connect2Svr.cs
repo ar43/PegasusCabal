@@ -27,10 +27,5 @@ namespace LoginServer.Packets.C2S
 
 			return true;
 		}
-
-		public static UInt16 GetSize()
-		{
-			return 14;
-		}
 	}
 }

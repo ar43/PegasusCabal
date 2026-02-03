@@ -4,6 +4,8 @@ option csharp_namespace = "Shared.Protos";
 
 package character_master;
 
+import "db_serialization.proto";
+
 service CharacterMaster 
 {
 	rpc GetMyCharacters (GetMyCharactersRequest) returns (GetMyCharactersReply);
@@ -69,8 +71,9 @@ message GetMyCharactersReplySingle
 	uint32 worldId = 8;
 	uint32 x = 9;
 	uint32 y = 10;
-	repeated uint32 equipment = 11;
+	db_serialization.EquipmentData equipment = 11;
 	string name = 12;
+	uint32 eqCount = 13;
 }
 
 message GetMyCharactersReply

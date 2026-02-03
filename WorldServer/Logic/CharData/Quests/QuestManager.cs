@@ -97,11 +97,11 @@ namespace WorldServer.Logic.CharData.Quests
 			if (ActiveQuests.ContainsKey(slot) || _startedQuests[questId] == true)
 				throw new Exception("Either the slot is full or quest is already started");
 
-			Debug.Assert(character.Style.BattleStyleNum > 0);
+			Debug.Assert(character.Style.ClassLow > 0);
 			var quest = new Quest((UInt16)questId);
 			var npcPosX = npcData[quest.GetStartNpcId()].PosX;
 			var npcPosY = npcData[quest.GetStartNpcId()].PosY;
-			var bStyle = 1 << (character.Style.BattleStyleNum - 1);
+			var bStyle = 1 << (character.Style.ClassLow - 1);
 
 			if (posData.Instance?.MapId != (MapId)quest.GetStartMapId())
 				throw new Exception("char not in correct instance");
@@ -189,7 +189,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 			if (questReward.RewardItemIdx > 0)
 			{
-				itemReward = Item.GenerateReward((UInt32)questReward.RewardItemIdx, client.Character.Style.BattleStyleNum, choice);
+				itemReward = Item.GenerateReward((UInt32)questReward.RewardItemIdx, client.Character.Style.ClassLow, choice);
 			}
 
 			if (itemReward != null)
@@ -409,7 +409,7 @@ namespace WorldServer.Logic.CharData.Quests
 
 						var remaining = neededCount - lootProgress;
 
-						if (neededKind == item.Kind && neededOpt == real_opt && remaining > 0 && remaining - real_quant >= 0)
+						if (neededKind == uint.CreateTruncating(item.Kind) && neededOpt == real_opt && remaining > 0 && remaining - real_quant >= 0)
 						{
 							return (quest.Key, i, (int)real_quant);
 						}

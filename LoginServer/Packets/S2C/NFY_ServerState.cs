@@ -23,19 +23,33 @@ namespace LoginServer.Packets.S2C
 				PacketWriter.WriteByte(data, (byte)server.ServerId);
 				PacketWriter.WriteByte(data, (byte)server.ServerFlag);
 				PacketWriter.WriteUInt32(data, 0); // LanguageMaybe
+				PacketWriter.WriteByte(data, 0); //unk
+				PacketWriter.WriteByte(data, 0); //unk
 				PacketWriter.WriteByte(data, (byte)server.ChannelCount);
 				for (int j = 0; j < server.ChannelCount; j++)
 				{
 					var chan = server.Channels[j];
-					var ip = BitConverter.ToUInt32(IPAddress.Parse(chan.Ip).GetAddressBytes(), 0);
+					var ipArray = chan.Ip.ToCharArray();
+					Array.Resize(ref ipArray, 64);
+					PacketWriter.WriteByte(data, (byte)server.ServerId);
 					PacketWriter.WriteByte(data, (byte)chan.ChannelId);
 					PacketWriter.WriteUInt16(data, (UInt16)chan.UserCount);
-					PacketWriter.WriteNull(data, 21); //check ostara packet
-					PacketWriter.WriteByte(data, 0xFF); // maximum rank
+					PacketWriter.WriteUInt16(data, 0); //UsersInWarLobby
+					PacketWriter.WriteUInt16(data, 0); //u2
+					PacketWriter.WriteUInt16(data, 0); //CapellasInWar
+					PacketWriter.WriteUInt16(data, 0); //ProcInWar
+					PacketWriter.WriteUInt32(data, 0); //u3
+					PacketWriter.WriteUInt16(data, 0); //CapellasInWar2
+					PacketWriter.WriteUInt16(data, 0); //ProcInWar2
+					PacketWriter.WriteUInt16(data, 0); //u4
+					PacketWriter.WriteByte(data, 0); // min lvl
+					PacketWriter.WriteByte(data, 0); // max lvl
+					PacketWriter.WriteByte(data, 0); // min rank
+					PacketWriter.WriteByte(data, 0); // max rank
 					PacketWriter.WriteUInt16(data, (UInt16)chan.MaximumUserCount);
-					PacketWriter.WriteUInt32(data, ip);
+					PacketWriter.WriteArray(data, System.Text.Encoding.UTF8.GetBytes(ipArray));
 					PacketWriter.WriteUInt16(data, (UInt16)chan.Port);
-					PacketWriter.WriteUInt32(data, chan.Type);
+					PacketWriter.WriteUInt64(data, chan.Type);
 				}
 			}
 		}

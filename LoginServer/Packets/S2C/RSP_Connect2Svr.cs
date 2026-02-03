@@ -25,6 +25,8 @@ namespace LoginServer.Packets.S2C
 			PacketWriter.WriteUInt32(data, _authKey);
 			PacketWriter.WriteUInt16(data, _userIdx);
 			PacketWriter.WriteUInt16(data, _recvXorKeyIdx);
+			PacketWriter.WriteUInt32(data, 1);
+			PacketWriter.WriteUInt32(data, 0);
 			//Serilog.Log.Debug($"Expecting to see {_recvXorKeyIdx}");
 		}
 	}

@@ -19,6 +19,7 @@ namespace WorldServer.Packets.S2C
 			PacketWriter.WriteInt32(data, _payMode);
 			PacketWriter.WriteInt32(data, _remainingTime);
 			PacketWriter.WriteInt32(data, _serviceKind);
+			PacketWriter.WriteNull(data, 16);
 		}
 	}
 }

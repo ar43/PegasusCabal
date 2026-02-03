@@ -46,7 +46,7 @@ namespace LoginServer.Packets
 				Opcode.CHECKVERSION => new REQ_CheckVersion(data),
 				Opcode.PRESERVERENVREQUEST => new REQ_PreServerEnvRequest(data),
 				Opcode.PUBLICKEY => new REQ_PublicKey(data),
-				Opcode.AUTHACCOUNT => new REQ_AuthAccount(data),
+				Opcode.AUTHACCOUNT => new REQ_Login(data),
 				Opcode.VERIFYLINKS => new REQ_VerifyLinks(data),
 				_ => throw new NotImplementedException($"unimplemented opcode {opcode}"),
 			}; ;

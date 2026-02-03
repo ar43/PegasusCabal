@@ -43,9 +43,9 @@ namespace WorldServer.Packets.S2C
 				PacketWriter.WriteUInt16(data, item.ObjectIndexData.ObjectId);
 				PacketWriter.WriteByte(data, item.ObjectIndexData.WorldIndex);
 				PacketWriter.WriteByte(data, (Byte)item.ObjectIndexData.ObjectType);
-				PacketWriter.WriteUInt32(data, item.Item.Option);
+				PacketWriter.WriteUInt64(data, item.Item.Option);
 				PacketWriter.WriteUInt32(data, _fromIdOverride);
-				PacketWriter.WriteUInt32(data, item.Item.Kind);
+				PacketWriter.WriteUInt64(data, item.Item.Kind);
 				PacketWriter.WriteUInt16(data, item.X);
 				PacketWriter.WriteUInt16(data, item.Y);
 				PacketWriter.WriteUInt16(data, item.Key);

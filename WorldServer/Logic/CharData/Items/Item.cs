@@ -8,7 +8,7 @@ namespace WorldServer.Logic.CharData.Items
 {
 	internal class Item
 	{
-		public Item(UInt32 kind, UInt32 option, UInt32 serial, UInt32 duration)
+		public Item(UInt64 kind, UInt64 option, UInt64 serial, UInt32 duration)
 		{
 			if (ItemConfig == null || _itemRewardData == null)
 				throw new Exception("item configs not yet loaded");
@@ -19,13 +19,13 @@ namespace WorldServer.Logic.CharData.Items
 			_itemInfo = ItemConfig[GetId()];
 		}
 
-		public UInt32 Kind { get; private set; }
+		public UInt64 Kind { get; private set; }
 
-		public UInt32 Option { get; private set; }
-		public UInt32 Serial { get; private set; }
+		public UInt64 Option { get; private set; }
+		public UInt64 Serial { get; private set; }
 		public UInt32 Duration { get; private set; } //change to period
 
-		private static Dictionary<UInt32, ItemInfo>? ItemConfig;
+		private static Dictionary<UInt64, ItemInfo>? ItemConfig;
 		private static ItemRewardData? _itemRewardData = null;
 		private ItemInfo _itemInfo;
 
@@ -235,7 +235,7 @@ namespace WorldServer.Logic.CharData.Items
 		public void ConvertOptionToQuestOption(int quantity)
 		{
 			Debug.Assert(IsQuestItem());
-			Option = (uint)((Option << 7) + (quantity & MASK_QITEM_CNT));
+			Option = (ulong)((Option << 7) + ((uint)quantity & MASK_QITEM_CNT));
 		}
 
 		public void SetQuestItemCount(int quantity)
@@ -248,13 +248,13 @@ namespace WorldServer.Logic.CharData.Items
 		public uint GetQuestItemOpt()
 		{
 			Debug.Assert(IsQuestItem());
-			return (Option & MASK_QITEM_IDX) >> 7;
+			return (uint.CreateTruncating(Option) & MASK_QITEM_IDX) >> 7;
 		}
 
 		public uint GetQuestItemCount()
 		{
 			Debug.Assert(IsQuestItem());
-			return Option & MASK_QITEM_CNT;
+			return uint.CreateTruncating(Option) & MASK_QITEM_CNT;
 		}
 
 		public int GetHeight()
@@ -299,19 +299,19 @@ namespace WorldServer.Logic.CharData.Items
 			return true;
 		}
 
-		public void SetKind(UInt32 kind)
+		public void SetKind(UInt64 kind)
 		{
 			Kind = kind;
 		}
 
-		public void SetOption(UInt32 option)
+		public void SetOption(UInt64 option)
 		{
 			Option = option;
 		}
 
 		public uint GetId()
 		{
-			return Kind & (1 << 12) - 1;
+			return uint.CreateTruncating(Kind) & (1 << 12) - 1;
 		}
 
 		public ItemData GetProtobuf()

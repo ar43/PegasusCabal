@@ -78,11 +78,11 @@ namespace WorldServer.Logic.CharData
 				{
 					if (type == ItemType.IDT_LKWP)
 					{
-						if (chr.Style.BattleStyleNum == 3 || chr.Style.BattleStyleNum == 4)
+						if (chr.Style.ClassLow == 3 || chr.Style.ClassLow == 4)
 						{
 							type = ItemType.IDT_MWPN;
 						}
-						else if (chr.Style.BattleStyleNum == 2)
+						else if (chr.Style.ClassLow == 2)
 						{
 							type = ItemType.IDT_2HND;
 						}

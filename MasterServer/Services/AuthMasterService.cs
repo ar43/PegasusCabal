@@ -78,6 +78,7 @@ namespace MasterServer.Services
 						serverData[i + 1] = (Byte)charCount;
 					}
 				}
+				else serverData ??= new byte[2];
 			}
 			else
 			{
@@ -94,7 +95,7 @@ namespace MasterServer.Services
 				PremServId = 0,
 				PremServExpired = 0,
 				Language = 0,
-				AuthKey = "46385170829535025841897130667207"
+				AuthKey = "46385170829535025841897130667207" //perhaps this is CashToken, whatever that is
 			});
 		}
 	}

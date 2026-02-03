@@ -15,6 +15,14 @@ namespace LibPegasus.Packets
 			data.AddToBack(Convert.ToByte(val));
 		}
 
+		public static void WriteBoolLarge(Deque<byte> data, bool val)
+		{
+			data.AddToBack(Convert.ToByte(val));
+			data.AddToBack(0);
+			data.AddToBack(0);
+			data.AddToBack(0);
+		}
+
 		public static void WriteInt8(Deque<byte> data, sbyte val)
 		{
 			data.AddToBack((byte)val);
